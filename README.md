@@ -24,11 +24,7 @@ An offline-first casual mini-game collection for Android, built with Kotlin and 
 
 ### Command-line build
 
-If you have Gradle 8.4+ installed:
-
 ```bash
-gradle wrapper --gradle-version 8.4
-chmod +x gradlew
 ./gradlew assembleDebug
 ```
 
