@@ -125,33 +125,43 @@ private val numberColors = mapOf(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun MinesweeperScreen(onBack: () -> Unit) {
-    // null board = not yet started; first tap generates it (avoiding the tapped cell)
+fun MinesweeperScreen(
+    onBack: () -> Unit,
+    onWin: (timeSecs: Long) -> Unit = {}
+) {
     var board by remember { mutableStateOf<List<List<MsCell>>?>(null) }
     var gameState by remember { mutableStateOf(MsState.Playing) }
     var flagsLeft by remember { mutableIntStateOf(MS_MINES) }
+    var startTimeMs by remember { mutableStateOf(0L) }
 
     fun reset() {
         board = null
         gameState = MsState.Playing
         flagsLeft = MS_MINES
+        startTimeMs = 0L
     }
 
     fun onTap(row: Int, col: Int) {
         if (gameState != MsState.Playing) return
-        // First tap: generate board guaranteeing a safe first cell
-        val current = board ?: createMsBoard(row, col).also { board = it }
+        val current = board ?: createMsBoard(row, col).also {
+            board = it
+            startTimeMs = System.currentTimeMillis()
+        }
         val cell = current[row][col]
         if (cell.isFlagged || cell.isRevealed) return
         if (cell.isMine) {
-            // Reveal every mine so the player can see what they hit
             board = current.map { r -> r.map { c -> if (c.isMine) c.copy(isRevealed = true) else c } }
             gameState = MsState.Lost
             return
         }
         val next = revealMs(current, row, col)
         board = next
-        if (checkWinMs(next)) gameState = MsState.Won
+        if (checkWinMs(next)) {
+            gameState = MsState.Won
+            val elapsed = if (startTimeMs > 0L)
+                (System.currentTimeMillis() - startTimeMs) / 1000L else 0L
+            onWin(elapsed)
+        }
     }
 
     fun onLongPress(row: Int, col: Int) {

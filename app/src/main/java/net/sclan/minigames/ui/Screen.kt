@@ -5,4 +5,5 @@ sealed class Screen {
     object TicTacToe : Screen()
     object Game2048 : Screen()
     object Minesweeper : Screen()
+    object Settings : Screen()
 }

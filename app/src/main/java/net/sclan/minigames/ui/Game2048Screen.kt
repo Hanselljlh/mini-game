@@ -130,9 +130,13 @@ private fun tileTextColor(value: Int): Color =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Game2048Screen(onBack: () -> Unit) {
+fun Game2048Screen(
+    onBack: () -> Unit,
+    onBestScore: (tile: Int, score: Int) -> Unit = { _, _ -> }
+) {
     var board by remember { mutableStateOf(addRandomTile(addRandomTile(emptyBoard2048()))) }
     var score by remember { mutableIntStateOf(0) }
+    var bestTile by remember { mutableIntStateOf(0) }
     var gameOver by remember { mutableStateOf(false) }
     var won by remember { mutableStateOf(false) }
 
@@ -143,6 +147,8 @@ fun Game2048Screen(onBack: () -> Unit) {
         val next = addRandomTile(newBoard)
         board = next
         score += gained
+        val maxTile = next.maxOf { row -> row.maxOrNull() ?: 0 }
+        if (maxTile > bestTile) bestTile = maxTile
         when {
             next.any { row -> row.any { it == 2048 } } -> won = true
             !hasValidMoves2048(next) -> gameOver = true
@@ -152,6 +158,7 @@ fun Game2048Screen(onBack: () -> Unit) {
     fun reset() {
         board = addRandomTile(addRandomTile(emptyBoard2048()))
         score = 0
+        bestTile = 0
         gameOver = false
         won = false
     }
@@ -161,7 +168,10 @@ fun Game2048Screen(onBack: () -> Unit) {
             TopAppBar(
                 title = { Text("2048") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = {
+                        onBestScore(bestTile, score)
+                        onBack()
+                    }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -191,8 +201,6 @@ fun Game2048Screen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(8.dp))
 
-            // Swipe surface — key on `board` so the coroutine re-launches after each move,
-            // ensuring `move` always closes over the latest board state.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
