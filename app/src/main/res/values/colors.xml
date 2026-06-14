@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Pocket Mini Games</string>
+    <color name="launch_bg">#3949AB</color>
 </resources>
