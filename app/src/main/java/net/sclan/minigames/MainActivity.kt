@@ -10,6 +10,8 @@ import androidx.compose.runtime.setValue
 import net.sclan.minigames.billing.BillingRepository
 import net.sclan.minigames.data.ScoreRepository
 import net.sclan.minigames.ui.Game2048Screen
+import net.sclan.minigames.ui.GameId
+import net.sclan.minigames.ui.GameSetupScreen
 import net.sclan.minigames.ui.HomeScreen
 import net.sclan.minigames.ui.MinesweeperScreen
 import net.sclan.minigames.ui.Screen
@@ -31,26 +33,40 @@ class MainActivity : ComponentActivity() {
         setContent {
             MiniGameHubTheme {
                 var screen by remember { mutableStateOf<Screen>(Screen.Home) }
-
-                // Both repos expose Compose observable state — reads here
-                // auto-trigger recomposition when scores or purchase state change.
                 val scores = scoreRepo.scores
                 val purchaseState = billingRepo.purchaseState
 
-                when (screen) {
+                when (val current = screen) {
                     Screen.Home -> HomeScreen(
-                        onGameSelect = { screen = it },
+                        onGameSelect = { screen = Screen.GameSetup(it) },
                         scores = scores,
                         adsEnabled = billingRepo.areAdsEnabled,
                         onSettings = { screen = Screen.Settings }
                     )
-                    Screen.TicTacToe -> TicTacToeScreen(onBack = { screen = Screen.Home })
-                    Screen.Game2048 -> Game2048Screen(
+                    is Screen.GameSetup -> GameSetupScreen(
+                        game = current.game,
+                        scores = scores,
                         onBack = { screen = Screen.Home },
+                        onPlay = { choice ->
+                            screen = when (current.game) {
+                                GameId.TileMerge -> Screen.Game2048(choice.tileMerge)
+                                GameId.Minesweeper -> Screen.Minesweeper(choice.minesweeper)
+                                GameId.TicTacToe -> Screen.TicTacToe(choice.ticTacToe)
+                            }
+                        }
+                    )
+                    is Screen.TicTacToe -> TicTacToeScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.TicTacToe) }
+                    )
+                    is Screen.Game2048 -> Game2048Screen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.TileMerge) },
                         onBestScore = { tile, score -> scoreRepo.tryUpdateBest2048(tile, score) }
                     )
-                    Screen.Minesweeper -> MinesweeperScreen(
-                        onBack = { screen = Screen.Home },
+                    is Screen.Minesweeper -> MinesweeperScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.Minesweeper) },
                         onWin = { timeSecs -> scoreRepo.recordMinesweeperWin(timeSecs) }
                     )
                     Screen.Settings -> SettingsScreen(
