@@ -30,7 +30,7 @@ import net.sclan.minigames.data.ScoreLogic
 
 @Composable
 fun HomeScreen(
-    onGameSelect: (Screen) -> Unit,
+    onGameSelect: (GameId) -> Unit,
     scores: HighScores = HighScores(),
     adsEnabled: Boolean = true,
     onSettings: () -> Unit = {}
@@ -50,7 +50,7 @@ fun HomeScreen(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                "Play offline, anytime.",
+                "Choose a game, read the rules, set difficulty, then play offline.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -60,27 +60,28 @@ fun HomeScreen(
             Spacer(Modifier.height(8.dp))
 
             GameCard(
-                title = "2048",
-                subtitle = "Swipe to slide and combine tiles",
+                game = GameId.TileMerge,
+                subtitle = "Slide and merge matching number tiles",
                 badge = if (scores.best2048Tile > 0)
                     "Best tile: ${ScoreLogic.tileLabel(scores.best2048Tile)}  •  Score: ${scores.best2048Score}"
-                else null,
-                onClick = { onGameSelect(Screen.Game2048) }
+                else "Setup • instructions • difficulty",
+                onClick = { onGameSelect(GameId.TileMerge) }
             )
             Spacer(Modifier.height(10.dp))
             GameCard(
-                title = "Minesweeper",
-                subtitle = "Tap to reveal • hold to flag",
+                game = GameId.Minesweeper,
+                subtitle = "Reveal safe squares and flag hidden mines",
                 badge = if (scores.minesweeperWins > 0)
                     "Wins: ${scores.minesweeperWins}  •  Best: ${ScoreLogic.timeLabel(scores.minesweeperBestTimeSecs)}"
-                else null,
-                onClick = { onGameSelect(Screen.Minesweeper) }
+                else "Easy / Normal / Hard boards",
+                onClick = { onGameSelect(GameId.Minesweeper) }
             )
             Spacer(Modifier.height(10.dp))
             GameCard(
-                title = "Tic Tac Toe",
-                subtitle = "Two players — take turns on a 3×3 grid",
-                onClick = { onGameSelect(Screen.TicTacToe) }
+                game = GameId.TicTacToe,
+                subtitle = "2-player, easy bot, or smart bot",
+                badge = "Choose opponent before playing",
+                onClick = { onGameSelect(GameId.TicTacToe) }
             )
 
             Spacer(Modifier.height(28.dp))
@@ -90,19 +91,10 @@ fun HomeScreen(
             Card(
                 onClick = onSettings,
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                )
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        Icons.Filled.Star,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary
-                    )
+                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Filled.Star, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
                     Spacer(Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
@@ -117,11 +109,7 @@ fun HomeScreen(
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
                 }
             }
 
@@ -132,42 +120,29 @@ fun HomeScreen(
 
 @Composable
 private fun SectionLabel(text: String) {
-    Text(
-        text,
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.Bold
-    )
+    Text(text, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
 }
 
 @Composable
-private fun GameCard(title: String, subtitle: String, badge: String? = null, onClick: () -> Unit) {
+private fun GameCard(game: GameId, subtitle: String, badge: String? = null, onClick: () -> Unit) {
     Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Text(
-                subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            if (badge != null) {
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    badge,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            MiniGameIcon(game, modifier = Modifier.width(56.dp).height(56.dp))
+            Spacer(Modifier.width(14.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(game.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (badge != null) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(badge, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                }
             }
         }
     }

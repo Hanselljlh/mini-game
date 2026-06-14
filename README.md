@@ -6,9 +6,9 @@ An offline-first casual mini-game collection for Android, built with Kotlin and 
 
 | Game | Description |
 |------|-------------|
-| Tic Tac Toe | Classic 3×3 grid for two local players |
-| 2048 | Slide tiles to combine them and reach 2048 |
-| Minesweeper | 9×9 grid with 10 mines — tap to reveal, long-press to flag |
+| Tic Tac Toe | Classic 3×3 grid with 2-player, easy bot, and smart bot modes |
+| Tile Merge | Slide matching number tiles together until you reach the target tile |
+| Minesweeper | Easy, Normal, and Hard boards — tap to reveal, long-press to flag |
 
 ## Requirements
 
@@ -48,6 +48,10 @@ app/src/main/java/net/sclan/minigames/
 
 GitHub Actions builds a debug APK on every push and pull request to `main`.
 See `.github/workflows/android-ci.yml`.
+
+## Graphics and licenses
+
+Current in-app graphics are original Compose/vector artwork created for this project. UI icons use Google's Material Icons, licensed under Apache 2.0. No random web/stock assets are bundled.
 
 ## Docs
 

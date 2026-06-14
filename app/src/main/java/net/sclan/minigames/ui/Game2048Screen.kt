@@ -60,6 +60,12 @@ internal fun addRandomTile(board: Board2048): Board2048 {
     }
 }
 
+internal fun startingBoard2048(difficulty: TileMergeDifficulty = TileMergeDifficulty.Normal): Board2048 {
+    var board = emptyBoard2048()
+    repeat(difficulty.startTiles) { board = addRandomTile(board) }
+    return board
+}
+
 internal fun slideLeft(row: List<Int>): Pair<List<Int>, Int> {
     val tiles = row.filter { it != 0 }.toMutableList()
     var score = 0
@@ -131,10 +137,11 @@ private fun tileTextColor(value: Int): Color =
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Game2048Screen(
+    difficulty: TileMergeDifficulty = TileMergeDifficulty.Normal,
     onBack: () -> Unit,
     onBestScore: (tile: Int, score: Int) -> Unit = { _, _ -> }
 ) {
-    var board by remember { mutableStateOf(addRandomTile(addRandomTile(emptyBoard2048()))) }
+    var board by remember(difficulty) { mutableStateOf(startingBoard2048(difficulty)) }
     var score by remember { mutableIntStateOf(0) }
     var bestTile by remember { mutableIntStateOf(0) }
     var gameOver by remember { mutableStateOf(false) }
@@ -150,13 +157,13 @@ fun Game2048Screen(
         val maxTile = next.maxOf { row -> row.maxOrNull() ?: 0 }
         if (maxTile > bestTile) bestTile = maxTile
         when {
-            next.any { row -> row.any { it == 2048 } } -> won = true
+            next.any { row -> row.any { it == difficulty.targetTile } } -> won = true
             !hasValidMoves2048(next) -> gameOver = true
         }
     }
 
     fun reset() {
-        board = addRandomTile(addRandomTile(emptyBoard2048()))
+        board = startingBoard2048(difficulty)
         score = 0
         bestTile = 0
         gameOver = false
@@ -166,7 +173,7 @@ fun Game2048Screen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("2048") },
+                title = { Text("Tile Merge • ${difficulty.label}") },
                 navigationIcon = {
                     IconButton(onClick = {
                         onBestScore(bestTile, score)
@@ -196,7 +203,7 @@ fun Game2048Screen(
 
             Spacer(Modifier.height(8.dp))
 
-            if (won) Text("You reached 2048!", color = Color(0xFF776E65), fontWeight = FontWeight.Bold)
+            if (won) Text("You reached ${difficulty.targetTile}!", color = Color(0xFF776E65), fontWeight = FontWeight.Bold)
             if (gameOver) Text("Game Over!", color = Color.Red, fontWeight = FontWeight.Bold)
 
             Spacer(Modifier.height(8.dp))
@@ -270,7 +277,7 @@ fun Game2048Screen(
 
             Spacer(Modifier.height(8.dp))
             Text(
-                "Swipe to move tiles",
+                "Swipe to move every tile. Match equal numbers to merge. Target: ${difficulty.targetTile}.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
