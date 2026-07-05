@@ -29,5 +29,8 @@ sealed class Screen {
     data class FlappyJump(val difficulty: FlappyDifficulty) : Screen()
     data class SandFall(val brush: SandBrush) : Screen()
     object BlockFill : Screen()
+    object MergeChain : Screen()
+    data class CrossMath(val difficulty: CrossMathDifficulty) : Screen()
+    data class NumberConnect(val difficulty: NumberConnectDifficulty) : Screen()
     object Settings : Screen()
 }

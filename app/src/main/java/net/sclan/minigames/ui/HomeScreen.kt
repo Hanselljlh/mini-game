@@ -280,6 +280,9 @@ private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
     GameId.MazePaint -> if (scores.paintBestSwipes > 0) "Best: ${scores.paintBestSwipes} swipes" else null
     GameId.FlappyJump -> if (scores.flappyBestScore > 0) "Best: ${scores.flappyBestScore} pipes" else null
     GameId.BlockFill -> if (scores.blockFillBestScore > 0) "Best: ${scores.blockFillBestScore}" else null
+    GameId.MergeChain -> if (scores.mergeChainBest > 0) "Best: ${scores.mergeChainBest}" else null
+    GameId.CrossMath -> if (scores.crossMathSolved > 0) "Solved: ${scores.crossMathSolved}" else null
+    GameId.NumberConnect -> if (scores.numberConnectWins > 0) "Paths: ${scores.numberConnectWins}" else null
     GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala, GameId.SandFall -> null
 }
 

@@ -28,6 +28,9 @@ data class HighScores(
     val paintBestSwipes: Int = 0,
     val flappyBestScore: Int = 0,
     val blockFillBestScore: Int = 0,
+    val mergeChainBest: Int = 0,
+    val crossMathSolved: Int = 0,
+    val numberConnectWins: Int = 0,
     val totalXp: Int = 0,
     val gamesPlayed: Int = 0
 )
@@ -55,6 +58,8 @@ object ScoreLogic {
     const val XP_PAINT_WIN = 15
     const val XP_FLAPPY_RUN = 10
     const val XP_BLOCKFILL_RUN = 10
+    const val XP_CROSSMATH_WIN = 15
+    const val XP_CONNECT_WIN = 20
 
     fun isBetterTile(new: Int, best: Int): Boolean = new > best
     fun isBetterScore(new: Int, best: Int): Boolean = new > best
@@ -117,6 +122,9 @@ class ScoreRepository(context: Context) {
         paintBestSwipes = prefs.getInt("paint_best_swipes", 0),
         flappyBestScore = prefs.getInt("flappy_best", 0),
         blockFillBestScore = prefs.getInt("blockfill_best", 0),
+        mergeChainBest = prefs.getInt("mergechain_best", 0),
+        crossMathSolved = prefs.getInt("crossmath_solved", 0),
+        numberConnectWins = prefs.getInt("connect_wins", 0),
         totalXp = prefs.getInt("total_xp", 0),
         gamesPlayed = prefs.getInt("games_played", 0)
     )
@@ -255,6 +263,30 @@ class ScoreRepository(context: Context) {
         val newXp = cur.totalXp + if (score > 0) ScoreLogic.XP_BLOCKS_RUN else 0
         prefs.edit().putInt("blocks_best", newBest).putInt("total_xp", newXp).apply()
         scores = cur.copy(blocksBestScore = newBest, totalXp = newXp)
+    }
+
+    /** Called on every merge with the running score; XP only on new bests to avoid farming. */
+    fun recordMergeChainScore(score: Int) {
+        val cur = scores
+        if (!ScoreLogic.isBetterScore(score, cur.mergeChainBest)) return
+        prefs.edit().putInt("mergechain_best", score).apply()
+        scores = cur.copy(mergeChainBest = score)
+    }
+
+    fun recordCrossMathWin() {
+        val cur = scores
+        val newCount = cur.crossMathSolved + 1
+        val newXp = cur.totalXp + ScoreLogic.XP_CROSSMATH_WIN
+        prefs.edit().putInt("crossmath_solved", newCount).putInt("total_xp", newXp).apply()
+        scores = cur.copy(crossMathSolved = newCount, totalXp = newXp)
+    }
+
+    fun recordNumberConnectWin() {
+        val cur = scores
+        val newCount = cur.numberConnectWins + 1
+        val newXp = cur.totalXp + ScoreLogic.XP_CONNECT_WIN
+        prefs.edit().putInt("connect_wins", newCount).putInt("total_xp", newXp).apply()
+        scores = cur.copy(numberConnectWins = newCount, totalXp = newXp)
     }
 
     fun recordEscapeLevel() {

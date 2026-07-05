@@ -84,13 +84,17 @@ fun GameSetupScreen(
     var flappyDifficulty by remember { mutableStateOf(FlappyDifficulty.Normal) }
     var sandBrush by remember { mutableStateOf(SandBrush.Normal) }
     var blockFillMode by remember { mutableStateOf(BlockFillMode.Classic) }
+    var mergeChainMode by remember { mutableStateOf(MergeChainMode.Classic) }
+    var crossDifficulty by remember { mutableStateOf(CrossMathDifficulty.Normal) }
+    var connectDifficulty by remember { mutableStateOf(NumberConnectDifficulty.Normal) }
 
     val choice = GameSetupChoice(
         tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode,
         snakeDifficulty, fourMode, dotsSize, wordDifficulty, codeDifficulty, sudokuDifficulty, bubbleSize,
         stackSpeed, mazeSize, anagramLength, mancalaMode, simonSpeed,
         waterDifficulty, nutsDifficulty, fillDifficulty, blocksDifficulty,
-        escapePack, paintSize, flappyDifficulty, sandBrush, blockFillMode
+        escapePack, paintSize, flappyDifficulty, sandBrush, blockFillMode,
+        mergeChainMode, crossDifficulty, connectDifficulty
     )
     val pages = instructionPages(game, choice)
 
@@ -237,6 +241,18 @@ fun GameSetupScreen(
                                 BlockFillMode.entries.map { it.label },
                                 blockFillMode.ordinal
                             ) { blockFillMode = BlockFillMode.entries[it] }
+                            GameId.MergeChain -> DifficultyRow(
+                                MergeChainMode.entries.map { it.label },
+                                mergeChainMode.ordinal
+                            ) { mergeChainMode = MergeChainMode.entries[it] }
+                            GameId.CrossMath -> DifficultyRow(
+                                CrossMathDifficulty.entries.map { it.label },
+                                crossDifficulty.ordinal
+                            ) { crossDifficulty = CrossMathDifficulty.entries[it] }
+                            GameId.NumberConnect -> DifficultyRow(
+                                NumberConnectDifficulty.entries.map { it.label },
+                                connectDifficulty.ordinal
+                            ) { connectDifficulty = NumberConnectDifficulty.entries[it] }
                         }
                     }
                 }
@@ -309,6 +325,9 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.FlappyJump -> Text("🐤", style = MaterialTheme.typography.headlineMedium)
             GameId.SandFall -> Text("⏳", style = MaterialTheme.typography.headlineMedium)
             GameId.BlockFill -> Text("▦", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+            GameId.MergeChain -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("2"); IconTile("4") }
+            GameId.CrossMath -> Text("＋＝", style = MaterialTheme.typography.titleLarge, color = Color.White)
+            GameId.NumberConnect -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("1"); IconTile("N") }
         }
     }
 }
@@ -381,6 +400,12 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
         GameId.SandFall -> "Pure relaxation — nothing tracked."
         GameId.BlockFill -> if (scores.blockFillBestScore > 0)
             "Best score: ${scores.blockFillBestScore}" else "No saved score yet."
+        GameId.MergeChain -> if (scores.mergeChainBest > 0)
+            "Best score: ${scores.mergeChainBest}" else "No saved score yet."
+        GameId.CrossMath -> if (scores.crossMathSolved > 0)
+            "Solved: ${scores.crossMathSolved}" else "No puzzles solved yet."
+        GameId.NumberConnect -> if (scores.numberConnectWins > 0)
+            "Paths traced: ${scores.numberConnectWins}" else "No paths traced yet."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -560,5 +585,20 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Place your pieces" to "Tap one of the three pieces, then tap the board square where its top-left corner should go.",
         "Clear lines" to "Complete a full row or column and it clears for bonus points — rows and columns can combo.",
         "Keep space open" to "You lose when none of your remaining pieces fit. The 3×3 square is the usual culprit!"
+    )
+    GameId.MergeChain -> listOf(
+        "Start a chain" to "Tap a tile, then tap an adjacent tile with the same number to begin a chain.",
+        "Keep it growing" to "Extend the chain to neighbors with the same value or exactly double it — diagonals count.",
+        "Merge!" to "Re-tap the last tile to merge the chain into the next power of two. New tiles rain in from the top."
+    )
+    GameId.CrossMath -> listOf(
+        "Read the grid" to "Two equations run across, two run down, and they share the four mystery squares.",
+        "Place digits" to "Tap a slot, then a number tile. Every equation must be true at the same time.",
+        "Watch the ops" to "${choice.crossMath.label}. Tap a filled square to take its number back."
+    )
+    GameId.NumberConnect -> listOf(
+        "Find the path" to "A hidden path visits every square exactly once, numbered 1 to ${choice.numberConnect.gridSize * choice.numberConnect.gridSize}.",
+        "Walk it" to "Start on 1 and tap adjacent squares to advance. Checkpoint numbers confirm you're on track.",
+        "No dead ends" to "Wrong turn? Tap your last square to step back, or restart the path."
     )
 }

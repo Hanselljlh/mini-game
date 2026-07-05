@@ -26,7 +26,10 @@ enum class GameId(val title: String, val shortDescription: String) {
     MazePaint("Maze Paint", "Slide through the maze and paint every square you touch."),
     FlappyJump("Flappy Jump", "Tap to flap and thread the gaps. One touch ends the run."),
     SandFall("Sand Fall", "Pour rainbow sand and watch it pile, slide, and settle."),
-    BlockFill("Block Fill", "Place pieces on the board and clear full rows and columns.")
+    BlockFill("Block Fill", "Place pieces on the board and clear full rows and columns."),
+    MergeChain("Merge Chain", "Link matching numbers into chains and merge them ever higher."),
+    CrossMath("Cross Math", "Place digits so every equation works across and down."),
+    NumberConnect("Number Connect", "Retrace the hidden 1-to-N path through the grid.")
 }
 
 enum class TileMergeDifficulty(val label: String, val targetTile: Int, val startTiles: Int) {
@@ -174,6 +177,22 @@ enum class BlockFillMode(val label: String) {
     Classic("Classic 10×10")
 }
 
+enum class MergeChainMode(val label: String) {
+    Classic("Classic 5×6")
+}
+
+enum class CrossMathDifficulty(val label: String, val ops: List<Char>, val decoys: Int) {
+    Easy("Easy • + only", listOf('+'), 0),
+    Normal("Normal • + −", listOf('+', '−'), 2),
+    Hard("Hard • + − ×", listOf('+', '−', '×'), 3)
+}
+
+enum class NumberConnectDifficulty(val label: String, val gridSize: Int, val revealEvery: Int) {
+    Easy("Easy 5×5", 5, 3),
+    Normal("Normal 6×6", 6, 4),
+    Hard("Hard 7×7", 7, 5)
+}
+
 data class GameSetupChoice(
     val tileMerge: TileMergeDifficulty = TileMergeDifficulty.Normal,
     val minesweeper: MinesweeperDifficulty = MinesweeperDifficulty.Normal,
@@ -200,7 +219,10 @@ data class GameSetupChoice(
     val mazePaint: MazeSize = MazeSize.Medium,
     val flappyJump: FlappyDifficulty = FlappyDifficulty.Normal,
     val sandFall: SandBrush = SandBrush.Normal,
-    val blockFill: BlockFillMode = BlockFillMode.Classic
+    val blockFill: BlockFillMode = BlockFillMode.Classic,
+    val mergeChain: MergeChainMode = MergeChainMode.Classic,
+    val crossMath: CrossMathDifficulty = CrossMathDifficulty.Normal,
+    val numberConnect: NumberConnectDifficulty = NumberConnectDifficulty.Normal
 )
 
 fun defaultSetupChoice(game: GameId): GameSetupChoice = GameSetupChoice()

@@ -46,7 +46,10 @@ object GameRegistry {
         GameMeta(GameId.MazePaint, GameCategory.Arcade, "Solo", "3 min", "Slide and paint every square of the maze"),
         GameMeta(GameId.FlappyJump, GameCategory.Arcade, "Solo", "2 min", "Tap to flap through the gaps"),
         GameMeta(GameId.SandFall, GameCategory.Relax, "Solo", "∞", "Pour rainbow sand, watch it settle"),
-        GameMeta(GameId.BlockFill, GameCategory.Puzzle, "Solo", "5 min", "Place pieces, clear lines, don't run out of room")
+        GameMeta(GameId.BlockFill, GameCategory.Puzzle, "Solo", "5 min", "Place pieces, clear lines, don't run out of room"),
+        GameMeta(GameId.MergeChain, GameCategory.Brain, "Solo", "5 min", "Chain matching numbers into ever-bigger merges"),
+        GameMeta(GameId.CrossMath, GameCategory.Brain, "Solo", "3 min", "Make every equation work, across and down"),
+        GameMeta(GameId.NumberConnect, GameCategory.Brain, "Solo", "5 min", "Retrace the hidden 1-to-N path")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

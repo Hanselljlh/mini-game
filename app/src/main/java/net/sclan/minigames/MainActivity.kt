@@ -14,7 +14,10 @@ import net.sclan.minigames.ui.CodeBreakerScreen
 import net.sclan.minigames.ui.BlockFillScreen
 import net.sclan.minigames.ui.ColorBlocksScreen
 import net.sclan.minigames.ui.ColorFillScreen
+import net.sclan.minigames.ui.CrossMathScreen
 import net.sclan.minigames.ui.EscapeScreen
+import net.sclan.minigames.ui.MergeChainScreen
+import net.sclan.minigames.ui.NumberConnectScreen
 import net.sclan.minigames.ui.FlappyJumpScreen
 import net.sclan.minigames.ui.MazePaintScreen
 import net.sclan.minigames.ui.SandFallScreen
@@ -116,6 +119,9 @@ class MainActivity : ComponentActivity() {
                                 GameId.FlappyJump -> Screen.FlappyJump(choice.flappyJump)
                                 GameId.SandFall -> Screen.SandFall(choice.sandFall)
                                 GameId.BlockFill -> Screen.BlockFill
+                                GameId.MergeChain -> Screen.MergeChain
+                                GameId.CrossMath -> Screen.CrossMath(choice.crossMath)
+                                GameId.NumberConnect -> Screen.NumberConnect(choice.numberConnect)
                             }
                         }
                     )
@@ -321,6 +327,29 @@ class MainActivity : ComponentActivity() {
                         onGameOver = { score ->
                             scoreRepo.recordBlockFillRun(score)
                             if (score > 0) completeIfDaily(GameId.BlockFill)
+                        }
+                    )
+                    Screen.MergeChain -> MergeChainScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.MergeChain) },
+                        onBestScore = { score ->
+                            scoreRepo.recordMergeChainScore(score)
+                            completeIfDaily(GameId.MergeChain)
+                        }
+                    )
+                    is Screen.CrossMath -> CrossMathScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.CrossMath) },
+                        onWin = {
+                            scoreRepo.recordCrossMathWin()
+                            completeIfDaily(GameId.CrossMath)
+                        }
+                    )
+                    is Screen.NumberConnect -> NumberConnectScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.NumberConnect) },
+                        onWin = {
+                            scoreRepo.recordNumberConnectWin()
+                            completeIfDaily(GameId.NumberConnect)
                         }
                     )
                     Screen.Settings -> SettingsScreen(

@@ -4,7 +4,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 
 **No account. No location. Built for offline play.** Every game works in airplane mode; scores, favorites, and XP live only on the device.
 
-## Games (26)
+## Games (29)
 
 | Game | Category | Description |
 |------|----------|-------------|
@@ -15,6 +15,9 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Maze Runner | Brain & Logic | Freshly generated mazes — slide until you hit a wall, race to the exit |
 | Simon Says | Brain & Logic | Repeat the flashing pad sequence as it grows, three speeds |
 | Escape | Brain & Logic | Slide blockers along their tracks and free the red block — 6 handcrafted levels |
+| Merge Chain | Brain & Logic | 2248-style chain merging with gravity refill |
+| Cross Math | Brain & Logic | Interlocking equation puzzles with digit tiles |
+| Number Connect | Brain & Logic | Retrace a hidden Hamiltonian path from 1 to N |
 | Water Sort | Sort & Fill | Pour colored water between tubes until every tube is one color |
 | Nuts & Bolts | Sort & Fill | Sort colored nuts onto matching bolts |
 | Multi-Color Fill | Sort & Fill | Flood-fill the board into one color within the move limit |
