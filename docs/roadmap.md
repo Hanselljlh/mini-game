@@ -23,9 +23,10 @@ to that plan (Phase 1 = shell + registry + 5 vertical-slice games).
 - [x] 18 achievements computed from local stats
 - [x] Every game reports completion events (XP + daily challenge credit)
 
-## v1.3 — More content & polish
+## v1.3 — More content (current)
 
-- [ ] Grow catalog toward 25–30 games: Solitaire, Air-hockey duel, Anagram tiles, Word Ladder, Mancala, Checkers, Maze Runner, Timing Stack, more relax toys
+- [x] Catalog grown to 16 games: added Timing Stack, Maze Runner, Anagram Tiles, Mancala
+- [ ] Grow catalog toward 25–30 games: Solitaire, Air-hockey duel, Word Ladder, Checkers, Simon Says, more relax toys
 - [ ] Animated tile transitions in Tile Merge; win/loss celebration effects
 - [ ] Migrate persistence to DataStore with schema versioning
 - [ ] Ad wrapper with frequency caps (between sessions only, offline-safe)

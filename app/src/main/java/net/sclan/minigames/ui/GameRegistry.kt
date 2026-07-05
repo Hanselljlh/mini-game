@@ -31,7 +31,11 @@ object GameRegistry {
         GameMeta(GameId.TicTacToe, GameCategory.Duel, "1–2 players", "2 min", "Pass-and-play, easy bot, or smart bot"),
         GameMeta(GameId.FourInARow, GameCategory.Duel, "1–2 players", "5 min", "Drop discs and connect four to win"),
         GameMeta(GameId.DotsAndBoxes, GameCategory.Duel, "2 players", "5 min", "Close boxes with lines — most boxes wins"),
-        GameMeta(GameId.BubbleWrap, GameCategory.Relax, "Solo", "1 min", "Pop every bubble. No goal. Pure calm.")
+        GameMeta(GameId.BubbleWrap, GameCategory.Relax, "Solo", "1 min", "Pop every bubble. No goal. Pure calm."),
+        GameMeta(GameId.TimingStack, GameCategory.Arcade, "Solo", "2 min", "Tap at the right moment to stack blocks high"),
+        GameMeta(GameId.MazeRunner, GameCategory.Brain, "Solo", "3 min", "Slide through the maze to the exit"),
+        GameMeta(GameId.AnagramTiles, GameCategory.Words, "Solo", "3 min", "Unscramble letters to rebuild the word"),
+        GameMeta(GameId.Mancala, GameCategory.Duel, "1–2 players", "5 min", "Sow seeds, land in your store, capture big")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

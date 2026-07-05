@@ -142,6 +142,9 @@ fun SettingsScreen(
                     Text("Word Search best: ${ScoreLogic.timeLabel(scores.wordSearchBestSecs)}", style = MaterialTheme.typography.bodyMedium)
                     Text("Code Breaker best: ${if (scores.codeBestGuesses > 0) "${scores.codeBestGuesses} guesses" else "—"}", style = MaterialTheme.typography.bodyMedium)
                     Text("Sudoku solved: ${scores.sudokuWins}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Timing Stack best: ${if (scores.stackBestLayers > 0) "${scores.stackBestLayers} layers" else "—"}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Maze Runner best: ${ScoreLogic.timeLabel(scores.mazeBestSecs)}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Anagram best round: ${if (scores.anagramBestSolved > 0) "${scores.anagramBestSolved} solved" else "—"}", style = MaterialTheme.typography.bodyMedium)
                 }
             }
 

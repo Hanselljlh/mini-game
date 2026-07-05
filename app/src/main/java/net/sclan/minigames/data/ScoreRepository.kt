@@ -16,6 +16,9 @@ data class HighScores(
     val wordSearchBestSecs: Long = 0L,
     val codeBestGuesses: Int = 0,
     val sudokuWins: Int = 0,
+    val stackBestLayers: Int = 0,
+    val mazeBestSecs: Long = 0L,
+    val anagramBestSolved: Int = 0,
     val totalXp: Int = 0,
     val gamesPlayed: Int = 0
 )
@@ -32,6 +35,9 @@ object ScoreLogic {
     const val XP_SUDOKU_WIN = 40
     const val XP_DUEL_FINISH = 15
     const val XP_BUBBLE_SHEET = 5
+    const val XP_STACK_RUN = 10
+    const val XP_MAZE_WIN = 20
+    const val XP_ANAGRAM_ROUND = 15
 
     fun isBetterTile(new: Int, best: Int): Boolean = new > best
     fun isBetterScore(new: Int, best: Int): Boolean = new > best
@@ -82,6 +88,9 @@ class ScoreRepository(context: Context) {
         wordSearchBestSecs = prefs.getLong("ws_best_secs", 0L),
         codeBestGuesses = prefs.getInt("code_best_guesses", 0),
         sudokuWins = prefs.getInt("sudoku_wins", 0),
+        stackBestLayers = prefs.getInt("stack_best", 0),
+        mazeBestSecs = prefs.getLong("maze_best_secs", 0L),
+        anagramBestSolved = prefs.getInt("anagram_best", 0),
         totalXp = prefs.getInt("total_xp", 0),
         gamesPlayed = prefs.getInt("games_played", 0)
     )
@@ -173,6 +182,30 @@ class ScoreRepository(context: Context) {
     }
 
     fun recordDuelFinished() = addXp(ScoreLogic.XP_DUEL_FINISH)
+
+    fun recordStackRun(layers: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterScore(layers, cur.stackBestLayers)) layers else cur.stackBestLayers
+        val newXp = cur.totalXp + if (layers > 0) ScoreLogic.XP_STACK_RUN else 0
+        prefs.edit().putInt("stack_best", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(stackBestLayers = newBest, totalXp = newXp)
+    }
+
+    fun recordMazeWin(timeSecs: Long) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterTime(timeSecs, cur.mazeBestSecs)) timeSecs else cur.mazeBestSecs
+        val newXp = cur.totalXp + ScoreLogic.XP_MAZE_WIN
+        prefs.edit().putLong("maze_best_secs", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(mazeBestSecs = newBest, totalXp = newXp)
+    }
+
+    fun recordAnagramRound(solved: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterScore(solved, cur.anagramBestSolved)) solved else cur.anagramBestSolved
+        val newXp = cur.totalXp + if (solved > 0) ScoreLogic.XP_ANAGRAM_ROUND else 0
+        prefs.edit().putInt("anagram_best", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(anagramBestSolved = newBest, totalXp = newXp)
+    }
 
     /** Awards the daily bonus once per epoch day. Returns true if the bonus was granted. */
     fun markDailyComplete(epochDay: Long, bonusXp: Int): Boolean {

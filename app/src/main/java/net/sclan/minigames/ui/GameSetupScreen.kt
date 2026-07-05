@@ -70,10 +70,15 @@ fun GameSetupScreen(
     var codeDifficulty by remember { mutableStateOf(CodeBreakerDifficulty.Easy) }
     var sudokuDifficulty by remember { mutableStateOf(SudokuDifficulty.Mini) }
     var bubbleSize by remember { mutableStateOf(BubbleWrapSize.Standard) }
+    var stackSpeed by remember { mutableStateOf(TimingStackSpeed.Normal) }
+    var mazeSize by remember { mutableStateOf(MazeSize.Medium) }
+    var anagramLength by remember { mutableStateOf(AnagramLength.Mixed) }
+    var mancalaMode by remember { mutableStateOf(MancalaMode.TwoPlayer) }
 
     val choice = GameSetupChoice(
         tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode,
-        snakeDifficulty, fourMode, dotsSize, wordDifficulty, codeDifficulty, sudokuDifficulty, bubbleSize
+        snakeDifficulty, fourMode, dotsSize, wordDifficulty, codeDifficulty, sudokuDifficulty, bubbleSize,
+        stackSpeed, mazeSize, anagramLength, mancalaMode
     )
     val pages = instructionPages(game, choice)
 
@@ -164,6 +169,22 @@ fun GameSetupScreen(
                                 BubbleWrapSize.entries.map { it.label },
                                 bubbleSize.ordinal
                             ) { bubbleSize = BubbleWrapSize.entries[it] }
+                            GameId.TimingStack -> DifficultyRow(
+                                TimingStackSpeed.entries.map { it.label },
+                                stackSpeed.ordinal
+                            ) { stackSpeed = TimingStackSpeed.entries[it] }
+                            GameId.MazeRunner -> DifficultyRow(
+                                MazeSize.entries.map { it.label },
+                                mazeSize.ordinal
+                            ) { mazeSize = MazeSize.entries[it] }
+                            GameId.AnagramTiles -> DifficultyRow(
+                                AnagramLength.entries.map { it.label },
+                                anagramLength.ordinal
+                            ) { anagramLength = AnagramLength.entries[it] }
+                            GameId.Mancala -> DifficultyRow(
+                                MancalaMode.entries.map { it.label },
+                                mancalaMode.ordinal
+                            ) { mancalaMode = MancalaMode.entries[it] }
                         }
                     }
                 }
@@ -222,6 +243,10 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.CodeBreaker -> Text("◐◑", style = MaterialTheme.typography.titleLarge, color = Color.White)
             GameId.Sudoku -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("1"); IconTile("9") }
             GameId.BubbleWrap -> Text("○○", style = MaterialTheme.typography.titleLarge, color = Color.White)
+            GameId.TimingStack -> Text("▬", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+            GameId.MazeRunner -> Text("◱", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+            GameId.AnagramTiles -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("A"); IconTile("Z") }
+            GameId.Mancala -> Text("⚈⚈", style = MaterialTheme.typography.titleLarge, color = Color.White)
         }
     }
 }
@@ -268,6 +293,13 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
         GameId.FourInARow -> "Play a friend or challenge the bot."
         GameId.DotsAndBoxes -> "Local pass-and-play duel."
         GameId.BubbleWrap -> "No score. Just relax."
+        GameId.TimingStack -> if (scores.stackBestLayers > 0)
+            "Best tower: ${scores.stackBestLayers} layers" else "No saved score yet."
+        GameId.MazeRunner -> if (scores.mazeBestSecs > 0)
+            "Best escape: ${ScoreLogic.timeLabel(scores.mazeBestSecs)}" else "No saved score yet."
+        GameId.AnagramTiles -> if (scores.anagramBestSolved > 0)
+            "Best round: ${scores.anagramBestSolved} solved" else "No saved score yet."
+        GameId.Mancala -> "Classic seed-sowing duel."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -377,5 +409,26 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
     GameId.BubbleWrap -> listOf(
         "Pop" to "Tap bubbles to pop them. That's it. That's the game.",
         "Fresh sheets" to "Popped every bubble? Grab a new sheet and keep going. We won't judge."
+    )
+    GameId.TimingStack -> listOf(
+        "Watch it slide" to "A block slides back and forth above your tower. Tap anywhere to drop it.",
+        "Keep the overlap" to "Only the part that overlaps the layer below survives. Miss completely and the tower falls.",
+        "Reach the top" to "Stack 12 layers to build a perfect tower. ${choice.timingStack.label} speed sets the pace."
+    )
+    GameId.MazeRunner -> listOf(
+        "Slide, don't step" to "Swipe a direction and you glide until you hit a wall — plan each slide.",
+        "Find the exit" to "Start top-left, reach the gold dot at the bottom-right.",
+        "Race the clock" to "Your escape time is saved. ${choice.mazeRunner.label} mazes are freshly generated every game."
+    )
+    GameId.AnagramTiles -> listOf(
+        "Read the tiles" to "Each round scrambles a real word into letter tiles.",
+        "Rebuild the word" to "Tap tiles in order to spell your answer. Tap a placed letter to send it back.",
+        "Clear the round" to "${choice.anagramTiles.rounds} words per round. Stuck? Reveal or skip — but those don't count as solved."
+    )
+    GameId.Mancala -> listOf(
+        "Sow your seeds" to "Tap one of your six pits to scoop its seeds and drop one in each pit counter-clockwise.",
+        "Earn extra turns" to "If your last seed lands in your store (the big pit on your right), you move again.",
+        "Capture" to "Last seed in one of your empty pits? You capture it plus everything in the pit across from it.",
+        "End game" to "When one side is empty, remaining seeds go to their owner. Most seeds in store wins."
     )
 }

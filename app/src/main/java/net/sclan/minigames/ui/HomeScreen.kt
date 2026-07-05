@@ -268,7 +268,10 @@ private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
     GameId.WordSearch -> if (scores.wordSearchBestSecs > 0) "Best: ${ScoreLogic.timeLabel(scores.wordSearchBestSecs)}" else null
     GameId.CodeBreaker -> if (scores.codeBestGuesses > 0) "Best: ${scores.codeBestGuesses} guesses" else null
     GameId.Sudoku -> if (scores.sudokuWins > 0) "Solved: ${scores.sudokuWins}" else null
-    GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap -> null
+    GameId.TimingStack -> if (scores.stackBestLayers > 0) "Best: ${scores.stackBestLayers} layers" else null
+    GameId.MazeRunner -> if (scores.mazeBestSecs > 0) "Best: ${ScoreLogic.timeLabel(scores.mazeBestSecs)}" else null
+    GameId.AnagramTiles -> if (scores.anagramBestSolved > 0) "Best: ${scores.anagramBestSolved} solved" else null
+    GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala -> null
 }
 
 @Composable

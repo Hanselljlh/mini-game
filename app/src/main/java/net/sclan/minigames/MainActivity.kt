@@ -18,8 +18,12 @@ import net.sclan.minigames.ui.Game2048Screen
 import net.sclan.minigames.ui.GameId
 import net.sclan.minigames.ui.GameSetupScreen
 import net.sclan.minigames.ui.HomeScreen
+import net.sclan.minigames.ui.AnagramTilesScreen
+import net.sclan.minigames.ui.MancalaScreen
+import net.sclan.minigames.ui.MazeRunnerScreen
 import net.sclan.minigames.ui.MemoryMatchScreen
 import net.sclan.minigames.ui.MinesweeperScreen
+import net.sclan.minigames.ui.TimingStackScreen
 import net.sclan.minigames.ui.ReactionTapScreen
 import net.sclan.minigames.ui.Screen
 import net.sclan.minigames.ui.SettingsScreen
@@ -88,6 +92,10 @@ class MainActivity : ComponentActivity() {
                                 GameId.CodeBreaker -> Screen.CodeBreaker(choice.codeBreaker)
                                 GameId.Sudoku -> Screen.Sudoku(choice.sudoku)
                                 GameId.BubbleWrap -> Screen.BubbleWrap(choice.bubbleWrap)
+                                GameId.TimingStack -> Screen.TimingStack(choice.timingStack)
+                                GameId.MazeRunner -> Screen.MazeRunner(choice.mazeRunner)
+                                GameId.AnagramTiles -> Screen.AnagramTiles(choice.anagramTiles)
+                                GameId.Mancala -> Screen.Mancala(choice.mancala)
                             }
                         }
                     )
@@ -186,6 +194,38 @@ class MainActivity : ComponentActivity() {
                         onSheetDone = {
                             scoreRepo.recordBubbleSheet()
                             completeIfDaily(GameId.BubbleWrap)
+                        }
+                    )
+                    is Screen.TimingStack -> TimingStackScreen(
+                        speed = current.speed,
+                        onBack = { screen = Screen.GameSetup(GameId.TimingStack) },
+                        onFinished = { layers ->
+                            scoreRepo.recordStackRun(layers)
+                            if (layers > 0) completeIfDaily(GameId.TimingStack)
+                        }
+                    )
+                    is Screen.MazeRunner -> MazeRunnerScreen(
+                        size = current.size,
+                        onBack = { screen = Screen.GameSetup(GameId.MazeRunner) },
+                        onWin = { secs ->
+                            scoreRepo.recordMazeWin(secs)
+                            completeIfDaily(GameId.MazeRunner)
+                        }
+                    )
+                    is Screen.AnagramTiles -> AnagramTilesScreen(
+                        length = current.length,
+                        onBack = { screen = Screen.GameSetup(GameId.AnagramTiles) },
+                        onFinished = { solved ->
+                            scoreRepo.recordAnagramRound(solved)
+                            if (solved > 0) completeIfDaily(GameId.AnagramTiles)
+                        }
+                    )
+                    is Screen.Mancala -> MancalaScreen(
+                        mode = current.mode,
+                        onBack = { screen = Screen.GameSetup(GameId.Mancala) },
+                        onFinished = { _, _ ->
+                            scoreRepo.recordDuelFinished()
+                            completeIfDaily(GameId.Mancala)
                         }
                     )
                     Screen.Settings -> SettingsScreen(

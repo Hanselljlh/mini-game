@@ -15,5 +15,9 @@ sealed class Screen {
     data class CodeBreaker(val difficulty: CodeBreakerDifficulty) : Screen()
     data class Sudoku(val difficulty: SudokuDifficulty) : Screen()
     data class BubbleWrap(val size: BubbleWrapSize) : Screen()
+    data class TimingStack(val speed: TimingStackSpeed) : Screen()
+    data class MazeRunner(val size: MazeSize) : Screen()
+    data class AnagramTiles(val length: AnagramLength) : Screen()
+    data class Mancala(val mode: MancalaMode) : Screen()
     object Settings : Screen()
 }

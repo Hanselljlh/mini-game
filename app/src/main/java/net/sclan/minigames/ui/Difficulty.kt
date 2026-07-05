@@ -12,7 +12,11 @@ enum class GameId(val title: String, val shortDescription: String) {
     WordSearch("Word Search", "Find every hidden word in the letter grid."),
     CodeBreaker("Code Breaker", "Crack the secret color code using logic and feedback pegs."),
     Sudoku("Mini Sudoku", "Fill the grid so every row, column, and box has each number once."),
-    BubbleWrap("Bubble Wrap", "Pop every bubble on the sheet. Endlessly satisfying.")
+    BubbleWrap("Bubble Wrap", "Pop every bubble on the sheet. Endlessly satisfying."),
+    TimingStack("Timing Stack", "Tap at the right moment to stack blocks sky-high."),
+    MazeRunner("Maze Runner", "Slide through the maze and find the exit as fast as you can."),
+    AnagramTiles("Anagram Tiles", "Unscramble the letters to rebuild the hidden word."),
+    Mancala("Mancala", "Sow seeds around the board and capture more than your opponent.")
 }
 
 enum class TileMergeDifficulty(val label: String, val targetTile: Int, val startTiles: Int) {
@@ -91,6 +95,29 @@ enum class BubbleWrapSize(val label: String, val rows: Int, val cols: Int) {
     Jumbo("Jumbo sheet", 12, 8)
 }
 
+enum class TimingStackSpeed(val label: String, val tickMs: Long) {
+    Chill("Chill", 150L),
+    Normal("Normal", 105L),
+    Turbo("Turbo", 70L)
+}
+
+enum class MazeSize(val label: String, val size: Int) {
+    Small("Small 8×8", 8),
+    Medium("Medium 11×11", 11),
+    Large("Large 14×14", 14)
+}
+
+enum class AnagramLength(val label: String, val rounds: Int, val minLen: Int, val maxLen: Int) {
+    Short("Short words • 5 rounds", 5, 4, 5),
+    Mixed("Mixed words • 7 rounds", 7, 4, 7),
+    Long("Long words • 7 rounds", 7, 6, 8)
+}
+
+enum class MancalaMode(val label: String) {
+    TwoPlayer("2 Players"),
+    EasyBot("Easy Bot")
+}
+
 data class GameSetupChoice(
     val tileMerge: TileMergeDifficulty = TileMergeDifficulty.Normal,
     val minesweeper: MinesweeperDifficulty = MinesweeperDifficulty.Normal,
@@ -103,7 +130,11 @@ data class GameSetupChoice(
     val wordSearch: WordSearchDifficulty = WordSearchDifficulty.Normal,
     val codeBreaker: CodeBreakerDifficulty = CodeBreakerDifficulty.Easy,
     val sudoku: SudokuDifficulty = SudokuDifficulty.Mini,
-    val bubbleWrap: BubbleWrapSize = BubbleWrapSize.Standard
+    val bubbleWrap: BubbleWrapSize = BubbleWrapSize.Standard,
+    val timingStack: TimingStackSpeed = TimingStackSpeed.Normal,
+    val mazeRunner: MazeSize = MazeSize.Medium,
+    val anagramTiles: AnagramLength = AnagramLength.Mixed,
+    val mancala: MancalaMode = MancalaMode.TwoPlayer
 )
 
 fun defaultSetupChoice(game: GameId): GameSetupChoice = GameSetupChoice()
