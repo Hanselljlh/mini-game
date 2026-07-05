@@ -4,7 +4,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 
 **No account. No location. Built for offline play.** Every game works in airplane mode; scores, favorites, and XP live only on the device.
 
-## Games (34)
+## Games (35)
 
 | Game | Category | Description |
 |------|----------|-------------|
@@ -41,6 +41,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Dots & Boxes | Local Duel | Pass-and-play line duel on 3×3 to 5×5 boards |
 | Mancala | Local Duel | Classic Kalah rules — sow, capture, extra turns; 2-player or easy bot |
 | Checkers | Local Duel | Mandatory-jump checkers with kings vs the bot |
+| Ludo | Local Duel | Full classic board — vs bot, 2-player, or 4-player pass-and-play |
 | Bubble Wrap | Relax Toys | Pop every bubble. No score, no timer, pure calm |
 
 ## App features

@@ -288,6 +288,7 @@ private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
     GameId.Blackjack -> if (scores.blackjackWins > 0) "Hands won: ${scores.blackjackWins}" else null
     GameId.Dominoes -> if (scores.dominoWins > 0) "Wins: ${scores.dominoWins}" else null
     GameId.Checkers -> if (scores.checkersWins > 0) "Wins: ${scores.checkersWins}" else null
+    GameId.Ludo -> if (scores.ludoWins > 0) "Races won: ${scores.ludoWins}" else null
     GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala, GameId.SandFall -> null
 }
 

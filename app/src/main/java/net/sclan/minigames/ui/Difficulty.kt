@@ -34,7 +34,8 @@ enum class GameId(val title: String, val shortDescription: String) {
     War("War", "Flip cards head-to-head. Highest card takes both."),
     Blackjack("Blackjack", "Hit or stand — get closest to 21 without busting."),
     Dominoes("Dominoes", "Match tiles to the chain ends and empty your hand first."),
-    Checkers("Checkers", "Jump, capture, and crown kings against the bot.")
+    Checkers("Checkers", "Jump, capture, and crown kings against the bot."),
+    Ludo("Ludo", "Race all four tokens home — roll sixes, capture rivals, play it safe on stars.")
 }
 
 enum class TileMergeDifficulty(val label: String, val targetTile: Int, val startTiles: Int) {
@@ -203,6 +204,12 @@ enum class ClassicMode(val label: String) {
     Classic("Classic rules")
 }
 
+enum class LudoMode(val label: String, val players: Int) {
+    VsBot("You vs Bot", 2),
+    TwoPlayer("2 Players", 2),
+    FourPlayer("4 Players", 4)
+}
+
 data class GameSetupChoice(
     val tileMerge: TileMergeDifficulty = TileMergeDifficulty.Normal,
     val minesweeper: MinesweeperDifficulty = MinesweeperDifficulty.Normal,
@@ -233,7 +240,8 @@ data class GameSetupChoice(
     val mergeChain: MergeChainMode = MergeChainMode.Classic,
     val crossMath: CrossMathDifficulty = CrossMathDifficulty.Normal,
     val numberConnect: NumberConnectDifficulty = NumberConnectDifficulty.Normal,
-    val classic: ClassicMode = ClassicMode.Classic
+    val classic: ClassicMode = ClassicMode.Classic,
+    val ludo: LudoMode = LudoMode.VsBot
 )
 
 fun defaultSetupChoice(game: GameId): GameSetupChoice = GameSetupChoice()

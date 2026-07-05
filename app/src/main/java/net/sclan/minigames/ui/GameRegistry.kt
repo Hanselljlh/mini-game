@@ -54,7 +54,8 @@ object GameRegistry {
         GameMeta(GameId.War, GameCategory.Cards, "Solo", "3 min", "Flip for the highest card, take them all"),
         GameMeta(GameId.Blackjack, GameCategory.Cards, "Solo", "3 min", "Hit or stand — closest to 21 wins"),
         GameMeta(GameId.Dominoes, GameCategory.Cards, "Solo", "5 min", "Match tiles to the chain, empty your hand"),
-        GameMeta(GameId.Checkers, GameCategory.Duel, "Solo", "10 min", "Jump, capture, and crown kings vs the bot")
+        GameMeta(GameId.Checkers, GameCategory.Duel, "Solo", "10 min", "Jump, capture, and crown kings vs the bot"),
+        GameMeta(GameId.Ludo, GameCategory.Duel, "1–4 players", "15 min", "Race four tokens home — captures, stars, and sixes")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

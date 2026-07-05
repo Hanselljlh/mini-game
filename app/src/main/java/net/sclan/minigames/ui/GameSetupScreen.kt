@@ -87,6 +87,7 @@ fun GameSetupScreen(
     var mergeChainMode by remember { mutableStateOf(MergeChainMode.Classic) }
     var crossDifficulty by remember { mutableStateOf(CrossMathDifficulty.Normal) }
     var connectDifficulty by remember { mutableStateOf(NumberConnectDifficulty.Normal) }
+    var ludoMode by remember { mutableStateOf(LudoMode.VsBot) }
 
     val choice = GameSetupChoice(
         tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode,
@@ -94,7 +95,8 @@ fun GameSetupScreen(
         stackSpeed, mazeSize, anagramLength, mancalaMode, simonSpeed,
         waterDifficulty, nutsDifficulty, fillDifficulty, blocksDifficulty,
         escapePack, paintSize, flappyDifficulty, sandBrush, blockFillMode,
-        mergeChainMode, crossDifficulty, connectDifficulty
+        mergeChainMode, crossDifficulty, connectDifficulty,
+        ClassicMode.Classic, ludoMode
     )
     val pages = instructionPages(game, choice)
 
@@ -255,6 +257,10 @@ fun GameSetupScreen(
                             ) { connectDifficulty = NumberConnectDifficulty.entries[it] }
                             GameId.Solitaire, GameId.War, GameId.Blackjack, GameId.Dominoes, GameId.Checkers ->
                                 DifficultyRow(ClassicMode.entries.map { it.label }, 0) {}
+                            GameId.Ludo -> DifficultyRow(
+                                LudoMode.entries.map { it.label },
+                                ludoMode.ordinal
+                            ) { ludoMode = LudoMode.entries[it] }
                         }
                     }
                 }
@@ -335,6 +341,7 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.Blackjack -> Text("21", style = MaterialTheme.typography.headlineSmall, color = Color.White, fontWeight = FontWeight.Bold)
             GameId.Dominoes -> Text("🁫", style = MaterialTheme.typography.headlineMedium, color = Color.White)
             GameId.Checkers -> Text("⛀⛂", style = MaterialTheme.typography.titleLarge, color = Color.White)
+            GameId.Ludo -> Text("🎲", style = MaterialTheme.typography.headlineMedium)
         }
     }
 }
@@ -423,6 +430,8 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
             "Games won: ${scores.dominoWins}" else "No wins yet."
         GameId.Checkers -> if (scores.checkersWins > 0)
             "Games won: ${scores.checkersWins}" else "No wins yet."
+        GameId.Ludo -> if (scores.ludoWins > 0)
+            "Races won: ${scores.ludoWins}" else "No races won yet."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -642,5 +651,11 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Diagonal moves" to "Men slide one square diagonally forward on the dark squares.",
         "Jumps are mandatory" to "If you can capture, you must — and chains of jumps continue with the same piece.",
         "Crown your kings" to "Reach the far row to crown a king, which moves and jumps in all four directions."
+    )
+    GameId.Ludo -> listOf(
+        "Roll to run" to "Roll a 6 to bring a token out of your yard onto your start square. Rolling a 6 always grants another roll.",
+        "Race the loop" to "Tokens run the track clockwise, then climb their colored home column. An exact roll lands them home.",
+        "Capture & safety" to "Land on a rival to send them back to their yard — unless they're on a grey star or a start square.",
+        "First home wins" to "Get all four tokens home before anyone else. ${choice.ludo.label} mode."
     )
 }

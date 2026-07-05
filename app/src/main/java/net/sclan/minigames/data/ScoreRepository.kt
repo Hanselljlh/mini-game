@@ -36,6 +36,7 @@ data class HighScores(
     val blackjackWins: Int = 0,
     val dominoWins: Int = 0,
     val checkersWins: Int = 0,
+    val ludoWins: Int = 0,
     val totalXp: Int = 0,
     val gamesPlayed: Int = 0
 )
@@ -135,6 +136,7 @@ class ScoreRepository(context: Context) {
         blackjackWins = prefs.getInt("blackjack_wins", 0),
         dominoWins = prefs.getInt("domino_wins", 0),
         checkersWins = prefs.getInt("checkers_wins", 0),
+        ludoWins = prefs.getInt("ludo_wins", 0),
         totalXp = prefs.getInt("total_xp", 0),
         gamesPlayed = prefs.getInt("games_played", 0)
     )
@@ -312,6 +314,7 @@ class ScoreRepository(context: Context) {
     fun recordBlackjackWin() = bumpWinCounter("blackjack_wins", scores.blackjackWins, 5) { s, n -> s.copy(blackjackWins = n) }
     fun recordDominoWin() = bumpWinCounter("domino_wins", scores.dominoWins, 20) { s, n -> s.copy(dominoWins = n) }
     fun recordCheckersWin() = bumpWinCounter("checkers_wins", scores.checkersWins, 30) { s, n -> s.copy(checkersWins = n) }
+    fun recordLudoWin() = bumpWinCounter("ludo_wins", scores.ludoWins, 35) { s, n -> s.copy(ludoWins = n) }
 
     fun recordEscapeLevel() {
         val cur = scores

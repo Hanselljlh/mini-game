@@ -16,6 +16,7 @@ import net.sclan.minigames.ui.BlockFillScreen
 import net.sclan.minigames.ui.CheckersScreen
 import net.sclan.minigames.ui.ColorBlocksScreen
 import net.sclan.minigames.ui.DominoesScreen
+import net.sclan.minigames.ui.LudoScreen
 import net.sclan.minigames.ui.SolitaireScreen
 import net.sclan.minigames.ui.WarScreen
 import net.sclan.minigames.ui.ColorFillScreen
@@ -132,6 +133,7 @@ class MainActivity : ComponentActivity() {
                                 GameId.Blackjack -> Screen.Blackjack
                                 GameId.Dominoes -> Screen.Dominoes
                                 GameId.Checkers -> Screen.Checkers
+                                GameId.Ludo -> Screen.Ludo(choice.ludo)
                             }
                         }
                     )
@@ -395,6 +397,14 @@ class MainActivity : ComponentActivity() {
                         onFinished = { playerWon ->
                             if (playerWon) scoreRepo.recordCheckersWin()
                             completeIfDaily(GameId.Checkers)
+                        }
+                    )
+                    is Screen.Ludo -> LudoScreen(
+                        mode = current.mode,
+                        onBack = { screen = Screen.GameSetup(GameId.Ludo) },
+                        onFinished = { playerWon ->
+                            if (playerWon) scoreRepo.recordLudoWin()
+                            completeIfDaily(GameId.Ludo)
                         }
                     )
                     Screen.Settings -> SettingsScreen(

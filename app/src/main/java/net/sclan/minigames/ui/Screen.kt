@@ -37,5 +37,6 @@ sealed class Screen {
     object Blackjack : Screen()
     object Dominoes : Screen()
     object Checkers : Screen()
+    data class Ludo(val mode: LudoMode) : Screen()
     object Settings : Screen()
 }
