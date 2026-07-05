@@ -276,7 +276,11 @@ private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
     GameId.NutsAndBolts -> if (scores.nutsBestMoves > 0) "Best: ${ScoreLogic.movesLabel(scores.nutsBestMoves)}" else null
     GameId.ColorFill -> if (scores.colorFillWins > 0) "Filled: ${scores.colorFillWins}" else null
     GameId.ColorBlocks -> if (scores.blocksBestScore > 0) "Best: ${scores.blocksBestScore}" else null
-    GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala -> null
+    GameId.Escape -> if (scores.escapeLevelsBeaten > 0) "Levels: ${scores.escapeLevelsBeaten}" else null
+    GameId.MazePaint -> if (scores.paintBestSwipes > 0) "Best: ${scores.paintBestSwipes} swipes" else null
+    GameId.FlappyJump -> if (scores.flappyBestScore > 0) "Best: ${scores.flappyBestScore} pipes" else null
+    GameId.BlockFill -> if (scores.blockFillBestScore > 0) "Best: ${scores.blockFillBestScore}" else null
+    GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala, GameId.SandFall -> null
 }
 
 @Composable

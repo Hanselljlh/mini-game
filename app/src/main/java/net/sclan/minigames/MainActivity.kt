@@ -11,8 +11,13 @@ import net.sclan.minigames.billing.BillingRepository
 import net.sclan.minigames.data.ScoreRepository
 import net.sclan.minigames.ui.BubbleWrapScreen
 import net.sclan.minigames.ui.CodeBreakerScreen
+import net.sclan.minigames.ui.BlockFillScreen
 import net.sclan.minigames.ui.ColorBlocksScreen
 import net.sclan.minigames.ui.ColorFillScreen
+import net.sclan.minigames.ui.EscapeScreen
+import net.sclan.minigames.ui.FlappyJumpScreen
+import net.sclan.minigames.ui.MazePaintScreen
+import net.sclan.minigames.ui.SandFallScreen
 import net.sclan.minigames.ui.NutsAndBoltsScreen
 import net.sclan.minigames.ui.WaterSortScreen
 import net.sclan.minigames.ui.DailyChallenge
@@ -106,6 +111,11 @@ class MainActivity : ComponentActivity() {
                                 GameId.NutsAndBolts -> Screen.NutsAndBolts(choice.nutsAndBolts)
                                 GameId.ColorFill -> Screen.ColorFill(choice.colorFill)
                                 GameId.ColorBlocks -> Screen.ColorBlocks(choice.colorBlocks)
+                                GameId.Escape -> Screen.Escape(choice.escape)
+                                GameId.MazePaint -> Screen.MazePaint(choice.mazePaint)
+                                GameId.FlappyJump -> Screen.FlappyJump(choice.flappyJump)
+                                GameId.SandFall -> Screen.SandFall(choice.sandFall)
+                                GameId.BlockFill -> Screen.BlockFill
                             }
                         }
                     )
@@ -276,6 +286,41 @@ class MainActivity : ComponentActivity() {
                         onFinished = { score ->
                             scoreRepo.recordBlocksRun(score)
                             if (score > 0) completeIfDaily(GameId.ColorBlocks)
+                        }
+                    )
+                    is Screen.Escape -> EscapeScreen(
+                        pack = current.pack,
+                        onBack = { screen = Screen.GameSetup(GameId.Escape) },
+                        onLevelDone = { _, _ ->
+                            scoreRepo.recordEscapeLevel()
+                            completeIfDaily(GameId.Escape)
+                        }
+                    )
+                    is Screen.MazePaint -> MazePaintScreen(
+                        size = current.size,
+                        onBack = { screen = Screen.GameSetup(GameId.MazePaint) },
+                        onWin = { swipes ->
+                            scoreRepo.recordMazePaintWin(swipes)
+                            completeIfDaily(GameId.MazePaint)
+                        }
+                    )
+                    is Screen.FlappyJump -> FlappyJumpScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.FlappyJump) },
+                        onGameOver = { score ->
+                            scoreRepo.recordFlappyRun(score)
+                            if (score > 0) completeIfDaily(GameId.FlappyJump)
+                        }
+                    )
+                    is Screen.SandFall -> SandFallScreen(
+                        brush = current.brush,
+                        onBack = { screen = Screen.GameSetup(GameId.SandFall) }
+                    )
+                    Screen.BlockFill -> BlockFillScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.BlockFill) },
+                        onGameOver = { score ->
+                            scoreRepo.recordBlockFillRun(score)
+                            if (score > 0) completeIfDaily(GameId.BlockFill)
                         }
                     )
                     Screen.Settings -> SettingsScreen(

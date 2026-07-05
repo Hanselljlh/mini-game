@@ -24,10 +24,16 @@ class ProgressionTest {
         }
     }
 
-    @Test fun dailyPickCyclesThroughAllGames() {
-        val size = GameId.entries.size
-        val picked = (0L until size.toLong()).map { DailyChallenge.gameForDay(it) }.toSet()
-        assertEquals(GameId.entries.toSet(), picked)
+    @Test fun dailyPickCyclesThroughAllPlayableGames() {
+        val playable = DailyChallenge.playable
+        val picked = (0L until playable.size.toLong()).map { DailyChallenge.gameForDay(it) }.toSet()
+        assertEquals(playable.toSet(), picked)
+    }
+
+    @Test fun dailyPickNeverSelectsSandFall() {
+        (0L..500L).forEach { day ->
+            assertTrue(DailyChallenge.gameForDay(day) != GameId.SandFall)
+        }
     }
 
     @Test fun dailyPickHandlesNegativeDays() {

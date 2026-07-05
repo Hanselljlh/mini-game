@@ -10,8 +10,11 @@ object DailyChallenge {
 
     fun todayEpochDay(): Long = System.currentTimeMillis() / 86_400_000L
 
+    /** Games that report a completion event and can therefore be a daily pick. */
+    val playable: List<GameId> get() = GameId.entries.filter { it != GameId.SandFall }
+
     fun gameForDay(epochDay: Long): GameId {
-        val games = GameId.entries
+        val games = playable
         val index = ((epochDay % games.size) + games.size) % games.size
         return games[index.toInt()]
     }

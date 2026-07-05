@@ -41,7 +41,12 @@ object GameRegistry {
         GameMeta(GameId.WaterSort, GameCategory.Puzzle, "Solo", "5 min", "Pour water until every tube is one color"),
         GameMeta(GameId.NutsAndBolts, GameCategory.Puzzle, "Solo", "5 min", "Sort colored nuts onto matching bolts"),
         GameMeta(GameId.ColorFill, GameCategory.Puzzle, "Solo", "3 min", "Flood the board into one color in limited moves"),
-        GameMeta(GameId.ColorBlocks, GameCategory.Puzzle, "Solo", "3 min", "Clear matching block groups — bigger is better")
+        GameMeta(GameId.ColorBlocks, GameCategory.Puzzle, "Solo", "3 min", "Clear matching block groups — bigger is better"),
+        GameMeta(GameId.Escape, GameCategory.Brain, "Solo", "5 min", "Slide blockers aside and free the red block"),
+        GameMeta(GameId.MazePaint, GameCategory.Arcade, "Solo", "3 min", "Slide and paint every square of the maze"),
+        GameMeta(GameId.FlappyJump, GameCategory.Arcade, "Solo", "2 min", "Tap to flap through the gaps"),
+        GameMeta(GameId.SandFall, GameCategory.Relax, "Solo", "∞", "Pour rainbow sand, watch it settle"),
+        GameMeta(GameId.BlockFill, GameCategory.Puzzle, "Solo", "5 min", "Place pieces, clear lines, don't run out of room")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

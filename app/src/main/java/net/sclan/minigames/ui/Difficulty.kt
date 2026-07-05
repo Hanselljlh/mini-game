@@ -21,7 +21,12 @@ enum class GameId(val title: String, val shortDescription: String) {
     WaterSort("Water Sort", "Pour colored water between tubes until every tube is one color."),
     NutsAndBolts("Nuts & Bolts", "Move colored nuts between bolts until each bolt matches."),
     ColorFill("Multi-Color Fill", "Flood the board into a single color before moves run out."),
-    ColorBlocks("Color Blocks", "Tap groups of matching blocks to clear the board for big scores.")
+    ColorBlocks("Color Blocks", "Tap groups of matching blocks to clear the board for big scores."),
+    Escape("Escape", "Slide the blockers out of the way and drive the red block to the exit."),
+    MazePaint("Maze Paint", "Slide through the maze and paint every square you touch."),
+    FlappyJump("Flappy Jump", "Tap to flap and thread the gaps. One touch ends the run."),
+    SandFall("Sand Fall", "Pour rainbow sand and watch it pile, slide, and settle."),
+    BlockFill("Block Fill", "Place pieces on the board and clear full rows and columns.")
 }
 
 enum class TileMergeDifficulty(val label: String, val targetTile: Int, val startTiles: Int) {
@@ -147,6 +152,28 @@ enum class ColorBlocksDifficulty(val label: String, val rows: Int, val cols: Int
     Hard("Hard • 6 colors", 12, 10, 6)
 }
 
+enum class EscapePack(val label: String, val firstLevel: Int, val count: Int) {
+    Rookie("Rookie • levels 1–2", 0, 2),
+    Driver("Driver • levels 3–4", 2, 2),
+    Expert("Expert • levels 5–6", 4, 2)
+}
+
+enum class FlappyDifficulty(val label: String, val speed: Float, val gap: Float) {
+    Easy("Easy", 0.006f, 0.34f),
+    Normal("Normal", 0.008f, 0.30f),
+    Hard("Hard", 0.010f, 0.26f)
+}
+
+enum class SandBrush(val label: String, val radius: Int) {
+    Fine("Fine stream", 0),
+    Normal("Steady pour", 1),
+    Wide("Bucket", 2)
+}
+
+enum class BlockFillMode(val label: String) {
+    Classic("Classic 10×10")
+}
+
 data class GameSetupChoice(
     val tileMerge: TileMergeDifficulty = TileMergeDifficulty.Normal,
     val minesweeper: MinesweeperDifficulty = MinesweeperDifficulty.Normal,
@@ -168,7 +195,12 @@ data class GameSetupChoice(
     val waterSort: WaterSortDifficulty = WaterSortDifficulty.Normal,
     val nutsAndBolts: WaterSortDifficulty = WaterSortDifficulty.Normal,
     val colorFill: ColorFillDifficulty = ColorFillDifficulty.Normal,
-    val colorBlocks: ColorBlocksDifficulty = ColorBlocksDifficulty.Normal
+    val colorBlocks: ColorBlocksDifficulty = ColorBlocksDifficulty.Normal,
+    val escape: EscapePack = EscapePack.Rookie,
+    val mazePaint: MazeSize = MazeSize.Medium,
+    val flappyJump: FlappyDifficulty = FlappyDifficulty.Normal,
+    val sandFall: SandBrush = SandBrush.Normal,
+    val blockFill: BlockFillMode = BlockFillMode.Classic
 )
 
 fun defaultSetupChoice(game: GameId): GameSetupChoice = GameSetupChoice()

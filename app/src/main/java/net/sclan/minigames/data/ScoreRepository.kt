@@ -24,6 +24,10 @@ data class HighScores(
     val nutsBestMoves: Int = 0,
     val colorFillWins: Int = 0,
     val blocksBestScore: Int = 0,
+    val escapeLevelsBeaten: Int = 0,
+    val paintBestSwipes: Int = 0,
+    val flappyBestScore: Int = 0,
+    val blockFillBestScore: Int = 0,
     val totalXp: Int = 0,
     val gamesPlayed: Int = 0
 )
@@ -47,6 +51,10 @@ object ScoreLogic {
     const val XP_SORT_WIN = 20
     const val XP_FILL_WIN = 15
     const val XP_BLOCKS_RUN = 10
+    const val XP_ESCAPE_LEVEL = 20
+    const val XP_PAINT_WIN = 15
+    const val XP_FLAPPY_RUN = 10
+    const val XP_BLOCKFILL_RUN = 10
 
     fun isBetterTile(new: Int, best: Int): Boolean = new > best
     fun isBetterScore(new: Int, best: Int): Boolean = new > best
@@ -105,6 +113,10 @@ class ScoreRepository(context: Context) {
         nutsBestMoves = prefs.getInt("nuts_best_moves", 0),
         colorFillWins = prefs.getInt("fill_wins", 0),
         blocksBestScore = prefs.getInt("blocks_best", 0),
+        escapeLevelsBeaten = prefs.getInt("escape_levels", 0),
+        paintBestSwipes = prefs.getInt("paint_best_swipes", 0),
+        flappyBestScore = prefs.getInt("flappy_best", 0),
+        blockFillBestScore = prefs.getInt("blockfill_best", 0),
         totalXp = prefs.getInt("total_xp", 0),
         gamesPlayed = prefs.getInt("games_played", 0)
     )
@@ -243,6 +255,38 @@ class ScoreRepository(context: Context) {
         val newXp = cur.totalXp + if (score > 0) ScoreLogic.XP_BLOCKS_RUN else 0
         prefs.edit().putInt("blocks_best", newBest).putInt("total_xp", newXp).apply()
         scores = cur.copy(blocksBestScore = newBest, totalXp = newXp)
+    }
+
+    fun recordEscapeLevel() {
+        val cur = scores
+        val newCount = cur.escapeLevelsBeaten + 1
+        val newXp = cur.totalXp + ScoreLogic.XP_ESCAPE_LEVEL
+        prefs.edit().putInt("escape_levels", newCount).putInt("total_xp", newXp).apply()
+        scores = cur.copy(escapeLevelsBeaten = newCount, totalXp = newXp)
+    }
+
+    fun recordMazePaintWin(swipes: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterMoves(swipes, cur.paintBestSwipes)) swipes else cur.paintBestSwipes
+        val newXp = cur.totalXp + ScoreLogic.XP_PAINT_WIN
+        prefs.edit().putInt("paint_best_swipes", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(paintBestSwipes = newBest, totalXp = newXp)
+    }
+
+    fun recordFlappyRun(score: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterScore(score, cur.flappyBestScore)) score else cur.flappyBestScore
+        val newXp = cur.totalXp + if (score > 0) ScoreLogic.XP_FLAPPY_RUN else 0
+        prefs.edit().putInt("flappy_best", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(flappyBestScore = newBest, totalXp = newXp)
+    }
+
+    fun recordBlockFillRun(score: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterScore(score, cur.blockFillBestScore)) score else cur.blockFillBestScore
+        val newXp = cur.totalXp + if (score > 0) ScoreLogic.XP_BLOCKFILL_RUN else 0
+        prefs.edit().putInt("blockfill_best", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(blockFillBestScore = newBest, totalXp = newXp)
     }
 
     fun recordSimonRun(rounds: Int) {

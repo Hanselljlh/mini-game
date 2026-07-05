@@ -146,6 +146,14 @@ fun SettingsScreen(
                     Text("Maze Runner best: ${ScoreLogic.timeLabel(scores.mazeBestSecs)}", style = MaterialTheme.typography.bodyMedium)
                     Text("Anagram best round: ${if (scores.anagramBestSolved > 0) "${scores.anagramBestSolved} solved" else "—"}", style = MaterialTheme.typography.bodyMedium)
                     Text("Simon Says best: ${if (scores.simonBestRound > 0) "${scores.simonBestRound} rounds" else "—"}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Water Sort best: ${ScoreLogic.movesLabel(scores.waterSortBestMoves)}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Nuts & Bolts best: ${ScoreLogic.movesLabel(scores.nutsBestMoves)}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Color Fill boards: ${scores.colorFillWins}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Color Blocks best: ${if (scores.blocksBestScore > 0) "${scores.blocksBestScore}" else "—"}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Escape levels beaten: ${scores.escapeLevelsBeaten}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Maze Paint best: ${if (scores.paintBestSwipes > 0) "${scores.paintBestSwipes} swipes" else "—"}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Flappy Jump best: ${if (scores.flappyBestScore > 0) "${scores.flappyBestScore} pipes" else "—"}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Block Fill best: ${if (scores.blockFillBestScore > 0) "${scores.blockFillBestScore}" else "—"}", style = MaterialTheme.typography.bodyMedium)
                 }
             }
 

@@ -79,12 +79,18 @@ fun GameSetupScreen(
     var nutsDifficulty by remember { mutableStateOf(WaterSortDifficulty.Normal) }
     var fillDifficulty by remember { mutableStateOf(ColorFillDifficulty.Normal) }
     var blocksDifficulty by remember { mutableStateOf(ColorBlocksDifficulty.Normal) }
+    var escapePack by remember { mutableStateOf(EscapePack.Rookie) }
+    var paintSize by remember { mutableStateOf(MazeSize.Medium) }
+    var flappyDifficulty by remember { mutableStateOf(FlappyDifficulty.Normal) }
+    var sandBrush by remember { mutableStateOf(SandBrush.Normal) }
+    var blockFillMode by remember { mutableStateOf(BlockFillMode.Classic) }
 
     val choice = GameSetupChoice(
         tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode,
         snakeDifficulty, fourMode, dotsSize, wordDifficulty, codeDifficulty, sudokuDifficulty, bubbleSize,
         stackSpeed, mazeSize, anagramLength, mancalaMode, simonSpeed,
-        waterDifficulty, nutsDifficulty, fillDifficulty, blocksDifficulty
+        waterDifficulty, nutsDifficulty, fillDifficulty, blocksDifficulty,
+        escapePack, paintSize, flappyDifficulty, sandBrush, blockFillMode
     )
     val pages = instructionPages(game, choice)
 
@@ -211,6 +217,26 @@ fun GameSetupScreen(
                                 ColorBlocksDifficulty.entries.map { it.label },
                                 blocksDifficulty.ordinal
                             ) { blocksDifficulty = ColorBlocksDifficulty.entries[it] }
+                            GameId.Escape -> DifficultyRow(
+                                EscapePack.entries.map { it.label },
+                                escapePack.ordinal
+                            ) { escapePack = EscapePack.entries[it] }
+                            GameId.MazePaint -> DifficultyRow(
+                                MazeSize.entries.map { it.label },
+                                paintSize.ordinal
+                            ) { paintSize = MazeSize.entries[it] }
+                            GameId.FlappyJump -> DifficultyRow(
+                                FlappyDifficulty.entries.map { it.label },
+                                flappyDifficulty.ordinal
+                            ) { flappyDifficulty = FlappyDifficulty.entries[it] }
+                            GameId.SandFall -> DifficultyRow(
+                                SandBrush.entries.map { it.label },
+                                sandBrush.ordinal
+                            ) { sandBrush = SandBrush.entries[it] }
+                            GameId.BlockFill -> DifficultyRow(
+                                BlockFillMode.entries.map { it.label },
+                                blockFillMode.ordinal
+                            ) { blockFillMode = BlockFillMode.entries[it] }
                         }
                     }
                 }
@@ -278,6 +304,11 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.NutsAndBolts -> Text("🔩", style = MaterialTheme.typography.headlineMedium)
             GameId.ColorFill -> Text("🎨", style = MaterialTheme.typography.headlineMedium)
             GameId.ColorBlocks -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("◼"); IconTile("◼") }
+            GameId.Escape -> Text("🚗", style = MaterialTheme.typography.headlineMedium)
+            GameId.MazePaint -> Text("🖌", style = MaterialTheme.typography.headlineMedium)
+            GameId.FlappyJump -> Text("🐤", style = MaterialTheme.typography.headlineMedium)
+            GameId.SandFall -> Text("⏳", style = MaterialTheme.typography.headlineMedium)
+            GameId.BlockFill -> Text("▦", style = MaterialTheme.typography.headlineMedium, color = Color.White)
         }
     }
 }
@@ -341,6 +372,15 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
             "Boards filled: ${scores.colorFillWins}" else "No boards filled yet."
         GameId.ColorBlocks -> if (scores.blocksBestScore > 0)
             "Best score: ${scores.blocksBestScore}" else "No saved score yet."
+        GameId.Escape -> if (scores.escapeLevelsBeaten > 0)
+            "Levels beaten: ${scores.escapeLevelsBeaten}" else "No escapes yet."
+        GameId.MazePaint -> if (scores.paintBestSwipes > 0)
+            "Best: ${scores.paintBestSwipes} swipes" else "No saved score yet."
+        GameId.FlappyJump -> if (scores.flappyBestScore > 0)
+            "Best: ${scores.flappyBestScore} pipes" else "No saved score yet."
+        GameId.SandFall -> "Pure relaxation — nothing tracked."
+        GameId.BlockFill -> if (scores.blockFillBestScore > 0)
+            "Best score: ${scores.blockFillBestScore}" else "No saved score yet."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -496,5 +536,29 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Find groups" to "Tap any group of two or more touching blocks of the same color to clear it.",
         "Think big" to "Score = (blocks − 1)². A 10-block group is worth 81 points — plan your taps to build big groups.",
         "Clear the board" to "Blocks fall and columns slide left as you clear. Empty the whole board for a +100 bonus."
+    )
+    GameId.Escape -> listOf(
+        "Free the red block" to "The red block wants out through the right edge. Everything else is in the way.",
+        "Slide the blockers" to "Tap a block to select it, then swipe to slide it along its track — horizontal blocks slide sideways, vertical ones up and down.",
+        "Fewer moves, more glory" to "Each pack has ${choice.escape.count} hand-crafted levels. Solve them in as few moves as you can."
+    )
+    GameId.MazePaint -> listOf(
+        "Slide and paint" to "Swipe to glide until you hit a wall. Every square you pass gets painted.",
+        "Cover everything" to "The maze is done when every square is painted — dead ends included.",
+        "Plan your route" to "Fewer swipes is better. ${choice.mazePaint.label} mazes are generated fresh every game."
+    )
+    GameId.FlappyJump -> listOf(
+        "Tap to flap" to "Gravity never stops. Each tap gives one flap upward.",
+        "Thread the gaps" to "Pipes scroll toward you — slip through the openings without touching anything.",
+        "Score the pipes" to "Every pipe you pass is a point. ${choice.flappyJump.label} sets the speed and gap size."
+    )
+    GameId.SandFall -> listOf(
+        "Pour" to "Tap or drag anywhere to pour sand. It falls, piles up, and slides down slopes.",
+        "Paint with physics" to "The color shifts as you pour. Build dunes, bury the floor, then clear it and start again."
+    )
+    GameId.BlockFill -> listOf(
+        "Place your pieces" to "Tap one of the three pieces, then tap the board square where its top-left corner should go.",
+        "Clear lines" to "Complete a full row or column and it clears for bonus points — rows and columns can combo.",
+        "Keep space open" to "You lose when none of your remaining pieces fit. The 3×3 square is the usual culprit!"
     )
 }

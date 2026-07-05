@@ -4,7 +4,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 
 **No account. No location. Built for offline play.** Every game works in airplane mode; scores, favorites, and XP live only on the device.
 
-## Games (17)
+## Games (26)
 
 | Game | Category | Description |
 |------|----------|-------------|
@@ -14,6 +14,15 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Mini Sudoku | Brain & Logic | Generated 4×4, 6×6, and 9×9 puzzles with conflict highlighting |
 | Maze Runner | Brain & Logic | Freshly generated mazes — slide until you hit a wall, race to the exit |
 | Simon Says | Brain & Logic | Repeat the flashing pad sequence as it grows, three speeds |
+| Escape | Brain & Logic | Slide blockers along their tracks and free the red block — 6 handcrafted levels |
+| Water Sort | Sort & Fill | Pour colored water between tubes until every tube is one color |
+| Nuts & Bolts | Sort & Fill | Sort colored nuts onto matching bolts |
+| Multi-Color Fill | Sort & Fill | Flood-fill the board into one color within the move limit |
+| Color Blocks | Sort & Fill | Tap-match collapse with quadratic scoring and clear bonus |
+| Block Fill | Sort & Fill | 1010-style piece placement with row/column clears |
+| Maze Paint | Arcade | Slide-and-paint every square of a generated maze |
+| Flappy Jump | Arcade | Tap-to-flap through scrolling pipe gaps |
+| Sand Fall | Relax Toys | Falling-sand physics toy with shifting rainbow colors |
 | Word Search | Words | Generated letter grids with 5–9 hidden words, all 8 directions |
 | Anagram Tiles | Words | Unscramble letter tiles to rebuild hidden words over 5–7 rounds |
 | Memory Match | Cards & Classics | Flip cards and find every matching pair in as few moves as you can |
