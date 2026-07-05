@@ -63,8 +63,18 @@ fun GameSetupScreen(
     var ticDifficulty by remember { mutableStateOf(TicTacToeDifficulty.TwoPlayer) }
     var memoryDifficulty by remember { mutableStateOf(MemoryMatchDifficulty.Normal) }
     var reactionMode by remember { mutableStateOf(ReactionTapMode.Standard) }
+    var snakeDifficulty by remember { mutableStateOf(SnakeDifficulty.Normal) }
+    var fourMode by remember { mutableStateOf(FourInARowMode.TwoPlayer) }
+    var dotsSize by remember { mutableStateOf(DotsAndBoxesSize.Small) }
+    var wordDifficulty by remember { mutableStateOf(WordSearchDifficulty.Normal) }
+    var codeDifficulty by remember { mutableStateOf(CodeBreakerDifficulty.Easy) }
+    var sudokuDifficulty by remember { mutableStateOf(SudokuDifficulty.Mini) }
+    var bubbleSize by remember { mutableStateOf(BubbleWrapSize.Standard) }
 
-    val choice = GameSetupChoice(tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode)
+    val choice = GameSetupChoice(
+        tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode,
+        snakeDifficulty, fourMode, dotsSize, wordDifficulty, codeDifficulty, sudokuDifficulty, bubbleSize
+    )
     val pages = instructionPages(game, choice)
 
     Scaffold(
@@ -126,6 +136,34 @@ fun GameSetupScreen(
                                 ReactionTapMode.entries.map { it.label },
                                 reactionMode.ordinal
                             ) { reactionMode = ReactionTapMode.entries[it] }
+                            GameId.Snake -> DifficultyRow(
+                                SnakeDifficulty.entries.map { it.label },
+                                snakeDifficulty.ordinal
+                            ) { snakeDifficulty = SnakeDifficulty.entries[it] }
+                            GameId.FourInARow -> DifficultyRow(
+                                FourInARowMode.entries.map { it.label },
+                                fourMode.ordinal
+                            ) { fourMode = FourInARowMode.entries[it] }
+                            GameId.DotsAndBoxes -> DifficultyRow(
+                                DotsAndBoxesSize.entries.map { it.label },
+                                dotsSize.ordinal
+                            ) { dotsSize = DotsAndBoxesSize.entries[it] }
+                            GameId.WordSearch -> DifficultyRow(
+                                WordSearchDifficulty.entries.map { it.label },
+                                wordDifficulty.ordinal
+                            ) { wordDifficulty = WordSearchDifficulty.entries[it] }
+                            GameId.CodeBreaker -> DifficultyRow(
+                                CodeBreakerDifficulty.entries.map { it.label },
+                                codeDifficulty.ordinal
+                            ) { codeDifficulty = CodeBreakerDifficulty.entries[it] }
+                            GameId.Sudoku -> DifficultyRow(
+                                SudokuDifficulty.entries.map { it.label },
+                                sudokuDifficulty.ordinal
+                            ) { sudokuDifficulty = SudokuDifficulty.entries[it] }
+                            GameId.BubbleWrap -> DifficultyRow(
+                                BubbleWrapSize.entries.map { it.label },
+                                bubbleSize.ordinal
+                            ) { bubbleSize = BubbleWrapSize.entries[it] }
                         }
                     }
                 }
@@ -177,6 +215,13 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.TicTacToe -> Text("X O", style = MaterialTheme.typography.titleLarge, color = Color.White, fontWeight = FontWeight.Bold)
             GameId.MemoryMatch -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("?"); IconTile("?") }
             GameId.ReactionTap -> Text("⚡", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+            GameId.Snake -> Text("〰", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+            GameId.FourInARow -> Text("●●", style = MaterialTheme.typography.titleLarge, color = Color.White, fontWeight = FontWeight.Bold)
+            GameId.DotsAndBoxes -> Text("⊞", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+            GameId.WordSearch -> Text("W", style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.Bold)
+            GameId.CodeBreaker -> Text("◐◑", style = MaterialTheme.typography.titleLarge, color = Color.White)
+            GameId.Sudoku -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("1"); IconTile("9") }
+            GameId.BubbleWrap -> Text("○○", style = MaterialTheme.typography.titleLarge, color = Color.White)
         }
     }
 }
@@ -212,6 +257,17 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
             "Best: ${ScoreLogic.movesLabel(scores.memoryBestMoves)}" else "No saved score yet."
         GameId.ReactionTap -> if (scores.reactionBestMs > 0)
             "Best average: ${ScoreLogic.reactionLabel(scores.reactionBestMs)}" else "No saved score yet."
+        GameId.Snake -> if (scores.snakeBestScore > 0)
+            "Best: ${scores.snakeBestScore} food" else "No saved score yet."
+        GameId.WordSearch -> if (scores.wordSearchBestSecs > 0)
+            "Best: ${ScoreLogic.timeLabel(scores.wordSearchBestSecs)}" else "No saved score yet."
+        GameId.CodeBreaker -> if (scores.codeBestGuesses > 0)
+            "Best: ${scores.codeBestGuesses} guesses" else "No saved score yet."
+        GameId.Sudoku -> if (scores.sudokuWins > 0)
+            "Solved: ${scores.sudokuWins}" else "No puzzles solved yet."
+        GameId.FourInARow -> "Play a friend or challenge the bot."
+        GameId.DotsAndBoxes -> "Local pass-and-play duel."
+        GameId.BubbleWrap -> "No score. Just relax."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -287,5 +343,39 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Wait for green" to "Tap to arm a round. The panel turns red — hold steady until it flashes green.",
         "Tap fast" to "The instant it turns green, tap! Your reaction time is measured in milliseconds.",
         "Play ${choice.reactionTap.rounds} rounds" to "Your average over ${choice.reactionTap.rounds} rounds is your score. Tapping early restarts that round."
+    )
+    GameId.Snake -> listOf(
+        "Swipe to steer" to "Swipe up, down, left, or right anywhere on the board to change direction. The snake never stops moving.",
+        "Eat to grow" to "Grab the orange food to grow longer and score a point. New food appears somewhere else.",
+        "Don't crash" to "Hitting a wall or your own body ends the run. ${choice.snake.label} speed keeps things ${if (choice.snake == SnakeDifficulty.Fast) "spicy" else "manageable"}."
+    )
+    GameId.FourInARow -> listOf(
+        "Drop your discs" to "Tap a column to drop a disc — it falls to the lowest empty slot.",
+        "Connect four" to "Line up four of your discs in a row: across, down, or diagonally.",
+        "Watch the threats" to "Block your opponent's three-in-a-row before they complete it. Smart Bot will punish mistakes!"
+    )
+    GameId.DotsAndBoxes -> listOf(
+        "Draw lines" to "Take turns tapping the gap between two dots to draw a line.",
+        "Close boxes" to "Complete the fourth side of a box to claim it — and take another turn immediately.",
+        "Count carefully" to "Avoid drawing the third side of a box, or you'll hand it to your opponent. Most boxes wins."
+    )
+    GameId.WordSearch -> listOf(
+        "Scan the grid" to "${choice.wordSearch.wordCount} words are hidden in the grid — across, down, diagonal, even backwards.",
+        "Select a word" to "Tap the first letter of a word, then tap its last letter to select the line between them.",
+        "Find them all" to "Found words get crossed off the list. Clear the list as fast as you can."
+    )
+    GameId.CodeBreaker -> listOf(
+        "Crack the code" to "A secret code of 4 colors has been set. Colors can repeat!",
+        "Read the pegs" to "After each guess: ● = right color in the right spot, ○ = right color, wrong spot.",
+        "Use logic" to "You have ${choice.codeBreaker.maxGuesses} guesses with ${choice.codeBreaker.colors} possible colors. Every guess narrows it down."
+    )
+    GameId.Sudoku -> listOf(
+        "Fill the grid" to "Every row, every column, and every box must contain each number exactly once.",
+        "Tap and place" to "Tap a cell, then tap a number. Bold numbers are given and can't be changed.",
+        "Fix the reds" to "Numbers turn red when they conflict. The puzzle is solved when the grid is full with no reds."
+    )
+    GameId.BubbleWrap -> listOf(
+        "Pop" to "Tap bubbles to pop them. That's it. That's the game.",
+        "Fresh sheets" to "Popped every bubble? Grab a new sheet and keep going. We won't judge."
     )
 }

@@ -137,6 +137,10 @@ fun SettingsScreen(
                     Text("Minesweeper: ${scores.minesweeperWins} wins • best ${ScoreLogic.timeLabel(scores.minesweeperBestTimeSecs)}", style = MaterialTheme.typography.bodyMedium)
                     Text("Memory Match best: ${ScoreLogic.movesLabel(scores.memoryBestMoves)}", style = MaterialTheme.typography.bodyMedium)
                     Text("Reaction Tap best avg: ${ScoreLogic.reactionLabel(scores.reactionBestMs)}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Snake best: ${if (scores.snakeBestScore > 0) "${scores.snakeBestScore} food" else "—"}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Word Search best: ${ScoreLogic.timeLabel(scores.wordSearchBestSecs)}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Code Breaker best: ${if (scores.codeBestGuesses > 0) "${scores.codeBestGuesses} guesses" else "—"}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Sudoku solved: ${scores.sudokuWins}", style = MaterialTheme.typography.bodyMedium)
                 }
             }
 

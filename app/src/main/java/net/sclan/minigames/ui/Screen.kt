@@ -8,5 +8,12 @@ sealed class Screen {
     data class Minesweeper(val difficulty: MinesweeperDifficulty) : Screen()
     data class MemoryMatch(val difficulty: MemoryMatchDifficulty) : Screen()
     data class ReactionTap(val mode: ReactionTapMode) : Screen()
+    data class Snake(val difficulty: SnakeDifficulty) : Screen()
+    data class FourInARow(val mode: FourInARowMode) : Screen()
+    data class DotsAndBoxes(val size: DotsAndBoxesSize) : Screen()
+    data class WordSearch(val difficulty: WordSearchDifficulty) : Screen()
+    data class CodeBreaker(val difficulty: CodeBreakerDifficulty) : Screen()
+    data class Sudoku(val difficulty: SudokuDifficulty) : Screen()
+    data class BubbleWrap(val size: BubbleWrapSize) : Screen()
     object Settings : Screen()
 }

@@ -9,6 +9,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import net.sclan.minigames.billing.BillingRepository
 import net.sclan.minigames.data.ScoreRepository
+import net.sclan.minigames.ui.BubbleWrapScreen
+import net.sclan.minigames.ui.CodeBreakerScreen
+import net.sclan.minigames.ui.DotsAndBoxesScreen
+import net.sclan.minigames.ui.FourInARowScreen
 import net.sclan.minigames.ui.Game2048Screen
 import net.sclan.minigames.ui.GameId
 import net.sclan.minigames.ui.GameSetupScreen
@@ -18,7 +22,10 @@ import net.sclan.minigames.ui.MinesweeperScreen
 import net.sclan.minigames.ui.ReactionTapScreen
 import net.sclan.minigames.ui.Screen
 import net.sclan.minigames.ui.SettingsScreen
+import net.sclan.minigames.ui.SnakeScreen
+import net.sclan.minigames.ui.SudokuScreen
 import net.sclan.minigames.ui.TicTacToeScreen
+import net.sclan.minigames.ui.WordSearchScreen
 import net.sclan.minigames.ui.theme.MiniGameHubTheme
 
 class MainActivity : ComponentActivity() {
@@ -60,6 +67,13 @@ class MainActivity : ComponentActivity() {
                                 GameId.TicTacToe -> Screen.TicTacToe(choice.ticTacToe)
                                 GameId.MemoryMatch -> Screen.MemoryMatch(choice.memoryMatch)
                                 GameId.ReactionTap -> Screen.ReactionTap(choice.reactionTap)
+                                GameId.Snake -> Screen.Snake(choice.snake)
+                                GameId.FourInARow -> Screen.FourInARow(choice.fourInARow)
+                                GameId.DotsAndBoxes -> Screen.DotsAndBoxes(choice.dotsAndBoxes)
+                                GameId.WordSearch -> Screen.WordSearch(choice.wordSearch)
+                                GameId.CodeBreaker -> Screen.CodeBreaker(choice.codeBreaker)
+                                GameId.Sudoku -> Screen.Sudoku(choice.sudoku)
+                                GameId.BubbleWrap -> Screen.BubbleWrap(choice.bubbleWrap)
                             }
                         }
                     )
@@ -87,6 +101,41 @@ class MainActivity : ComponentActivity() {
                         mode = current.mode,
                         onBack = { screen = Screen.GameSetup(GameId.ReactionTap) },
                         onFinish = { avgMs -> scoreRepo.recordReactionResult(avgMs) }
+                    )
+                    is Screen.Snake -> SnakeScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.Snake) },
+                        onGameOver = { score -> scoreRepo.recordSnakeRun(score) }
+                    )
+                    is Screen.FourInARow -> FourInARowScreen(
+                        mode = current.mode,
+                        onBack = { screen = Screen.GameSetup(GameId.FourInARow) },
+                        onFinished = { scoreRepo.recordDuelFinished() }
+                    )
+                    is Screen.DotsAndBoxes -> DotsAndBoxesScreen(
+                        size = current.size,
+                        onBack = { screen = Screen.GameSetup(GameId.DotsAndBoxes) },
+                        onFinished = { _, _ -> scoreRepo.recordDuelFinished() }
+                    )
+                    is Screen.WordSearch -> WordSearchScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.WordSearch) },
+                        onWin = { secs -> scoreRepo.recordWordSearchWin(secs) }
+                    )
+                    is Screen.CodeBreaker -> CodeBreakerScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.CodeBreaker) },
+                        onWin = { guesses -> scoreRepo.recordCodeBreakerWin(guesses) }
+                    )
+                    is Screen.Sudoku -> SudokuScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.Sudoku) },
+                        onWin = { scoreRepo.recordSudokuWin() }
+                    )
+                    is Screen.BubbleWrap -> BubbleWrapScreen(
+                        size = current.size,
+                        onBack = { screen = Screen.GameSetup(GameId.BubbleWrap) },
+                        onSheetDone = { scoreRepo.recordBubbleSheet() }
                     )
                     Screen.Settings -> SettingsScreen(
                         onBack = { screen = Screen.Home },

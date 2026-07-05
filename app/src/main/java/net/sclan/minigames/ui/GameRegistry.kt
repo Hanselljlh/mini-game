@@ -2,9 +2,11 @@ package net.sclan.minigames.ui
 
 enum class GameCategory(val label: String) {
     Brain("Brain & Logic"),
+    Words("Words"),
     Cards("Cards & Classics"),
     Arcade("Arcade"),
-    Duel("Local Duel")
+    Duel("Local Duel"),
+    Relax("Relax Toys")
 }
 
 data class GameMeta(
@@ -18,41 +20,18 @@ data class GameMeta(
 object GameRegistry {
 
     val games: List<GameMeta> = listOf(
-        GameMeta(
-            id = GameId.TileMerge,
-            category = GameCategory.Brain,
-            players = "Solo",
-            estTime = "5 min",
-            subtitle = "Slide and merge matching number tiles"
-        ),
-        GameMeta(
-            id = GameId.Minesweeper,
-            category = GameCategory.Brain,
-            players = "Solo",
-            estTime = "5 min",
-            subtitle = "Reveal safe squares and flag hidden mines"
-        ),
-        GameMeta(
-            id = GameId.MemoryMatch,
-            category = GameCategory.Cards,
-            players = "Solo",
-            estTime = "2 min",
-            subtitle = "Flip cards and find every matching pair"
-        ),
-        GameMeta(
-            id = GameId.ReactionTap,
-            category = GameCategory.Arcade,
-            players = "Solo",
-            estTime = "30 sec",
-            subtitle = "Wait for green, then tap as fast as you can"
-        ),
-        GameMeta(
-            id = GameId.TicTacToe,
-            category = GameCategory.Duel,
-            players = "1–2 players",
-            estTime = "2 min",
-            subtitle = "Pass-and-play, easy bot, or smart bot"
-        )
+        GameMeta(GameId.TileMerge, GameCategory.Brain, "Solo", "5 min", "Slide and merge matching number tiles"),
+        GameMeta(GameId.Minesweeper, GameCategory.Brain, "Solo", "5 min", "Reveal safe squares and flag hidden mines"),
+        GameMeta(GameId.CodeBreaker, GameCategory.Brain, "Solo", "5 min", "Crack the secret color code with logic"),
+        GameMeta(GameId.Sudoku, GameCategory.Brain, "Solo", "10 min", "Every row, column, and box — each number once"),
+        GameMeta(GameId.WordSearch, GameCategory.Words, "Solo", "5 min", "Find every hidden word in the letter grid"),
+        GameMeta(GameId.MemoryMatch, GameCategory.Cards, "Solo", "2 min", "Flip cards and find every matching pair"),
+        GameMeta(GameId.ReactionTap, GameCategory.Arcade, "Solo", "30 sec", "Wait for green, then tap as fast as you can"),
+        GameMeta(GameId.Snake, GameCategory.Arcade, "Solo", "3 min", "Grow the snake, dodge the walls and yourself"),
+        GameMeta(GameId.TicTacToe, GameCategory.Duel, "1–2 players", "2 min", "Pass-and-play, easy bot, or smart bot"),
+        GameMeta(GameId.FourInARow, GameCategory.Duel, "1–2 players", "5 min", "Drop discs and connect four to win"),
+        GameMeta(GameId.DotsAndBoxes, GameCategory.Duel, "2 players", "5 min", "Close boxes with lines — most boxes wins"),
+        GameMeta(GameId.BubbleWrap, GameCategory.Relax, "Solo", "1 min", "Pop every bubble. No goal. Pure calm.")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

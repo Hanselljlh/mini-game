@@ -220,7 +220,11 @@ private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
         "Best: ${ScoreLogic.movesLabel(scores.memoryBestMoves)}" else null
     GameId.ReactionTap -> if (scores.reactionBestMs > 0)
         "Best avg: ${ScoreLogic.reactionLabel(scores.reactionBestMs)}" else null
-    GameId.TicTacToe -> null
+    GameId.Snake -> if (scores.snakeBestScore > 0) "Best: ${scores.snakeBestScore} food" else null
+    GameId.WordSearch -> if (scores.wordSearchBestSecs > 0) "Best: ${ScoreLogic.timeLabel(scores.wordSearchBestSecs)}" else null
+    GameId.CodeBreaker -> if (scores.codeBestGuesses > 0) "Best: ${scores.codeBestGuesses} guesses" else null
+    GameId.Sudoku -> if (scores.sudokuWins > 0) "Solved: ${scores.sudokuWins}" else null
+    GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap -> null
 }
 
 @Composable
