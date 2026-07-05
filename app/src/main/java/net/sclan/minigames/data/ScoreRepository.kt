@@ -9,30 +9,81 @@ data class HighScores(
     val best2048Tile: Int = 0,
     val best2048Score: Int = 0,
     val minesweeperWins: Int = 0,
-    val minesweeperBestTimeSecs: Long = 0L
+    val minesweeperBestTimeSecs: Long = 0L,
+    val memoryBestMoves: Int = 0,
+    val reactionBestMs: Long = 0L,
+    val totalXp: Int = 0,
+    val gamesPlayed: Int = 0
 )
 
 /** Pure logic — no Android/Compose deps, fully unit-testable. */
 object ScoreLogic {
+    const val XP_2048_WIN = 30
+    const val XP_MINESWEEPER_WIN = 25
+    const val XP_MEMORY_WIN = 15
+    const val XP_REACTION_FINISH = 10
+
     fun isBetterTile(new: Int, best: Int): Boolean = new > best
     fun isBetterScore(new: Int, best: Int): Boolean = new > best
     fun isBetterTime(newSecs: Long, bestSecs: Long): Boolean = bestSecs == 0L || newSecs < bestSecs
+    fun isBetterMoves(newMoves: Int, bestMoves: Int): Boolean = bestMoves == 0 || newMoves < bestMoves
+    fun isBetterReaction(newMs: Long, bestMs: Long): Boolean = bestMs == 0L || newMs < bestMs
+
     fun tileLabel(tile: Int): String = if (tile == 0) "—" else tile.toString()
     fun timeLabel(secs: Long): String = if (secs == 0L) "—" else "${secs}s"
+    fun movesLabel(moves: Int): String = if (moves == 0) "—" else "$moves moves"
+    fun reactionLabel(ms: Long): String = if (ms == 0L) "—" else "$ms ms"
+
+    /** Level 1 at 0 XP, +1 level every 100 XP. */
+    fun levelForXp(xp: Int): Int = xp / 100 + 1
+    fun xpIntoLevel(xp: Int): Int = xp % 100
+
+    /** Most-recent-first recents list capped at [max], no duplicates. */
+    fun updatedRecents(current: List<String>, played: String, max: Int = 5): List<String> =
+        (listOf(played) + current.filter { it != played }).take(max)
 }
 
 class ScoreRepository(context: Context) {
     private val prefs = context.getSharedPreferences("pmg_scores", Context.MODE_PRIVATE)
 
-    var scores: HighScores by mutableStateOf(load())
+    var scores: HighScores by mutableStateOf(loadScores())
         private set
 
-    private fun load() = HighScores(
+    /** GameId names marked as favorite. */
+    var favorites: Set<String> by mutableStateOf(prefs.getStringSet("favorites", emptySet())?.toSet() ?: emptySet())
+        private set
+
+    /** GameId names, most recently played first. */
+    var recents: List<String> by mutableStateOf(loadRecents())
+        private set
+
+    private fun loadScores() = HighScores(
         best2048Tile = prefs.getInt("best_tile", 0),
         best2048Score = prefs.getInt("best_score", 0),
         minesweeperWins = prefs.getInt("ms_wins", 0),
-        minesweeperBestTimeSecs = prefs.getLong("ms_best_time", 0L)
+        minesweeperBestTimeSecs = prefs.getLong("ms_best_time", 0L),
+        memoryBestMoves = prefs.getInt("mem_best_moves", 0),
+        reactionBestMs = prefs.getLong("react_best_ms", 0L),
+        totalXp = prefs.getInt("total_xp", 0),
+        gamesPlayed = prefs.getInt("games_played", 0)
     )
+
+    private fun loadRecents(): List<String> =
+        prefs.getString("recents", "")!!.split(',').filter { it.isNotBlank() }
+
+    fun toggleFavorite(gameId: String) {
+        val next = if (gameId in favorites) favorites - gameId else favorites + gameId
+        prefs.edit().putStringSet("favorites", next).apply()
+        favorites = next
+    }
+
+    fun recordPlayed(gameId: String) {
+        val next = ScoreLogic.updatedRecents(recents, gameId)
+        val played = scores.gamesPlayed + 1
+        prefs.edit().putString("recents", next.joinToString(",")).putInt("games_played", played).apply()
+        recents = next
+        scores = scores.copy(gamesPlayed = played)
+    }
 
     fun tryUpdateBest2048(tile: Int, score: Int) {
         val cur = scores
@@ -43,12 +94,45 @@ class ScoreRepository(context: Context) {
         scores = cur.copy(best2048Tile = newTile, best2048Score = newScore)
     }
 
+    fun record2048Win() = addXp(ScoreLogic.XP_2048_WIN)
+
     fun recordMinesweeperWin(timeSecs: Long) {
         val cur = scores
         val newWins = cur.minesweeperWins + 1
         val newBest = if (ScoreLogic.isBetterTime(timeSecs, cur.minesweeperBestTimeSecs))
             timeSecs else cur.minesweeperBestTimeSecs
-        prefs.edit().putInt("ms_wins", newWins).putLong("ms_best_time", newBest).apply()
-        scores = cur.copy(minesweeperWins = newWins, minesweeperBestTimeSecs = newBest)
+        val newXp = cur.totalXp + ScoreLogic.XP_MINESWEEPER_WIN
+        prefs.edit().putInt("ms_wins", newWins).putLong("ms_best_time", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(minesweeperWins = newWins, minesweeperBestTimeSecs = newBest, totalXp = newXp)
+    }
+
+    fun recordMemoryWin(moves: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterMoves(moves, cur.memoryBestMoves)) moves else cur.memoryBestMoves
+        val newXp = cur.totalXp + ScoreLogic.XP_MEMORY_WIN
+        prefs.edit().putInt("mem_best_moves", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(memoryBestMoves = newBest, totalXp = newXp)
+    }
+
+    fun recordReactionResult(avgMs: Long) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterReaction(avgMs, cur.reactionBestMs)) avgMs else cur.reactionBestMs
+        val newXp = cur.totalXp + ScoreLogic.XP_REACTION_FINISH
+        prefs.edit().putLong("react_best_ms", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(reactionBestMs = newBest, totalXp = newXp)
+    }
+
+    private fun addXp(amount: Int) {
+        val newXp = scores.totalXp + amount
+        prefs.edit().putInt("total_xp", newXp).apply()
+        scores = scores.copy(totalXp = newXp)
+    }
+
+    /** Privacy control: wipe every locally stored score, favorite, and stat. */
+    fun deleteAllData() {
+        prefs.edit().clear().apply()
+        scores = HighScores()
+        favorites = emptySet()
+        recents = emptyList()
     }
 }

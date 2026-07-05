@@ -1,5 +1,6 @@
 package net.sclan.minigames.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -139,7 +140,8 @@ private fun tileTextColor(value: Int): Color =
 fun Game2048Screen(
     difficulty: TileMergeDifficulty = TileMergeDifficulty.Normal,
     onBack: () -> Unit,
-    onBestScore: (tile: Int, score: Int) -> Unit = { _, _ -> }
+    onBestScore: (tile: Int, score: Int) -> Unit = { _, _ -> },
+    onWon: () -> Unit = {}
 ) {
     var board by remember(difficulty) { mutableStateOf(startingBoard2048(difficulty)) }
     var score by remember { mutableIntStateOf(0) }
@@ -156,10 +158,13 @@ fun Game2048Screen(
         score += gained
         val maxTile = next.maxOf { row -> row.maxOrNull() ?: 0 }
         if (maxTile > bestTile) bestTile = maxTile
-        when {
-            next.any { row -> row.any { it == difficulty.targetTile } } -> won = true
-            !hasValidMoves2048(next) -> gameOver = true
+        if (!won && next.any { row -> row.any { it >= difficulty.targetTile } }) {
+            won = true
+            onWon()
         }
+        if (!hasValidMoves2048(next)) gameOver = true
+        // Persist after every move so a swipe-away or process death never loses the best score.
+        onBestScore(bestTile, score)
     }
 
     fun reset() {
@@ -168,6 +173,11 @@ fun Game2048Screen(
         bestTile = 0
         gameOver = false
         won = false
+    }
+
+    BackHandler {
+        onBestScore(bestTile, score)
+        onBack()
     }
 
     Scaffold(

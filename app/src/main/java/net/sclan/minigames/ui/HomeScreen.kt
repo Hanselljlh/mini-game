@@ -1,5 +1,6 @@
 package net.sclan.minigames.ui
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,14 +14,24 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -28,13 +39,24 @@ import androidx.compose.ui.unit.dp
 import net.sclan.minigames.data.HighScores
 import net.sclan.minigames.data.ScoreLogic
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onGameSelect: (GameId) -> Unit,
     scores: HighScores = HighScores(),
+    favorites: Set<String> = emptySet(),
+    recents: List<String> = emptyList(),
     adsEnabled: Boolean = true,
+    onToggleFavorite: (GameId) -> Unit = {},
     onSettings: () -> Unit = {}
 ) {
+    var query by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf<GameCategory?>(null) }
+
+    val filtered = GameRegistry.search(query)
+        .filter { selectedCategory == null || it.category == selectedCategory }
+    val browsing = query.isNotBlank() || selectedCategory != null
+
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -43,51 +65,98 @@ fun HomeScreen(
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(24.dp))
             Text(
-                "Pocket Mini Games",
+                "Pocket Arcade Offline",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                "Choose a game, read the rules, set difficulty, then play offline.",
+                "Puzzles, cards, arcade & duels — no WiFi, no account.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(Modifier.height(28.dp))
-
-            SectionLabel("GAMES")
-            Spacer(Modifier.height(8.dp))
-
-            GameCard(
-                game = GameId.TileMerge,
-                subtitle = "Slide and merge matching number tiles",
-                badge = if (scores.best2048Tile > 0)
-                    "Best tile: ${ScoreLogic.tileLabel(scores.best2048Tile)}  •  Score: ${scores.best2048Score}"
-                else "Setup • instructions • difficulty",
-                onClick = { onGameSelect(GameId.TileMerge) }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "Level ${ScoreLogic.levelForXp(scores.totalXp)} • ${scores.totalXp} XP • ${scores.gamesPlayed} games played",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
             )
+            Spacer(Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Search games") },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                singleLine = true
+            )
+
             Spacer(Modifier.height(10.dp))
-            GameCard(
-                game = GameId.Minesweeper,
-                subtitle = "Reveal safe squares and flag hidden mines",
-                badge = if (scores.minesweeperWins > 0)
-                    "Wins: ${scores.minesweeperWins}  •  Best: ${ScoreLogic.timeLabel(scores.minesweeperBestTimeSecs)}"
-                else "Easy / Normal / Hard boards",
-                onClick = { onGameSelect(GameId.Minesweeper) }
-            )
-            Spacer(Modifier.height(10.dp))
-            GameCard(
-                game = GameId.TicTacToe,
-                subtitle = "2-player, easy bot, or smart bot",
-                badge = "Choose opponent before playing",
-                onClick = { onGameSelect(GameId.TicTacToe) }
-            )
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = selectedCategory == null,
+                    onClick = { selectedCategory = null },
+                    label = { Text("All") }
+                )
+                GameCategory.entries.forEach { category ->
+                    FilterChip(
+                        selected = selectedCategory == category,
+                        onClick = {
+                            selectedCategory = if (selectedCategory == category) null else category
+                        },
+                        label = { Text(category.label) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(16.dp))
 
-            Spacer(Modifier.height(28.dp))
-            SectionLabel("SETTINGS")
+            if (browsing) {
+                if (filtered.isEmpty()) {
+                    Text(
+                        "No games match. Try another search.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    GameCardList(filtered, scores, favorites, onGameSelect, onToggleFavorite)
+                }
+            } else {
+                val recentMetas = recents
+                    .mapNotNull { name -> GameRegistry.games.firstOrNull { it.id.name == name } }
+                    .take(3)
+                if (recentMetas.isNotEmpty()) {
+                    SectionLabel("CONTINUE PLAYING")
+                    Spacer(Modifier.height(8.dp))
+                    GameCardList(recentMetas, scores, favorites, onGameSelect, onToggleFavorite)
+                    Spacer(Modifier.height(20.dp))
+                }
+
+                val favoriteMetas = GameRegistry.games.filter { it.id.name in favorites && it.id.name !in recents.take(3) }
+                if (favoriteMetas.isNotEmpty()) {
+                    SectionLabel("FAVORITES")
+                    Spacer(Modifier.height(8.dp))
+                    GameCardList(favoriteMetas, scores, favorites, onGameSelect, onToggleFavorite)
+                    Spacer(Modifier.height(20.dp))
+                }
+
+                GameCategory.entries.forEach { category ->
+                    val inCategory = GameRegistry.games.filter { it.category == category }
+                    if (inCategory.isNotEmpty()) {
+                        SectionLabel(category.label.uppercase())
+                        Spacer(Modifier.height(8.dp))
+                        GameCardList(inCategory, scores, favorites, onGameSelect, onToggleFavorite)
+                        Spacer(Modifier.height(20.dp))
+                    }
+                }
+            }
+
+            SectionLabel("SETTINGS & PRIVACY")
             Spacer(Modifier.height(8.dp))
-
             Card(
                 onClick = onSettings,
                 modifier = Modifier.fillMaxWidth(),
@@ -98,18 +167,21 @@ fun HomeScreen(
                     Spacer(Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            if (adsEnabled) "Remove Ads" else "Ads Removed ✓",
+                            if (adsEnabled) "Remove Ads • Privacy • Data" else "Ads Removed ✓ • Privacy • Data",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            if (adsEnabled) "Support the app and hide placeholder ads"
-                            else "Thank you for your support!",
+                            "One-time purchase, restore, and delete-local-data controls",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
                 }
             }
 
@@ -119,30 +191,76 @@ fun HomeScreen(
 }
 
 @Composable
-private fun SectionLabel(text: String) {
-    Text(text, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+private fun GameCardList(
+    metas: List<GameMeta>,
+    scores: HighScores,
+    favorites: Set<String>,
+    onGameSelect: (GameId) -> Unit,
+    onToggleFavorite: (GameId) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        metas.forEach { meta ->
+            GameCard(
+                meta = meta,
+                badge = scoreBadge(meta.id, scores),
+                isFavorite = meta.id.name in favorites,
+                onClick = { onGameSelect(meta.id) },
+                onToggleFavorite = { onToggleFavorite(meta.id) }
+            )
+        }
+    }
+}
+
+private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
+    GameId.TileMerge -> if (scores.best2048Tile > 0)
+        "Best tile: ${ScoreLogic.tileLabel(scores.best2048Tile)}  •  Score: ${scores.best2048Score}" else null
+    GameId.Minesweeper -> if (scores.minesweeperWins > 0)
+        "Wins: ${scores.minesweeperWins}  •  Best: ${ScoreLogic.timeLabel(scores.minesweeperBestTimeSecs)}" else null
+    GameId.MemoryMatch -> if (scores.memoryBestMoves > 0)
+        "Best: ${ScoreLogic.movesLabel(scores.memoryBestMoves)}" else null
+    GameId.ReactionTap -> if (scores.reactionBestMs > 0)
+        "Best avg: ${ScoreLogic.reactionLabel(scores.reactionBestMs)}" else null
+    GameId.TicTacToe -> null
 }
 
 @Composable
-private fun GameCard(game: GameId, subtitle: String, badge: String? = null, onClick: () -> Unit) {
+private fun SectionLabel(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+private fun GameCard(
+    meta: GameMeta,
+    badge: String?,
+    isFavorite: Boolean,
+    onClick: () -> Unit,
+    onToggleFavorite: () -> Unit
+) {
     Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            MiniGameIcon(game, modifier = Modifier.width(56.dp).height(56.dp))
+        Row(modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            MiniGameIcon(meta.id, modifier = Modifier.width(56.dp).height(56.dp))
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(game.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (badge != null) {
-                    Spacer(Modifier.height(4.dp))
-                    Text(badge, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-                }
+                Text(meta.id.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text(meta.subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    badge ?: "${meta.players}  •  ~${meta.estTime}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            IconButton(onClick = onToggleFavorite) {
+                Icon(
+                    if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                    tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }

@@ -13,7 +13,9 @@ import net.sclan.minigames.ui.Game2048Screen
 import net.sclan.minigames.ui.GameId
 import net.sclan.minigames.ui.GameSetupScreen
 import net.sclan.minigames.ui.HomeScreen
+import net.sclan.minigames.ui.MemoryMatchScreen
 import net.sclan.minigames.ui.MinesweeperScreen
+import net.sclan.minigames.ui.ReactionTapScreen
 import net.sclan.minigames.ui.Screen
 import net.sclan.minigames.ui.SettingsScreen
 import net.sclan.minigames.ui.TicTacToeScreen
@@ -40,7 +42,10 @@ class MainActivity : ComponentActivity() {
                     Screen.Home -> HomeScreen(
                         onGameSelect = { screen = Screen.GameSetup(it) },
                         scores = scores,
+                        favorites = scoreRepo.favorites,
+                        recents = scoreRepo.recents,
                         adsEnabled = billingRepo.areAdsEnabled,
+                        onToggleFavorite = { scoreRepo.toggleFavorite(it.name) },
                         onSettings = { screen = Screen.Settings }
                     )
                     is Screen.GameSetup -> GameSetupScreen(
@@ -48,10 +53,13 @@ class MainActivity : ComponentActivity() {
                         scores = scores,
                         onBack = { screen = Screen.Home },
                         onPlay = { choice ->
+                            scoreRepo.recordPlayed(current.game.name)
                             screen = when (current.game) {
                                 GameId.TileMerge -> Screen.Game2048(choice.tileMerge)
                                 GameId.Minesweeper -> Screen.Minesweeper(choice.minesweeper)
                                 GameId.TicTacToe -> Screen.TicTacToe(choice.ticTacToe)
+                                GameId.MemoryMatch -> Screen.MemoryMatch(choice.memoryMatch)
+                                GameId.ReactionTap -> Screen.ReactionTap(choice.reactionTap)
                             }
                         }
                     )
@@ -62,18 +70,31 @@ class MainActivity : ComponentActivity() {
                     is Screen.Game2048 -> Game2048Screen(
                         difficulty = current.difficulty,
                         onBack = { screen = Screen.GameSetup(GameId.TileMerge) },
-                        onBestScore = { tile, score -> scoreRepo.tryUpdateBest2048(tile, score) }
+                        onBestScore = { tile, score -> scoreRepo.tryUpdateBest2048(tile, score) },
+                        onWon = { scoreRepo.record2048Win() }
                     )
                     is Screen.Minesweeper -> MinesweeperScreen(
                         difficulty = current.difficulty,
                         onBack = { screen = Screen.GameSetup(GameId.Minesweeper) },
                         onWin = { timeSecs -> scoreRepo.recordMinesweeperWin(timeSecs) }
                     )
+                    is Screen.MemoryMatch -> MemoryMatchScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.MemoryMatch) },
+                        onWin = { moves -> scoreRepo.recordMemoryWin(moves) }
+                    )
+                    is Screen.ReactionTap -> ReactionTapScreen(
+                        mode = current.mode,
+                        onBack = { screen = Screen.GameSetup(GameId.ReactionTap) },
+                        onFinish = { avgMs -> scoreRepo.recordReactionResult(avgMs) }
+                    )
                     Screen.Settings -> SettingsScreen(
                         onBack = { screen = Screen.Home },
                         purchaseState = purchaseState,
+                        scores = scores,
                         onRemoveAds = { billingRepo.launchPurchaseFlow(this@MainActivity) },
-                        onRestorePurchases = { billingRepo.checkExistingPurchases() }
+                        onRestorePurchases = { billingRepo.checkExistingPurchases() },
+                        onDeleteData = { scoreRepo.deleteAllData() }
                     )
                 }
             }

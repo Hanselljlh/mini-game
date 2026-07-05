@@ -61,8 +61,10 @@ fun GameSetupScreen(
     var tileDifficulty by remember { mutableStateOf(TileMergeDifficulty.Normal) }
     var mineDifficulty by remember { mutableStateOf(MinesweeperDifficulty.Normal) }
     var ticDifficulty by remember { mutableStateOf(TicTacToeDifficulty.TwoPlayer) }
+    var memoryDifficulty by remember { mutableStateOf(MemoryMatchDifficulty.Normal) }
+    var reactionMode by remember { mutableStateOf(ReactionTapMode.Standard) }
 
-    val choice = GameSetupChoice(tileDifficulty, mineDifficulty, ticDifficulty)
+    val choice = GameSetupChoice(tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode)
     val pages = instructionPages(game, choice)
 
     Scaffold(
@@ -116,6 +118,14 @@ fun GameSetupScreen(
                                 TicTacToeDifficulty.entries.map { it.label },
                                 ticDifficulty.ordinal
                             ) { ticDifficulty = TicTacToeDifficulty.entries[it] }
+                            GameId.MemoryMatch -> DifficultyRow(
+                                MemoryMatchDifficulty.entries.map { d -> "${d.label} ${d.rows}×${d.cols}" },
+                                memoryDifficulty.ordinal
+                            ) { memoryDifficulty = MemoryMatchDifficulty.entries[it] }
+                            GameId.ReactionTap -> DifficultyRow(
+                                ReactionTapMode.entries.map { it.label },
+                                reactionMode.ordinal
+                            ) { reactionMode = ReactionTapMode.entries[it] }
                         }
                     }
                 }
@@ -165,6 +175,8 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             }
             GameId.Minesweeper -> Text("✦", style = MaterialTheme.typography.headlineMedium, color = Color.White)
             GameId.TicTacToe -> Text("X O", style = MaterialTheme.typography.titleLarge, color = Color.White, fontWeight = FontWeight.Bold)
+            GameId.MemoryMatch -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("?"); IconTile("?") }
+            GameId.ReactionTap -> Text("⚡", style = MaterialTheme.typography.headlineMedium, color = Color.White)
         }
     }
 }
@@ -196,6 +208,10 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
         GameId.Minesweeper -> if (scores.minesweeperWins > 0)
             "Wins: ${scores.minesweeperWins} • Best: ${ScoreLogic.timeLabel(scores.minesweeperBestTimeSecs)}" else "No wins yet."
         GameId.TicTacToe -> "Practice against a friend or bot."
+        GameId.MemoryMatch -> if (scores.memoryBestMoves > 0)
+            "Best: ${ScoreLogic.movesLabel(scores.memoryBestMoves)}" else "No saved score yet."
+        GameId.ReactionTap -> if (scores.reactionBestMs > 0)
+            "Best average: ${ScoreLogic.reactionLabel(scores.reactionBestMs)}" else "No saved score yet."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -261,5 +277,15 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Take turns" to "Place X marks and try to make three in a row across, down, or diagonally.",
         "Choose opponent" to "2 Players is local pass-and-play. Easy Bot makes simple moves. Smart Bot tries to win or block you.",
         "Block threats" to "If your opponent has two in a row, block the third square before they win."
+    )
+    GameId.MemoryMatch -> listOf(
+        "Flip two cards" to "Tap any two face-down cards to flip them over and see their symbols.",
+        "Find the pairs" to "If the symbols match, the pair stays face up. If not, both cards flip back — remember where they were!",
+        "Beat your best" to "Clear the whole board on ${choice.memoryMatch.label} (${choice.memoryMatch.rows}×${choice.memoryMatch.cols}) in as few moves as possible."
+    )
+    GameId.ReactionTap -> listOf(
+        "Wait for green" to "Tap to arm a round. The panel turns red — hold steady until it flashes green.",
+        "Tap fast" to "The instant it turns green, tap! Your reaction time is measured in milliseconds.",
+        "Play ${choice.reactionTap.rounds} rounds" to "Your average over ${choice.reactionTap.rounds} rounds is your score. Tapping early restarts that round."
     )
 }

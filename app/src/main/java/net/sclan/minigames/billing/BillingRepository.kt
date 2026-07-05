@@ -5,10 +5,13 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 
 const val PRODUCT_REMOVE_ADS = "remove_ads"
@@ -23,8 +26,12 @@ class BillingRepository(context: Context) {
     @Suppress("DEPRECATION")
     private val client: BillingClient = BillingClient.newBuilder(context)
         .setListener { result, purchases ->
-            if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                handlePurchases(purchases ?: emptyList())
+            when (result.responseCode) {
+                BillingClient.BillingResponseCode.OK ->
+                    handlePurchases(purchases ?: emptyList())
+                else ->
+                    // Cancelled or failed mid-flow: never leave the UI stuck on Pending.
+                    if (purchaseState is PurchaseState.Pending) purchaseState = PurchaseState.NotPurchased
             }
         }
         .enablePendingPurchases()
@@ -53,20 +60,57 @@ class BillingRepository(context: Context) {
         }
     }
 
-    /** Initiates a purchase flow. In production, query ProductDetails first. */
-    @Suppress("UNUSED_PARAMETER")
     fun launchPurchaseFlow(activity: Activity) {
-        purchaseState = PurchaseState.Pending
-        // Real implementation: queryProductDetailsAsync → launchBillingFlow
+        if (!client.isReady) {
+            connect()
+            return
+        }
+        val product = QueryProductDetailsParams.Product.newBuilder()
+            .setProductId(PRODUCT_REMOVE_ADS)
+            .setProductType(BillingClient.ProductType.INAPP)
+            .build()
+        val params = QueryProductDetailsParams.newBuilder()
+            .setProductList(listOf(product))
+            .build()
+        client.queryProductDetailsAsync(params) { result, productDetailsList ->
+            val details = productDetailsList.firstOrNull()
+            if (result.responseCode == BillingClient.BillingResponseCode.OK && details != null) {
+                purchaseState = PurchaseState.Pending
+                val flowParams = BillingFlowParams.newBuilder()
+                    .setProductDetailsParamsList(
+                        listOf(
+                            BillingFlowParams.ProductDetailsParams.newBuilder()
+                                .setProductDetails(details)
+                                .build()
+                        )
+                    )
+                    .build()
+                val launchResult = client.launchBillingFlow(activity, flowParams)
+                if (launchResult.responseCode != BillingClient.BillingResponseCode.OK) {
+                    purchaseState = PurchaseState.NotPurchased
+                }
+            } else {
+                // Product not available (e.g. not published on Play yet) — stay purchasable.
+                purchaseState = PurchaseState.NotPurchased
+            }
+        }
     }
 
     fun disconnect() = client.endConnection()
 
     private fun handlePurchases(purchases: List<Purchase>) {
-        val owned = purchases.any { p ->
+        val ownedPurchases = purchases.filter { p ->
             p.products.contains(PRODUCT_REMOVE_ADS) &&
                 p.purchaseState == Purchase.PurchaseState.PURCHASED
         }
-        purchaseState = if (owned) PurchaseState.Purchased else PurchaseState.NotPurchased
+        ownedPurchases
+            .filter { !it.isAcknowledged }
+            .forEach { p ->
+                val ackParams = AcknowledgePurchaseParams.newBuilder()
+                    .setPurchaseToken(p.purchaseToken)
+                    .build()
+                client.acknowledgePurchase(ackParams) {}
+            }
+        purchaseState = if (ownedPurchases.isNotEmpty()) PurchaseState.Purchased else PurchaseState.NotPurchased
     }
 }
