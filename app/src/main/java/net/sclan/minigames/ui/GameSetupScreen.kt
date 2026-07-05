@@ -75,11 +75,16 @@ fun GameSetupScreen(
     var anagramLength by remember { mutableStateOf(AnagramLength.Mixed) }
     var mancalaMode by remember { mutableStateOf(MancalaMode.TwoPlayer) }
     var simonSpeed by remember { mutableStateOf(SimonSpeed.Normal) }
+    var waterDifficulty by remember { mutableStateOf(WaterSortDifficulty.Normal) }
+    var nutsDifficulty by remember { mutableStateOf(WaterSortDifficulty.Normal) }
+    var fillDifficulty by remember { mutableStateOf(ColorFillDifficulty.Normal) }
+    var blocksDifficulty by remember { mutableStateOf(ColorBlocksDifficulty.Normal) }
 
     val choice = GameSetupChoice(
         tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode,
         snakeDifficulty, fourMode, dotsSize, wordDifficulty, codeDifficulty, sudokuDifficulty, bubbleSize,
-        stackSpeed, mazeSize, anagramLength, mancalaMode, simonSpeed
+        stackSpeed, mazeSize, anagramLength, mancalaMode, simonSpeed,
+        waterDifficulty, nutsDifficulty, fillDifficulty, blocksDifficulty
     )
     val pages = instructionPages(game, choice)
 
@@ -190,6 +195,22 @@ fun GameSetupScreen(
                                 SimonSpeed.entries.map { it.label },
                                 simonSpeed.ordinal
                             ) { simonSpeed = SimonSpeed.entries[it] }
+                            GameId.WaterSort -> DifficultyRow(
+                                WaterSortDifficulty.entries.map { it.label },
+                                waterDifficulty.ordinal
+                            ) { waterDifficulty = WaterSortDifficulty.entries[it] }
+                            GameId.NutsAndBolts -> DifficultyRow(
+                                WaterSortDifficulty.entries.map { it.label },
+                                nutsDifficulty.ordinal
+                            ) { nutsDifficulty = WaterSortDifficulty.entries[it] }
+                            GameId.ColorFill -> DifficultyRow(
+                                ColorFillDifficulty.entries.map { it.label },
+                                fillDifficulty.ordinal
+                            ) { fillDifficulty = ColorFillDifficulty.entries[it] }
+                            GameId.ColorBlocks -> DifficultyRow(
+                                ColorBlocksDifficulty.entries.map { it.label },
+                                blocksDifficulty.ordinal
+                            ) { blocksDifficulty = ColorBlocksDifficulty.entries[it] }
                         }
                     }
                 }
@@ -253,6 +274,10 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.AnagramTiles -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("A"); IconTile("Z") }
             GameId.Mancala -> Text("⚈⚈", style = MaterialTheme.typography.titleLarge, color = Color.White)
             GameId.SimonSays -> Text("◩", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+            GameId.WaterSort -> Text("🧪", style = MaterialTheme.typography.headlineMedium)
+            GameId.NutsAndBolts -> Text("🔩", style = MaterialTheme.typography.headlineMedium)
+            GameId.ColorFill -> Text("🎨", style = MaterialTheme.typography.headlineMedium)
+            GameId.ColorBlocks -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("◼"); IconTile("◼") }
         }
     }
 }
@@ -308,6 +333,14 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
         GameId.Mancala -> "Classic seed-sowing duel."
         GameId.SimonSays -> if (scores.simonBestRound > 0)
             "Best: ${scores.simonBestRound} rounds" else "No saved score yet."
+        GameId.WaterSort -> if (scores.waterSortBestMoves > 0)
+            "Best: ${ScoreLogic.movesLabel(scores.waterSortBestMoves)}" else "No saved score yet."
+        GameId.NutsAndBolts -> if (scores.nutsBestMoves > 0)
+            "Best: ${ScoreLogic.movesLabel(scores.nutsBestMoves)}" else "No saved score yet."
+        GameId.ColorFill -> if (scores.colorFillWins > 0)
+            "Boards filled: ${scores.colorFillWins}" else "No boards filled yet."
+        GameId.ColorBlocks -> if (scores.blocksBestScore > 0)
+            "Best score: ${scores.blocksBestScore}" else "No saved score yet."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -443,5 +476,25 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Watch the pads" to "The four pads flash in a sequence. Memorize the order.",
         "Repeat it" to "Tap the pads in the same order. Get it right and the sequence grows by one.",
         "How far can you go?" to "One mistake ends the run. ${choice.simonSays.label} speed controls how fast the pads flash."
+    )
+    GameId.WaterSort -> listOf(
+        "Pick up a tube" to "Tap a tube to select it, then tap another tube to pour into it.",
+        "Match the tops" to "You can only pour onto the same color, or into an empty tube. Whole runs of one color pour together.",
+        "Sort them all" to "The puzzle is solved when every tube holds a single color (or nothing). Fewer moves = better score."
+    )
+    GameId.NutsAndBolts -> listOf(
+        "Grab some nuts" to "Tap a bolt to grab its top nuts, then tap another bolt to screw them on.",
+        "Stack by color" to "Nuts only land on a matching color or a bare bolt. Matching nuts move together.",
+        "Finish the job" to "Every bolt must end up holding one color. Fewer moves = better score."
+    )
+    GameId.ColorFill -> listOf(
+        "Flood from the corner" to "Your territory starts at the top-left square. Tap a color button to flood-fill your territory with it.",
+        "Grow every move" to "Picking the color of neighboring squares absorbs them into your territory.",
+        "Beat the limit" to "Turn the whole board one color within ${choice.colorFill.moveLimit} moves."
+    )
+    GameId.ColorBlocks -> listOf(
+        "Find groups" to "Tap any group of two or more touching blocks of the same color to clear it.",
+        "Think big" to "Score = (blocks − 1)². A 10-block group is worth 81 points — plan your taps to build big groups.",
+        "Clear the board" to "Blocks fall and columns slide left as you clear. Empty the whole board for a +100 bonus."
     )
 }

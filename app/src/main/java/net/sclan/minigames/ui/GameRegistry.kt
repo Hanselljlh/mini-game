@@ -2,6 +2,7 @@ package net.sclan.minigames.ui
 
 enum class GameCategory(val label: String) {
     Brain("Brain & Logic"),
+    Puzzle("Sort & Fill"),
     Words("Words"),
     Cards("Cards & Classics"),
     Arcade("Arcade"),
@@ -36,7 +37,11 @@ object GameRegistry {
         GameMeta(GameId.MazeRunner, GameCategory.Brain, "Solo", "3 min", "Slide through the maze to the exit"),
         GameMeta(GameId.AnagramTiles, GameCategory.Words, "Solo", "3 min", "Unscramble letters to rebuild the word"),
         GameMeta(GameId.Mancala, GameCategory.Duel, "1–2 players", "5 min", "Sow seeds, land in your store, capture big"),
-        GameMeta(GameId.SimonSays, GameCategory.Brain, "Solo", "2 min", "Repeat the flashing sequence as it grows")
+        GameMeta(GameId.SimonSays, GameCategory.Brain, "Solo", "2 min", "Repeat the flashing sequence as it grows"),
+        GameMeta(GameId.WaterSort, GameCategory.Puzzle, "Solo", "5 min", "Pour water until every tube is one color"),
+        GameMeta(GameId.NutsAndBolts, GameCategory.Puzzle, "Solo", "5 min", "Sort colored nuts onto matching bolts"),
+        GameMeta(GameId.ColorFill, GameCategory.Puzzle, "Solo", "3 min", "Flood the board into one color in limited moves"),
+        GameMeta(GameId.ColorBlocks, GameCategory.Puzzle, "Solo", "3 min", "Clear matching block groups — bigger is better")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

@@ -20,5 +20,9 @@ sealed class Screen {
     data class AnagramTiles(val length: AnagramLength) : Screen()
     data class Mancala(val mode: MancalaMode) : Screen()
     data class SimonSays(val speed: SimonSpeed) : Screen()
+    data class WaterSort(val difficulty: WaterSortDifficulty) : Screen()
+    data class NutsAndBolts(val difficulty: WaterSortDifficulty) : Screen()
+    data class ColorFill(val difficulty: ColorFillDifficulty) : Screen()
+    data class ColorBlocks(val difficulty: ColorBlocksDifficulty) : Screen()
     object Settings : Screen()
 }

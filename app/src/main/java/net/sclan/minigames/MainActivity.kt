@@ -11,6 +11,10 @@ import net.sclan.minigames.billing.BillingRepository
 import net.sclan.minigames.data.ScoreRepository
 import net.sclan.minigames.ui.BubbleWrapScreen
 import net.sclan.minigames.ui.CodeBreakerScreen
+import net.sclan.minigames.ui.ColorBlocksScreen
+import net.sclan.minigames.ui.ColorFillScreen
+import net.sclan.minigames.ui.NutsAndBoltsScreen
+import net.sclan.minigames.ui.WaterSortScreen
 import net.sclan.minigames.ui.DailyChallenge
 import net.sclan.minigames.ui.DotsAndBoxesScreen
 import net.sclan.minigames.ui.FourInARowScreen
@@ -98,6 +102,10 @@ class MainActivity : ComponentActivity() {
                                 GameId.AnagramTiles -> Screen.AnagramTiles(choice.anagramTiles)
                                 GameId.Mancala -> Screen.Mancala(choice.mancala)
                                 GameId.SimonSays -> Screen.SimonSays(choice.simonSays)
+                                GameId.WaterSort -> Screen.WaterSort(choice.waterSort)
+                                GameId.NutsAndBolts -> Screen.NutsAndBolts(choice.nutsAndBolts)
+                                GameId.ColorFill -> Screen.ColorFill(choice.colorFill)
+                                GameId.ColorBlocks -> Screen.ColorBlocks(choice.colorBlocks)
                             }
                         }
                     )
@@ -236,6 +244,38 @@ class MainActivity : ComponentActivity() {
                         onFinished = { rounds ->
                             scoreRepo.recordSimonRun(rounds)
                             if (rounds > 0) completeIfDaily(GameId.SimonSays)
+                        }
+                    )
+                    is Screen.WaterSort -> WaterSortScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.WaterSort) },
+                        onWin = { moves ->
+                            scoreRepo.recordWaterSortWin(moves)
+                            completeIfDaily(GameId.WaterSort)
+                        }
+                    )
+                    is Screen.NutsAndBolts -> NutsAndBoltsScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.NutsAndBolts) },
+                        onWin = { moves ->
+                            scoreRepo.recordNutsWin(moves)
+                            completeIfDaily(GameId.NutsAndBolts)
+                        }
+                    )
+                    is Screen.ColorFill -> ColorFillScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.ColorFill) },
+                        onWin = {
+                            scoreRepo.recordColorFillWin()
+                            completeIfDaily(GameId.ColorFill)
+                        }
+                    )
+                    is Screen.ColorBlocks -> ColorBlocksScreen(
+                        difficulty = current.difficulty,
+                        onBack = { screen = Screen.GameSetup(GameId.ColorBlocks) },
+                        onFinished = { score ->
+                            scoreRepo.recordBlocksRun(score)
+                            if (score > 0) completeIfDaily(GameId.ColorBlocks)
                         }
                     )
                     Screen.Settings -> SettingsScreen(

@@ -20,6 +20,10 @@ data class HighScores(
     val mazeBestSecs: Long = 0L,
     val anagramBestSolved: Int = 0,
     val simonBestRound: Int = 0,
+    val waterSortBestMoves: Int = 0,
+    val nutsBestMoves: Int = 0,
+    val colorFillWins: Int = 0,
+    val blocksBestScore: Int = 0,
     val totalXp: Int = 0,
     val gamesPlayed: Int = 0
 )
@@ -40,6 +44,9 @@ object ScoreLogic {
     const val XP_MAZE_WIN = 20
     const val XP_ANAGRAM_ROUND = 15
     const val XP_SIMON_RUN = 10
+    const val XP_SORT_WIN = 20
+    const val XP_FILL_WIN = 15
+    const val XP_BLOCKS_RUN = 10
 
     fun isBetterTile(new: Int, best: Int): Boolean = new > best
     fun isBetterScore(new: Int, best: Int): Boolean = new > best
@@ -94,6 +101,10 @@ class ScoreRepository(context: Context) {
         mazeBestSecs = prefs.getLong("maze_best_secs", 0L),
         anagramBestSolved = prefs.getInt("anagram_best", 0),
         simonBestRound = prefs.getInt("simon_best", 0),
+        waterSortBestMoves = prefs.getInt("water_best_moves", 0),
+        nutsBestMoves = prefs.getInt("nuts_best_moves", 0),
+        colorFillWins = prefs.getInt("fill_wins", 0),
+        blocksBestScore = prefs.getInt("blocks_best", 0),
         totalXp = prefs.getInt("total_xp", 0),
         gamesPlayed = prefs.getInt("games_played", 0)
     )
@@ -200,6 +211,38 @@ class ScoreRepository(context: Context) {
         val newXp = cur.totalXp + ScoreLogic.XP_MAZE_WIN
         prefs.edit().putLong("maze_best_secs", newBest).putInt("total_xp", newXp).apply()
         scores = cur.copy(mazeBestSecs = newBest, totalXp = newXp)
+    }
+
+    fun recordWaterSortWin(moves: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterMoves(moves, cur.waterSortBestMoves)) moves else cur.waterSortBestMoves
+        val newXp = cur.totalXp + ScoreLogic.XP_SORT_WIN
+        prefs.edit().putInt("water_best_moves", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(waterSortBestMoves = newBest, totalXp = newXp)
+    }
+
+    fun recordNutsWin(moves: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterMoves(moves, cur.nutsBestMoves)) moves else cur.nutsBestMoves
+        val newXp = cur.totalXp + ScoreLogic.XP_SORT_WIN
+        prefs.edit().putInt("nuts_best_moves", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(nutsBestMoves = newBest, totalXp = newXp)
+    }
+
+    fun recordColorFillWin() {
+        val cur = scores
+        val newWins = cur.colorFillWins + 1
+        val newXp = cur.totalXp + ScoreLogic.XP_FILL_WIN
+        prefs.edit().putInt("fill_wins", newWins).putInt("total_xp", newXp).apply()
+        scores = cur.copy(colorFillWins = newWins, totalXp = newXp)
+    }
+
+    fun recordBlocksRun(score: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterScore(score, cur.blocksBestScore)) score else cur.blocksBestScore
+        val newXp = cur.totalXp + if (score > 0) ScoreLogic.XP_BLOCKS_RUN else 0
+        prefs.edit().putInt("blocks_best", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(blocksBestScore = newBest, totalXp = newXp)
     }
 
     fun recordSimonRun(rounds: Int) {

@@ -17,7 +17,11 @@ enum class GameId(val title: String, val shortDescription: String) {
     MazeRunner("Maze Runner", "Slide through the maze and find the exit as fast as you can."),
     AnagramTiles("Anagram Tiles", "Unscramble the letters to rebuild the hidden word."),
     Mancala("Mancala", "Sow seeds around the board and capture more than your opponent."),
-    SimonSays("Simon Says", "Watch the pads light up, then repeat the growing sequence.")
+    SimonSays("Simon Says", "Watch the pads light up, then repeat the growing sequence."),
+    WaterSort("Water Sort", "Pour colored water between tubes until every tube is one color."),
+    NutsAndBolts("Nuts & Bolts", "Move colored nuts between bolts until each bolt matches."),
+    ColorFill("Multi-Color Fill", "Flood the board into a single color before moves run out."),
+    ColorBlocks("Color Blocks", "Tap groups of matching blocks to clear the board for big scores.")
 }
 
 enum class TileMergeDifficulty(val label: String, val targetTile: Int, val startTiles: Int) {
@@ -125,6 +129,24 @@ enum class SimonSpeed(val label: String, val showMs: Long, val gapMs: Long) {
     Fast("Fast", 280L, 120L)
 }
 
+enum class WaterSortDifficulty(val label: String, val colors: Int) {
+    Easy("Easy • 4 colors", 4),
+    Normal("Normal • 6 colors", 6),
+    Hard("Hard • 8 colors", 8)
+}
+
+enum class ColorFillDifficulty(val label: String, val gridSize: Int, val colors: Int, val moveLimit: Int) {
+    Easy("Easy 10×10", 10, 4, 18),
+    Normal("Normal 12×12", 12, 5, 22),
+    Hard("Hard 14×14", 14, 6, 25)
+}
+
+enum class ColorBlocksDifficulty(val label: String, val rows: Int, val cols: Int, val colors: Int) {
+    Easy("Easy • 4 colors", 9, 8, 4),
+    Normal("Normal • 5 colors", 10, 9, 5),
+    Hard("Hard • 6 colors", 12, 10, 6)
+}
+
 data class GameSetupChoice(
     val tileMerge: TileMergeDifficulty = TileMergeDifficulty.Normal,
     val minesweeper: MinesweeperDifficulty = MinesweeperDifficulty.Normal,
@@ -142,7 +164,11 @@ data class GameSetupChoice(
     val mazeRunner: MazeSize = MazeSize.Medium,
     val anagramTiles: AnagramLength = AnagramLength.Mixed,
     val mancala: MancalaMode = MancalaMode.TwoPlayer,
-    val simonSays: SimonSpeed = SimonSpeed.Normal
+    val simonSays: SimonSpeed = SimonSpeed.Normal,
+    val waterSort: WaterSortDifficulty = WaterSortDifficulty.Normal,
+    val nutsAndBolts: WaterSortDifficulty = WaterSortDifficulty.Normal,
+    val colorFill: ColorFillDifficulty = ColorFillDifficulty.Normal,
+    val colorBlocks: ColorBlocksDifficulty = ColorBlocksDifficulty.Normal
 )
 
 fun defaultSetupChoice(game: GameId): GameSetupChoice = GameSetupChoice()
