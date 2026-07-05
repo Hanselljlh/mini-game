@@ -4,20 +4,29 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 
 **No account. No location. Built for offline play.** Every game works in airplane mode; scores, favorites, and XP live only on the device.
 
-## Games
+## Games (12)
 
 | Game | Category | Description |
 |------|----------|-------------|
 | Tile Merge | Brain & Logic | Slide matching number tiles together until you reach the target tile (1024/2048/4096) |
 | Minesweeper | Brain & Logic | Easy, Normal, and Hard boards — tap to reveal, long-press to flag |
+| Code Breaker | Brain & Logic | Mastermind-style deduction — crack the 4-color code with feedback pegs |
+| Mini Sudoku | Brain & Logic | Generated 4×4, 6×6, and 9×9 puzzles with conflict highlighting |
+| Word Search | Words | Generated letter grids with 5–9 hidden words, all 8 directions |
 | Memory Match | Cards & Classics | Flip cards and find every matching pair in as few moves as you can |
 | Reaction Tap | Arcade | Wait for green, then tap as fast as you can — average over 3/5/10 rounds |
+| Snake | Arcade | Swipe-steered classic on a 15×15 grid with three speeds |
 | Tic Tac Toe | Local Duel | Classic 3×3 grid with 2-player, easy bot, and smart bot modes |
+| Four in a Row | Local Duel | Connect-four duels vs a friend or a blocking/winning bot |
+| Dots & Boxes | Local Duel | Pass-and-play line duel on 3×3 to 5×5 boards |
+| Bubble Wrap | Relax Toys | Pop every bubble. No score, no timer, pure calm |
 
 ## App features
 
 - **Hub shell** — search, category chips, Continue Playing, and Favorites sections
 - **Game registry** — every game declares category, player count, and session length; new games plug into the shell
+- **Daily offline challenge** — deterministic date-seeded pick, +50 XP bonus, no server involved
+- **Achievements** — 18 locally-computed achievements across all games
 - **Local progression** — XP, levels, per-game best scores, games-played stats
 - **Setup-first flow** — every game has a rules pager and difficulty selector before play
 - **Privacy controls** — Delete Local Data button, no analytics, no account

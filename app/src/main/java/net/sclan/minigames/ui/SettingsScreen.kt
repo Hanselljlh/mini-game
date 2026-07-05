@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import net.sclan.minigames.billing.PurchaseState
+import net.sclan.minigames.data.Achievements
 import net.sclan.minigames.data.HighScores
 import net.sclan.minigames.data.ScoreLogic
 
@@ -141,6 +142,36 @@ fun SettingsScreen(
                     Text("Word Search best: ${ScoreLogic.timeLabel(scores.wordSearchBestSecs)}", style = MaterialTheme.typography.bodyMedium)
                     Text("Code Breaker best: ${if (scores.codeBestGuesses > 0) "${scores.codeBestGuesses} guesses" else "—"}", style = MaterialTheme.typography.bodyMedium)
                     Text("Sudoku solved: ${scores.sudokuWins}", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+            val unlockedIds = Achievements.unlocked(scores).map { it.id }.toSet()
+            Text(
+                "ACHIEVEMENTS (${unlockedIds.size}/${Achievements.all.size})",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Achievements.all.forEach { achievement ->
+                        val unlocked = achievement.id in unlockedIds
+                        Column {
+                            Text(
+                                "${if (unlocked) "🏆" else "🔒"} ${achievement.title}",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (unlocked) MaterialTheme.colorScheme.onSurface
+                                else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                achievement.description,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
             }
 

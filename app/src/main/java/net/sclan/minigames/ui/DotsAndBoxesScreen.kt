@@ -162,10 +162,11 @@ fun DotsAndBoxesScreen(
             Button(onClick = ::reset) { Text("New Game") }
             Spacer(Modifier.height(12.dp))
 
+            val unclaimedColor = MaterialTheme.colorScheme.surfaceVariant
             fun edgeColor(owner: Int?): Color = when (owner) {
                 1 -> p1Color
                 2 -> p2Color
-                else -> MaterialTheme.colorScheme.surfaceVariant
+                else -> unclaimedColor
             }
 
             Column {

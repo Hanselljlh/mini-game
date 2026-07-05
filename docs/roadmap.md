@@ -15,16 +15,22 @@ to that plan (Phase 1 = shell + registry + 5 vertical-slice games).
 - [x] Real Google Play Billing flow for Remove Ads + Restore Purchases
 - [x] Unit tests run in CI
 
-## v1.2 — Phase 2: MVP content
+## v1.2 — Phase 2: MVP content (current)
 
-- [ ] Grow catalog toward 25–30 games (2–4 per month): Snake trail, Mini Sudoku, Word Search, Code Breaker, Dots-and-Boxes duel, Four-in-a-Row, Solitaire, Air-hockey duel, relax toys
-- [ ] Daily offline challenge (deterministic date seed, no server)
-- [ ] Achievements + mastery tracks per game
+- [x] Catalog grown to 12 games: added Snake, Four in a Row, Dots & Boxes, Word Search, Code Breaker, Mini Sudoku, Bubble Wrap
+- [x] Two new categories: Words, Relax Toys
+- [x] Daily offline challenge (deterministic date seed, +50 XP, no server)
+- [x] 18 achievements computed from local stats
+- [x] Every game reports completion events (XP + daily challenge credit)
+
+## v1.3 — More content & polish
+
+- [ ] Grow catalog toward 25–30 games: Solitaire, Air-hockey duel, Anagram tiles, Word Ladder, Mancala, Checkers, Maze Runner, Timing Stack, more relax toys
 - [ ] Animated tile transitions in Tile Merge; win/loss celebration effects
 - [ ] Migrate persistence to DataStore with schema versioning
 - [ ] Ad wrapper with frequency caps (between sessions only, offline-safe)
 
-## v1.3 — Accessibility & i18n
+## v1.4 — Accessibility & i18n
 
 - [ ] Content descriptions for all interactive elements
 - [ ] Colorblind palettes, reduced motion, large UI mode, haptics toggle

@@ -67,6 +67,10 @@ class ScoreRepository(context: Context) {
     var recents: List<String> by mutableStateOf(loadRecents())
         private set
 
+    /** Epoch day (UTC) on which the daily challenge was last completed; 0 = never. */
+    var dailyDoneDay: Long by mutableStateOf(prefs.getLong("daily_done_day", 0L))
+        private set
+
     private fun loadScores() = HighScores(
         best2048Tile = prefs.getInt("best_tile", 0),
         best2048Score = prefs.getInt("best_score", 0),
@@ -170,6 +174,16 @@ class ScoreRepository(context: Context) {
 
     fun recordDuelFinished() = addXp(ScoreLogic.XP_DUEL_FINISH)
 
+    /** Awards the daily bonus once per epoch day. Returns true if the bonus was granted. */
+    fun markDailyComplete(epochDay: Long, bonusXp: Int): Boolean {
+        if (dailyDoneDay == epochDay) return false
+        val newXp = scores.totalXp + bonusXp
+        prefs.edit().putLong("daily_done_day", epochDay).putInt("total_xp", newXp).apply()
+        dailyDoneDay = epochDay
+        scores = scores.copy(totalXp = newXp)
+        return true
+    }
+
     fun recordBubbleSheet() = addXp(ScoreLogic.XP_BUBBLE_SHEET)
 
     private fun addXp(amount: Int) {
@@ -184,5 +198,6 @@ class ScoreRepository(context: Context) {
         scores = HighScores()
         favorites = emptySet()
         recents = emptyList()
+        dailyDoneDay = 0L
     }
 }

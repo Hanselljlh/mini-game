@@ -47,6 +47,8 @@ fun HomeScreen(
     favorites: Set<String> = emptySet(),
     recents: List<String> = emptyList(),
     adsEnabled: Boolean = true,
+    dailyGame: GameId? = null,
+    dailyDone: Boolean = false,
     onToggleFavorite: (GameId) -> Unit = {},
     onSettings: () -> Unit = {}
 ) {
@@ -115,6 +117,48 @@ fun HomeScreen(
                 }
             }
             Spacer(Modifier.height(16.dp))
+
+            if (!browsing && dailyGame != null) {
+                val dailyMeta = GameRegistry.meta(dailyGame)
+                SectionLabel("TODAY'S OFFLINE PICK")
+                Spacer(Modifier.height(8.dp))
+                Card(
+                    onClick = { onGameSelect(dailyGame) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        MiniGameIcon(dailyGame, modifier = Modifier.width(56.dp).height(56.dp))
+                        Spacer(Modifier.width(14.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                dailyGame.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                dailyMeta.subtitle,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                if (dailyDone) "Completed today ✓ (+${DailyChallenge.BONUS_XP} XP earned)"
+                                else "Complete it today for +${DailyChallenge.BONUS_XP} XP",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+                Spacer(Modifier.height(20.dp))
+            }
 
             if (browsing) {
                 if (filtered.isEmpty()) {
