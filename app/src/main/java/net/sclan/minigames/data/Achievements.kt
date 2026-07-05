@@ -28,7 +28,10 @@ object Achievements {
         Achievement("code_first", "Code Cracker", "Crack a code in Code Breaker") { it.codeBestGuesses > 0 },
         Achievement("code_fast", "Mastermind", "Crack a code in 5 guesses or fewer") { it.codeBestGuesses in 1..5 },
         Achievement("sudoku_first", "Number Sage", "Solve a Sudoku puzzle") { it.sudokuWins >= 1 },
-        Achievement("sudoku_five", "Grid Guru", "Solve 5 Sudoku puzzles") { it.sudokuWins >= 5 }
+        Achievement("sudoku_five", "Grid Guru", "Solve 5 Sudoku puzzles") { it.sudokuWins >= 5 },
+        Achievement("stack_perfect", "Master Builder", "Finish a 12-layer Timing Stack tower") { it.stackBestLayers >= 12 },
+        Achievement("maze_fast", "Speed Runner", "Escape a maze in under 20 seconds") { it.mazeBestSecs in 1..19 },
+        Achievement("simon_10", "Copycat", "Reach round 10 in Simon Says") { it.simonBestRound >= 10 }
     )
 
     fun unlocked(scores: HighScores): List<Achievement> = all.filter { it.check(scores) }

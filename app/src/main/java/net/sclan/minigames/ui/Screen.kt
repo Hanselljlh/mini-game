@@ -19,5 +19,6 @@ sealed class Screen {
     data class MazeRunner(val size: MazeSize) : Screen()
     data class AnagramTiles(val length: AnagramLength) : Screen()
     data class Mancala(val mode: MancalaMode) : Screen()
+    data class SimonSays(val speed: SimonSpeed) : Screen()
     object Settings : Screen()
 }

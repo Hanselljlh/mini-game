@@ -16,7 +16,8 @@ enum class GameId(val title: String, val shortDescription: String) {
     TimingStack("Timing Stack", "Tap at the right moment to stack blocks sky-high."),
     MazeRunner("Maze Runner", "Slide through the maze and find the exit as fast as you can."),
     AnagramTiles("Anagram Tiles", "Unscramble the letters to rebuild the hidden word."),
-    Mancala("Mancala", "Sow seeds around the board and capture more than your opponent.")
+    Mancala("Mancala", "Sow seeds around the board and capture more than your opponent."),
+    SimonSays("Simon Says", "Watch the pads light up, then repeat the growing sequence.")
 }
 
 enum class TileMergeDifficulty(val label: String, val targetTile: Int, val startTiles: Int) {
@@ -118,6 +119,12 @@ enum class MancalaMode(val label: String) {
     EasyBot("Easy Bot")
 }
 
+enum class SimonSpeed(val label: String, val showMs: Long, val gapMs: Long) {
+    Relaxed("Relaxed", 600L, 250L),
+    Normal("Normal", 430L, 180L),
+    Fast("Fast", 280L, 120L)
+}
+
 data class GameSetupChoice(
     val tileMerge: TileMergeDifficulty = TileMergeDifficulty.Normal,
     val minesweeper: MinesweeperDifficulty = MinesweeperDifficulty.Normal,
@@ -134,7 +141,8 @@ data class GameSetupChoice(
     val timingStack: TimingStackSpeed = TimingStackSpeed.Normal,
     val mazeRunner: MazeSize = MazeSize.Medium,
     val anagramTiles: AnagramLength = AnagramLength.Mixed,
-    val mancala: MancalaMode = MancalaMode.TwoPlayer
+    val mancala: MancalaMode = MancalaMode.TwoPlayer,
+    val simonSays: SimonSpeed = SimonSpeed.Normal
 )
 
 fun defaultSetupChoice(game: GameId): GameSetupChoice = GameSetupChoice()

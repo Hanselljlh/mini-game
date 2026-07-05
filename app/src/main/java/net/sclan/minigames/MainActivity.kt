@@ -27,6 +27,7 @@ import net.sclan.minigames.ui.TimingStackScreen
 import net.sclan.minigames.ui.ReactionTapScreen
 import net.sclan.minigames.ui.Screen
 import net.sclan.minigames.ui.SettingsScreen
+import net.sclan.minigames.ui.SimonSaysScreen
 import net.sclan.minigames.ui.SnakeScreen
 import net.sclan.minigames.ui.SudokuScreen
 import net.sclan.minigames.ui.TicTacToeScreen
@@ -96,6 +97,7 @@ class MainActivity : ComponentActivity() {
                                 GameId.MazeRunner -> Screen.MazeRunner(choice.mazeRunner)
                                 GameId.AnagramTiles -> Screen.AnagramTiles(choice.anagramTiles)
                                 GameId.Mancala -> Screen.Mancala(choice.mancala)
+                                GameId.SimonSays -> Screen.SimonSays(choice.simonSays)
                             }
                         }
                     )
@@ -226,6 +228,14 @@ class MainActivity : ComponentActivity() {
                         onFinished = { _, _ ->
                             scoreRepo.recordDuelFinished()
                             completeIfDaily(GameId.Mancala)
+                        }
+                    )
+                    is Screen.SimonSays -> SimonSaysScreen(
+                        speed = current.speed,
+                        onBack = { screen = Screen.GameSetup(GameId.SimonSays) },
+                        onFinished = { rounds ->
+                            scoreRepo.recordSimonRun(rounds)
+                            if (rounds > 0) completeIfDaily(GameId.SimonSays)
                         }
                     )
                     Screen.Settings -> SettingsScreen(

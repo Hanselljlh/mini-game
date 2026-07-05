@@ -35,7 +35,8 @@ object GameRegistry {
         GameMeta(GameId.TimingStack, GameCategory.Arcade, "Solo", "2 min", "Tap at the right moment to stack blocks high"),
         GameMeta(GameId.MazeRunner, GameCategory.Brain, "Solo", "3 min", "Slide through the maze to the exit"),
         GameMeta(GameId.AnagramTiles, GameCategory.Words, "Solo", "3 min", "Unscramble letters to rebuild the word"),
-        GameMeta(GameId.Mancala, GameCategory.Duel, "1–2 players", "5 min", "Sow seeds, land in your store, capture big")
+        GameMeta(GameId.Mancala, GameCategory.Duel, "1–2 players", "5 min", "Sow seeds, land in your store, capture big"),
+        GameMeta(GameId.SimonSays, GameCategory.Brain, "Solo", "2 min", "Repeat the flashing sequence as it grows")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

@@ -271,6 +271,7 @@ private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
     GameId.TimingStack -> if (scores.stackBestLayers > 0) "Best: ${scores.stackBestLayers} layers" else null
     GameId.MazeRunner -> if (scores.mazeBestSecs > 0) "Best: ${ScoreLogic.timeLabel(scores.mazeBestSecs)}" else null
     GameId.AnagramTiles -> if (scores.anagramBestSolved > 0) "Best: ${scores.anagramBestSolved} solved" else null
+    GameId.SimonSays -> if (scores.simonBestRound > 0) "Best: ${scores.simonBestRound} rounds" else null
     GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala -> null
 }
 

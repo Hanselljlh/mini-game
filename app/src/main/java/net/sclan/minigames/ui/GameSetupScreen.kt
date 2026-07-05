@@ -74,11 +74,12 @@ fun GameSetupScreen(
     var mazeSize by remember { mutableStateOf(MazeSize.Medium) }
     var anagramLength by remember { mutableStateOf(AnagramLength.Mixed) }
     var mancalaMode by remember { mutableStateOf(MancalaMode.TwoPlayer) }
+    var simonSpeed by remember { mutableStateOf(SimonSpeed.Normal) }
 
     val choice = GameSetupChoice(
         tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode,
         snakeDifficulty, fourMode, dotsSize, wordDifficulty, codeDifficulty, sudokuDifficulty, bubbleSize,
-        stackSpeed, mazeSize, anagramLength, mancalaMode
+        stackSpeed, mazeSize, anagramLength, mancalaMode, simonSpeed
     )
     val pages = instructionPages(game, choice)
 
@@ -185,6 +186,10 @@ fun GameSetupScreen(
                                 MancalaMode.entries.map { it.label },
                                 mancalaMode.ordinal
                             ) { mancalaMode = MancalaMode.entries[it] }
+                            GameId.SimonSays -> DifficultyRow(
+                                SimonSpeed.entries.map { it.label },
+                                simonSpeed.ordinal
+                            ) { simonSpeed = SimonSpeed.entries[it] }
                         }
                     }
                 }
@@ -247,6 +252,7 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.MazeRunner -> Text("◱", style = MaterialTheme.typography.headlineMedium, color = Color.White)
             GameId.AnagramTiles -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("A"); IconTile("Z") }
             GameId.Mancala -> Text("⚈⚈", style = MaterialTheme.typography.titleLarge, color = Color.White)
+            GameId.SimonSays -> Text("◩", style = MaterialTheme.typography.headlineMedium, color = Color.White)
         }
     }
 }
@@ -300,6 +306,8 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
         GameId.AnagramTiles -> if (scores.anagramBestSolved > 0)
             "Best round: ${scores.anagramBestSolved} solved" else "No saved score yet."
         GameId.Mancala -> "Classic seed-sowing duel."
+        GameId.SimonSays -> if (scores.simonBestRound > 0)
+            "Best: ${scores.simonBestRound} rounds" else "No saved score yet."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -430,5 +438,10 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Earn extra turns" to "If your last seed lands in your store (the big pit on your right), you move again.",
         "Capture" to "Last seed in one of your empty pits? You capture it plus everything in the pit across from it.",
         "End game" to "When one side is empty, remaining seeds go to their owner. Most seeds in store wins."
+    )
+    GameId.SimonSays -> listOf(
+        "Watch the pads" to "The four pads flash in a sequence. Memorize the order.",
+        "Repeat it" to "Tap the pads in the same order. Get it right and the sequence grows by one.",
+        "How far can you go?" to "One mistake ends the run. ${choice.simonSays.label} speed controls how fast the pads flash."
     )
 }

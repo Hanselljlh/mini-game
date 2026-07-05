@@ -4,7 +4,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 
 **No account. No location. Built for offline play.** Every game works in airplane mode; scores, favorites, and XP live only on the device.
 
-## Games (16)
+## Games (17)
 
 | Game | Category | Description |
 |------|----------|-------------|
@@ -13,6 +13,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Code Breaker | Brain & Logic | Mastermind-style deduction — crack the 4-color code with feedback pegs |
 | Mini Sudoku | Brain & Logic | Generated 4×4, 6×6, and 9×9 puzzles with conflict highlighting |
 | Maze Runner | Brain & Logic | Freshly generated mazes — slide until you hit a wall, race to the exit |
+| Simon Says | Brain & Logic | Repeat the flashing pad sequence as it grows, three speeds |
 | Word Search | Words | Generated letter grids with 5–9 hidden words, all 8 directions |
 | Anagram Tiles | Words | Unscramble letter tiles to rebuild hidden words over 5–7 rounds |
 | Memory Match | Cards & Classics | Flip cards and find every matching pair in as few moves as you can |

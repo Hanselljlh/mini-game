@@ -145,6 +145,7 @@ fun SettingsScreen(
                     Text("Timing Stack best: ${if (scores.stackBestLayers > 0) "${scores.stackBestLayers} layers" else "—"}", style = MaterialTheme.typography.bodyMedium)
                     Text("Maze Runner best: ${ScoreLogic.timeLabel(scores.mazeBestSecs)}", style = MaterialTheme.typography.bodyMedium)
                     Text("Anagram best round: ${if (scores.anagramBestSolved > 0) "${scores.anagramBestSolved} solved" else "—"}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Simon Says best: ${if (scores.simonBestRound > 0) "${scores.simonBestRound} rounds" else "—"}", style = MaterialTheme.typography.bodyMedium)
                 }
             }
 

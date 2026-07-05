@@ -19,6 +19,7 @@ data class HighScores(
     val stackBestLayers: Int = 0,
     val mazeBestSecs: Long = 0L,
     val anagramBestSolved: Int = 0,
+    val simonBestRound: Int = 0,
     val totalXp: Int = 0,
     val gamesPlayed: Int = 0
 )
@@ -38,6 +39,7 @@ object ScoreLogic {
     const val XP_STACK_RUN = 10
     const val XP_MAZE_WIN = 20
     const val XP_ANAGRAM_ROUND = 15
+    const val XP_SIMON_RUN = 10
 
     fun isBetterTile(new: Int, best: Int): Boolean = new > best
     fun isBetterScore(new: Int, best: Int): Boolean = new > best
@@ -91,6 +93,7 @@ class ScoreRepository(context: Context) {
         stackBestLayers = prefs.getInt("stack_best", 0),
         mazeBestSecs = prefs.getLong("maze_best_secs", 0L),
         anagramBestSolved = prefs.getInt("anagram_best", 0),
+        simonBestRound = prefs.getInt("simon_best", 0),
         totalXp = prefs.getInt("total_xp", 0),
         gamesPlayed = prefs.getInt("games_played", 0)
     )
@@ -197,6 +200,14 @@ class ScoreRepository(context: Context) {
         val newXp = cur.totalXp + ScoreLogic.XP_MAZE_WIN
         prefs.edit().putLong("maze_best_secs", newBest).putInt("total_xp", newXp).apply()
         scores = cur.copy(mazeBestSecs = newBest, totalXp = newXp)
+    }
+
+    fun recordSimonRun(rounds: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterScore(rounds, cur.simonBestRound)) rounds else cur.simonBestRound
+        val newXp = cur.totalXp + if (rounds > 0) ScoreLogic.XP_SIMON_RUN else 0
+        prefs.edit().putInt("simon_best", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(simonBestRound = newBest, totalXp = newXp)
     }
 
     fun recordAnagramRound(solved: Int) {
