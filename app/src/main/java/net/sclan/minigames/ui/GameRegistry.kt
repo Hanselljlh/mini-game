@@ -49,7 +49,12 @@ object GameRegistry {
         GameMeta(GameId.BlockFill, GameCategory.Puzzle, "Solo", "5 min", "Place pieces, clear lines, don't run out of room"),
         GameMeta(GameId.MergeChain, GameCategory.Brain, "Solo", "5 min", "Chain matching numbers into ever-bigger merges"),
         GameMeta(GameId.CrossMath, GameCategory.Brain, "Solo", "3 min", "Make every equation work, across and down"),
-        GameMeta(GameId.NumberConnect, GameCategory.Brain, "Solo", "5 min", "Retrace the hidden 1-to-N path")
+        GameMeta(GameId.NumberConnect, GameCategory.Brain, "Solo", "5 min", "Retrace the hidden 1-to-N path"),
+        GameMeta(GameId.Solitaire, GameCategory.Cards, "Solo", "10 min", "Klondike — build all four foundations"),
+        GameMeta(GameId.War, GameCategory.Cards, "Solo", "3 min", "Flip for the highest card, take them all"),
+        GameMeta(GameId.Blackjack, GameCategory.Cards, "Solo", "3 min", "Hit or stand — closest to 21 wins"),
+        GameMeta(GameId.Dominoes, GameCategory.Cards, "Solo", "5 min", "Match tiles to the chain, empty your hand"),
+        GameMeta(GameId.Checkers, GameCategory.Duel, "Solo", "10 min", "Jump, capture, and crown kings vs the bot")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

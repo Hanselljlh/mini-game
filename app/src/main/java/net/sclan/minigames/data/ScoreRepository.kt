@@ -31,6 +31,11 @@ data class HighScores(
     val mergeChainBest: Int = 0,
     val crossMathSolved: Int = 0,
     val numberConnectWins: Int = 0,
+    val solitaireWins: Int = 0,
+    val warWins: Int = 0,
+    val blackjackWins: Int = 0,
+    val dominoWins: Int = 0,
+    val checkersWins: Int = 0,
     val totalXp: Int = 0,
     val gamesPlayed: Int = 0
 )
@@ -125,6 +130,11 @@ class ScoreRepository(context: Context) {
         mergeChainBest = prefs.getInt("mergechain_best", 0),
         crossMathSolved = prefs.getInt("crossmath_solved", 0),
         numberConnectWins = prefs.getInt("connect_wins", 0),
+        solitaireWins = prefs.getInt("solitaire_wins", 0),
+        warWins = prefs.getInt("war_wins", 0),
+        blackjackWins = prefs.getInt("blackjack_wins", 0),
+        dominoWins = prefs.getInt("domino_wins", 0),
+        checkersWins = prefs.getInt("checkers_wins", 0),
         totalXp = prefs.getInt("total_xp", 0),
         gamesPlayed = prefs.getInt("games_played", 0)
     )
@@ -288,6 +298,20 @@ class ScoreRepository(context: Context) {
         prefs.edit().putInt("connect_wins", newCount).putInt("total_xp", newXp).apply()
         scores = cur.copy(numberConnectWins = newCount, totalXp = newXp)
     }
+
+    private fun bumpWinCounter(key: String, current: Int, xp: Int, update: (HighScores, Int) -> HighScores) {
+        val cur = scores
+        val newCount = current + 1
+        val newXp = cur.totalXp + xp
+        prefs.edit().putInt(key, newCount).putInt("total_xp", newXp).apply()
+        scores = update(cur.copy(totalXp = newXp), newCount)
+    }
+
+    fun recordSolitaireWin() = bumpWinCounter("solitaire_wins", scores.solitaireWins, 40) { s, n -> s.copy(solitaireWins = n) }
+    fun recordWarWin() = bumpWinCounter("war_wins", scores.warWins, 15) { s, n -> s.copy(warWins = n) }
+    fun recordBlackjackWin() = bumpWinCounter("blackjack_wins", scores.blackjackWins, 5) { s, n -> s.copy(blackjackWins = n) }
+    fun recordDominoWin() = bumpWinCounter("domino_wins", scores.dominoWins, 20) { s, n -> s.copy(dominoWins = n) }
+    fun recordCheckersWin() = bumpWinCounter("checkers_wins", scores.checkersWins, 30) { s, n -> s.copy(checkersWins = n) }
 
     fun recordEscapeLevel() {
         val cur = scores

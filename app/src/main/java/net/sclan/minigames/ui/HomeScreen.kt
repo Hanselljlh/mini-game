@@ -283,6 +283,11 @@ private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
     GameId.MergeChain -> if (scores.mergeChainBest > 0) "Best: ${scores.mergeChainBest}" else null
     GameId.CrossMath -> if (scores.crossMathSolved > 0) "Solved: ${scores.crossMathSolved}" else null
     GameId.NumberConnect -> if (scores.numberConnectWins > 0) "Paths: ${scores.numberConnectWins}" else null
+    GameId.Solitaire -> if (scores.solitaireWins > 0) "Wins: ${scores.solitaireWins}" else null
+    GameId.War -> if (scores.warWins > 0) "Wins: ${scores.warWins}" else null
+    GameId.Blackjack -> if (scores.blackjackWins > 0) "Hands won: ${scores.blackjackWins}" else null
+    GameId.Dominoes -> if (scores.dominoWins > 0) "Wins: ${scores.dominoWins}" else null
+    GameId.Checkers -> if (scores.checkersWins > 0) "Wins: ${scores.checkersWins}" else null
     GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala, GameId.SandFall -> null
 }
 

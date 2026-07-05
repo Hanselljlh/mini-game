@@ -32,5 +32,10 @@ sealed class Screen {
     object MergeChain : Screen()
     data class CrossMath(val difficulty: CrossMathDifficulty) : Screen()
     data class NumberConnect(val difficulty: NumberConnectDifficulty) : Screen()
+    object Solitaire : Screen()
+    object War : Screen()
+    object Blackjack : Screen()
+    object Dominoes : Screen()
+    object Checkers : Screen()
     object Settings : Screen()
 }

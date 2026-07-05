@@ -29,7 +29,12 @@ enum class GameId(val title: String, val shortDescription: String) {
     BlockFill("Block Fill", "Place pieces on the board and clear full rows and columns."),
     MergeChain("Merge Chain", "Link matching numbers into chains and merge them ever higher."),
     CrossMath("Cross Math", "Place digits so every equation works across and down."),
-    NumberConnect("Number Connect", "Retrace the hidden 1-to-N path through the grid.")
+    NumberConnect("Number Connect", "Retrace the hidden 1-to-N path through the grid."),
+    Solitaire("Solitaire", "Classic Klondike — build the four foundations from Ace to King."),
+    War("War", "Flip cards head-to-head. Highest card takes both."),
+    Blackjack("Blackjack", "Hit or stand — get closest to 21 without busting."),
+    Dominoes("Dominoes", "Match tiles to the chain ends and empty your hand first."),
+    Checkers("Checkers", "Jump, capture, and crown kings against the bot.")
 }
 
 enum class TileMergeDifficulty(val label: String, val targetTile: Int, val startTiles: Int) {
@@ -193,6 +198,11 @@ enum class NumberConnectDifficulty(val label: String, val gridSize: Int, val rev
     Hard("Hard 7×7", 7, 5)
 }
 
+/** Shared single-mode marker for the classic card and board games. */
+enum class ClassicMode(val label: String) {
+    Classic("Classic rules")
+}
+
 data class GameSetupChoice(
     val tileMerge: TileMergeDifficulty = TileMergeDifficulty.Normal,
     val minesweeper: MinesweeperDifficulty = MinesweeperDifficulty.Normal,
@@ -222,7 +232,8 @@ data class GameSetupChoice(
     val blockFill: BlockFillMode = BlockFillMode.Classic,
     val mergeChain: MergeChainMode = MergeChainMode.Classic,
     val crossMath: CrossMathDifficulty = CrossMathDifficulty.Normal,
-    val numberConnect: NumberConnectDifficulty = NumberConnectDifficulty.Normal
+    val numberConnect: NumberConnectDifficulty = NumberConnectDifficulty.Normal,
+    val classic: ClassicMode = ClassicMode.Classic
 )
 
 fun defaultSetupChoice(game: GameId): GameSetupChoice = GameSetupChoice()

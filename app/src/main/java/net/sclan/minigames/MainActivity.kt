@@ -11,8 +11,13 @@ import net.sclan.minigames.billing.BillingRepository
 import net.sclan.minigames.data.ScoreRepository
 import net.sclan.minigames.ui.BubbleWrapScreen
 import net.sclan.minigames.ui.CodeBreakerScreen
+import net.sclan.minigames.ui.BlackjackScreen
 import net.sclan.minigames.ui.BlockFillScreen
+import net.sclan.minigames.ui.CheckersScreen
 import net.sclan.minigames.ui.ColorBlocksScreen
+import net.sclan.minigames.ui.DominoesScreen
+import net.sclan.minigames.ui.SolitaireScreen
+import net.sclan.minigames.ui.WarScreen
 import net.sclan.minigames.ui.ColorFillScreen
 import net.sclan.minigames.ui.CrossMathScreen
 import net.sclan.minigames.ui.EscapeScreen
@@ -122,6 +127,11 @@ class MainActivity : ComponentActivity() {
                                 GameId.MergeChain -> Screen.MergeChain
                                 GameId.CrossMath -> Screen.CrossMath(choice.crossMath)
                                 GameId.NumberConnect -> Screen.NumberConnect(choice.numberConnect)
+                                GameId.Solitaire -> Screen.Solitaire
+                                GameId.War -> Screen.War
+                                GameId.Blackjack -> Screen.Blackjack
+                                GameId.Dominoes -> Screen.Dominoes
+                                GameId.Checkers -> Screen.Checkers
                             }
                         }
                     )
@@ -350,6 +360,41 @@ class MainActivity : ComponentActivity() {
                         onWin = {
                             scoreRepo.recordNumberConnectWin()
                             completeIfDaily(GameId.NumberConnect)
+                        }
+                    )
+                    Screen.Solitaire -> SolitaireScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.Solitaire) },
+                        onWin = {
+                            scoreRepo.recordSolitaireWin()
+                            completeIfDaily(GameId.Solitaire)
+                        }
+                    )
+                    Screen.War -> WarScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.War) },
+                        onFinished = { playerWon ->
+                            if (playerWon) scoreRepo.recordWarWin()
+                            completeIfDaily(GameId.War)
+                        }
+                    )
+                    Screen.Blackjack -> BlackjackScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.Blackjack) },
+                        onRoundEnd = { playerWon ->
+                            if (playerWon) scoreRepo.recordBlackjackWin()
+                            completeIfDaily(GameId.Blackjack)
+                        }
+                    )
+                    Screen.Dominoes -> DominoesScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.Dominoes) },
+                        onFinished = { playerWon ->
+                            if (playerWon) scoreRepo.recordDominoWin()
+                            completeIfDaily(GameId.Dominoes)
+                        }
+                    )
+                    Screen.Checkers -> CheckersScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.Checkers) },
+                        onFinished = { playerWon ->
+                            if (playerWon) scoreRepo.recordCheckersWin()
+                            completeIfDaily(GameId.Checkers)
                         }
                     )
                     Screen.Settings -> SettingsScreen(

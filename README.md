@@ -4,7 +4,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 
 **No account. No location. Built for offline play.** Every game works in airplane mode; scores, favorites, and XP live only on the device.
 
-## Games (29)
+## Games (34)
 
 | Game | Category | Description |
 |------|----------|-------------|
@@ -29,6 +29,10 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Word Search | Words | Generated letter grids with 5–9 hidden words, all 8 directions |
 | Anagram Tiles | Words | Unscramble letter tiles to rebuild hidden words over 5–7 rounds |
 | Memory Match | Cards & Classics | Flip cards and find every matching pair in as few moves as you can |
+| Solitaire | Cards & Classics | Klondike draw-1 with tap-to-auto-move |
+| War | Cards & Classics | Head-to-head card battles, aces high |
+| Blackjack | Cards & Classics | Hit/stand vs a stand-on-17 dealer, no chips |
+| Dominoes | Cards & Classics | Double-six block dominoes with boneyard vs bot |
 | Reaction Tap | Arcade | Wait for green, then tap as fast as you can — average over 3/5/10 rounds |
 | Snake | Arcade | Swipe-steered classic on a 15×15 grid with three speeds |
 | Timing Stack | Arcade | Tap to drop sliding blocks — only the overlap survives, 12 layers to win |
@@ -36,6 +40,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Four in a Row | Local Duel | Connect-four duels vs a friend or a blocking/winning bot |
 | Dots & Boxes | Local Duel | Pass-and-play line duel on 3×3 to 5×5 boards |
 | Mancala | Local Duel | Classic Kalah rules — sow, capture, extra turns; 2-player or easy bot |
+| Checkers | Local Duel | Mandatory-jump checkers with kings vs the bot |
 | Bubble Wrap | Relax Toys | Pop every bubble. No score, no timer, pure calm |
 
 ## App features

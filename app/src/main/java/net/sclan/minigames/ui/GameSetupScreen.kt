@@ -253,6 +253,8 @@ fun GameSetupScreen(
                                 NumberConnectDifficulty.entries.map { it.label },
                                 connectDifficulty.ordinal
                             ) { connectDifficulty = NumberConnectDifficulty.entries[it] }
+                            GameId.Solitaire, GameId.War, GameId.Blackjack, GameId.Dominoes, GameId.Checkers ->
+                                DifficultyRow(ClassicMode.entries.map { it.label }, 0) {}
                         }
                     }
                 }
@@ -328,6 +330,11 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.MergeChain -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("2"); IconTile("4") }
             GameId.CrossMath -> Text("＋＝", style = MaterialTheme.typography.titleLarge, color = Color.White)
             GameId.NumberConnect -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("1"); IconTile("N") }
+            GameId.Solitaire -> Text("♠♥", style = MaterialTheme.typography.titleLarge, color = Color.White)
+            GameId.War -> Text("⚔", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+            GameId.Blackjack -> Text("21", style = MaterialTheme.typography.headlineSmall, color = Color.White, fontWeight = FontWeight.Bold)
+            GameId.Dominoes -> Text("🁫", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+            GameId.Checkers -> Text("⛀⛂", style = MaterialTheme.typography.titleLarge, color = Color.White)
         }
     }
 }
@@ -406,6 +413,16 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
             "Solved: ${scores.crossMathSolved}" else "No puzzles solved yet."
         GameId.NumberConnect -> if (scores.numberConnectWins > 0)
             "Paths traced: ${scores.numberConnectWins}" else "No paths traced yet."
+        GameId.Solitaire -> if (scores.solitaireWins > 0)
+            "Games won: ${scores.solitaireWins}" else "No wins yet."
+        GameId.War -> if (scores.warWins > 0)
+            "Decks conquered: ${scores.warWins}" else "No wins yet."
+        GameId.Blackjack -> if (scores.blackjackWins > 0)
+            "Hands won: ${scores.blackjackWins}" else "No hands won yet."
+        GameId.Dominoes -> if (scores.dominoWins > 0)
+            "Games won: ${scores.dominoWins}" else "No wins yet."
+        GameId.Checkers -> if (scores.checkersWins > 0)
+            "Games won: ${scores.checkersWins}" else "No wins yet."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -600,5 +617,30 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Find the path" to "A hidden path visits every square exactly once, numbered 1 to ${choice.numberConnect.gridSize * choice.numberConnect.gridSize}.",
         "Walk it" to "Start on 1 and tap adjacent squares to advance. Checkpoint numbers confirm you're on track.",
         "No dead ends" to "Wrong turn? Tap your last square to step back, or restart the path."
+    )
+    GameId.Solitaire -> listOf(
+        "Build down, alternate colors" to "In the columns, stack cards in descending order with alternating red and black.",
+        "Foundations go up" to "Send aces up top, then build each suit A → K. All 52 cards up means you win.",
+        "Tap to move" to "Tap the deck to draw. Tap a card, then tap it again to auto-move — foundations first. Kings claim empty columns."
+    )
+    GameId.War -> listOf(
+        "Flip for it" to "You and the bot each flip your top card. Aces are high.",
+        "Winner takes both" to "The higher card takes both cards to the bottom of its deck. Ties split.",
+        "Total war" to "Whoever collects all 52 cards wins the war."
+    )
+    GameId.Blackjack -> listOf(
+        "Get to 21" to "You and the dealer each get two cards — one dealer card stays hidden.",
+        "Hit or stand" to "Take cards to improve your total, but bust past 21 and you lose instantly.",
+        "Dealer rules" to "The dealer must hit below 17 and stand on 17+. Aces flex between 11 and 1."
+    )
+    GameId.Dominoes -> listOf(
+        "Match the ends" to "Play a tile whose pips match either open end of the chain.",
+        "Draw when stuck" to "No playable tile? Draw from the boneyard until you find one, or pass when it's empty.",
+        "Go out first" to "First to play every tile in their hand wins the round."
+    )
+    GameId.Checkers -> listOf(
+        "Diagonal moves" to "Men slide one square diagonally forward on the dark squares.",
+        "Jumps are mandatory" to "If you can capture, you must — and chains of jumps continue with the same piece.",
+        "Crown your kings" to "Reach the far row to crown a king, which moves and jumps in all four directions."
     )
 }
