@@ -207,6 +207,15 @@ class ScoreRepository(context: Context) {
     var dailyDoneDay: Long by mutableStateOf(prefs.getLong("daily_done_day", 0L))
         private set
 
+    /** Accessibility: use the colorblind-friendly palette in color-matching games. */
+    var colorBlind: Boolean by mutableStateOf(prefs.getInt("colorblind", 0) == 1)
+        private set
+
+    fun setColorBlind(on: Boolean) {
+        prefs.edit().putInt("colorblind", if (on) 1 else 0).apply()
+        colorBlind = on
+    }
+
     private fun loadScores() = HighScores(
         best2048Tile = prefs.getInt("best_tile", 0),
         best2048Score = prefs.getInt("best_score", 0),
@@ -531,5 +540,6 @@ class ScoreRepository(context: Context) {
         favorites = emptySet()
         recents = emptyList()
         dailyDoneDay = 0L
+        colorBlind = false
     }
 }

@@ -1,5 +1,6 @@
 package net.sclan.minigames.ui
 
+import net.sclan.minigames.R
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import net.sclan.minigames.data.HighScores
@@ -69,12 +71,12 @@ fun HomeScreen(
         ) {
             Spacer(Modifier.height(24.dp))
             Text(
-                "Pocket Arcade Offline",
+                stringResource(R.string.home_title),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                "Puzzles, cards, arcade & duels — no WiFi, no account.",
+                stringResource(R.string.home_tagline),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -91,7 +93,7 @@ fun HomeScreen(
                 value = query,
                 onValueChange = { query = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search games") },
+                placeholder = { Text(stringResource(R.string.search_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 singleLine = true
             )
@@ -120,7 +122,7 @@ fun HomeScreen(
 
             if (!browsing && dailyGame != null) {
                 val dailyMeta = GameRegistry.meta(dailyGame)
-                SectionLabel("TODAY'S OFFLINE PICK")
+                SectionLabel(stringResource(R.string.section_todays_pick))
                 Spacer(Modifier.height(8.dp))
                 Card(
                     onClick = { onGameSelect(dailyGame) },
@@ -174,7 +176,7 @@ fun HomeScreen(
                     .mapNotNull { name -> GameRegistry.games.firstOrNull { it.id.name == name } }
                     .take(3)
                 if (recentMetas.isNotEmpty()) {
-                    SectionLabel("CONTINUE PLAYING")
+                    SectionLabel(stringResource(R.string.section_continue))
                     Spacer(Modifier.height(8.dp))
                     GameCardList(recentMetas, scores, favorites, onGameSelect, onToggleFavorite)
                     Spacer(Modifier.height(20.dp))
@@ -182,7 +184,7 @@ fun HomeScreen(
 
                 val favoriteMetas = GameRegistry.games.filter { it.id.name in favorites && it.id.name !in recents.take(3) }
                 if (favoriteMetas.isNotEmpty()) {
-                    SectionLabel("FAVORITES")
+                    SectionLabel(stringResource(R.string.section_favorites))
                     Spacer(Modifier.height(8.dp))
                     GameCardList(favoriteMetas, scores, favorites, onGameSelect, onToggleFavorite)
                     Spacer(Modifier.height(20.dp))
@@ -199,7 +201,7 @@ fun HomeScreen(
                 }
             }
 
-            SectionLabel("SETTINGS & PRIVACY")
+            SectionLabel(stringResource(R.string.section_settings_privacy))
             Spacer(Modifier.height(8.dp))
             Card(
                 onClick = onSettings,

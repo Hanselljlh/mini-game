@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Pocket Arcade Offline</string>
+    <string name="home_title">Pocket Arcade Offline</string>
+    <string name="home_tagline">Puzzles, cards, arcade &amp; duels — no WiFi, no account.</string>
+    <string name="search_hint">Search games</string>
+    <string name="section_todays_pick">TODAY\'S OFFLINE PICK</string>
+    <string name="section_continue">CONTINUE PLAYING</string>
+    <string name="section_favorites">FAVORITES</string>
+    <string name="section_settings_privacy">SETTINGS &amp; PRIVACY</string>
 </resources>

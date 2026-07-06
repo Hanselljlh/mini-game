@@ -43,6 +43,8 @@ fun SettingsScreen(
     onBack: () -> Unit,
     purchaseState: PurchaseState,
     scores: HighScores = HighScores(),
+    colorBlind: Boolean = false,
+    onColorBlind: (Boolean) -> Unit = {},
     onRemoveAds: () -> Unit,
     onRestorePurchases: () -> Unit,
     onDeleteData: () -> Unit = {}
@@ -184,6 +186,38 @@ fun SettingsScreen(
                             )
                         }
                     }
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "ACCESSIBILITY",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    androidx.compose.foundation.layout.Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text("Colorblind-friendly colors", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                            Text(
+                                "Uses a high-contrast palette in the color-matching games (Water Sort, Color Blocks, and friends).",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        androidx.compose.material3.Switch(checked = colorBlind, onCheckedChange = onColorBlind)
+                    }
+                    Text(
+                        "Text follows your system font size, and the app supports right-to-left layouts.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
 

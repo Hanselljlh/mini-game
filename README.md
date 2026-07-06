@@ -64,6 +64,9 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 - **Local progression** — XP, levels, per-game best scores, games-played stats
 - **Setup-first flow** — every game has a rules pager and difficulty selector before play
 - **Privacy controls** — Delete Local Data button, no analytics, no account
+- **Accessibility** — colorblind-friendly palette option (Okabe–Ito) for the color-matching games; RTL support
+- **Localization** — app shell in English, Spanish, French, and German
+- **Stable signing + release builds** — committed test keystore, R8-minified signed release APK from CI
 - **Fair monetization** — one-time Remove Ads purchase (Google Play Billing) + Restore Purchases; no ads during play
 
 ## Requirements

@@ -37,11 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-internal val sortColors = listOf(
-    Color(0xFFE53935), Color(0xFF1E88E5), Color(0xFF43A047), Color(0xFFFDD835),
-    Color(0xFF8E24AA), Color(0xFFFB8C00), Color(0xFF00ACC1), Color(0xFFEC407A),
-    Color(0xFF7CB342), Color(0xFF5C6BC0)
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

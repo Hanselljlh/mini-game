@@ -14,6 +14,7 @@ import net.sclan.minigames.ui.CodeBreakerScreen
 import net.sclan.minigames.ui.BlackjackScreen
 import net.sclan.minigames.ui.BlockFillScreen
 import net.sclan.minigames.ui.AirHockeyScreen
+import net.sclan.minigames.ui.AppSettings
 import net.sclan.minigames.ui.ChalkDoodleScreen
 import net.sclan.minigames.ui.CheckersScreen
 import net.sclan.minigames.ui.ChessScreen
@@ -81,6 +82,7 @@ class MainActivity : ComponentActivity() {
         scoreRepo = ScoreRepository(this)
         billingRepo = BillingRepository(this)
         billingRepo.connect()
+        AppSettings.colorBlind = scoreRepo.colorBlind
 
         setContent {
             MiniGameHubTheme {
@@ -505,9 +507,17 @@ class MainActivity : ComponentActivity() {
                         onBack = { screen = Screen.Home },
                         purchaseState = purchaseState,
                         scores = scores,
+                        colorBlind = scoreRepo.colorBlind,
+                        onColorBlind = {
+                            scoreRepo.setColorBlind(it)
+                            AppSettings.colorBlind = it
+                        },
                         onRemoveAds = { billingRepo.launchPurchaseFlow(this@MainActivity) },
                         onRestorePurchases = { billingRepo.checkExistingPurchases() },
-                        onDeleteData = { scoreRepo.deleteAllData() }
+                        onDeleteData = {
+                            scoreRepo.deleteAllData()
+                            AppSettings.colorBlind = false
+                        }
                     )
                 }
             }
