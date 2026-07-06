@@ -35,7 +35,14 @@ enum class GameId(val title: String, val shortDescription: String) {
     Blackjack("Blackjack", "Hit or stand — get closest to 21 without busting."),
     Dominoes("Dominoes", "Match tiles to the chain ends and empty your hand first."),
     Checkers("Checkers", "Jump, capture, and crown kings against the bot."),
-    Ludo("Ludo", "Race all four tokens home — roll sixes, capture rivals, play it safe on stars.")
+    Ludo("Ludo", "Race all four tokens home — roll sixes, capture rivals, play it safe on stars."),
+    WordRescue("Word Rescue", "Guess letters to save the word before all six balloons pop."),
+    WordGuess("Word Guess", "Crack the 5-letter word in six color-coded tries."),
+    SlidingPuzzle("Sliding Puzzle", "Slide the numbered tiles back into order."),
+    Pong("Pong Duel", "Classic paddle battle — vs bot or two players on one screen."),
+    PenaltyKicks("Penalty Kicks", "Time your shot past the diving keeper — five shots per round."),
+    FidgetSpinner("Fidget Spinner", "Flick it. Watch it spin. Feel better."),
+    ChalkDoodle("Chalk Doodle", "A pocket chalkboard for scribbling whatever you like.")
 }
 
 enum class TileMergeDifficulty(val label: String, val targetTile: Int, val startTiles: Int) {
@@ -210,6 +217,18 @@ enum class LudoMode(val label: String, val players: Int) {
     FourPlayer("4 Players", 4)
 }
 
+enum class SlidingSize(val label: String, val n: Int) {
+    Mini("Mini 3×3", 3),
+    Classic("Classic 4×4", 4),
+    Large("Large 5×5", 5)
+}
+
+enum class PongMode(val label: String, val speed: Float, val botStep: Float) {
+    VsBot("Vs Bot", 1f, 0.006f),
+    FastBot("Fast Bot", 1.4f, 0.009f),
+    TwoPlayer("2 Players", 1.1f, 0f)
+}
+
 data class GameSetupChoice(
     val tileMerge: TileMergeDifficulty = TileMergeDifficulty.Normal,
     val minesweeper: MinesweeperDifficulty = MinesweeperDifficulty.Normal,
@@ -241,7 +260,9 @@ data class GameSetupChoice(
     val crossMath: CrossMathDifficulty = CrossMathDifficulty.Normal,
     val numberConnect: NumberConnectDifficulty = NumberConnectDifficulty.Normal,
     val classic: ClassicMode = ClassicMode.Classic,
-    val ludo: LudoMode = LudoMode.VsBot
+    val ludo: LudoMode = LudoMode.VsBot,
+    val slidingPuzzle: SlidingSize = SlidingSize.Classic,
+    val pong: PongMode = PongMode.VsBot
 )
 
 fun defaultSetupChoice(game: GameId): GameSetupChoice = GameSetupChoice()

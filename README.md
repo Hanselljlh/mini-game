@@ -4,7 +4,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 
 **No account. No location. Built for offline play.** Every game works in airplane mode; scores, favorites, and XP live only on the device.
 
-## Games (35)
+## Games (42)
 
 | Game | Category | Description |
 |------|----------|-------------|
@@ -23,11 +23,17 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Multi-Color Fill | Sort & Fill | Flood-fill the board into one color within the move limit |
 | Color Blocks | Sort & Fill | Tap-match collapse with quadratic scoring and clear bonus |
 | Block Fill | Sort & Fill | 1010-style piece placement with row/column clears |
+| Sliding Puzzle | Sort & Fill | Classic 15-puzzle in 3×3 / 4×4 / 5×5 — always solvable shuffles |
 | Maze Paint | Arcade | Slide-and-paint every square of a generated maze |
 | Flappy Jump | Arcade | Tap-to-flap through scrolling pipe gaps |
+| Penalty Kicks | Arcade | Timing-based shootout vs a diving keeper, 5 shots a round |
 | Sand Fall | Relax Toys | Falling-sand physics toy with shifting rainbow colors |
+| Fidget Spinner | Relax Toys | Flick-to-spin with momentum and a spin counter |
+| Chalk Doodle | Relax Toys | Free drawing on a pocket chalkboard |
 | Word Search | Words | Generated letter grids with 5–9 hidden words, all 8 directions |
 | Anagram Tiles | Words | Unscramble letter tiles to rebuild hidden words over 5–7 rounds |
+| Word Rescue | Words | Letter-guessing with a balloon-pop twist (6 misses allowed) |
+| Word Guess | Words | 5-letter deduction with green/yellow/grey feedback over 6 tries |
 | Memory Match | Cards & Classics | Flip cards and find every matching pair in as few moves as you can |
 | Solitaire | Cards & Classics | Klondike draw-1 with tap-to-auto-move |
 | War | Cards & Classics | Head-to-head card battles, aces high |
@@ -42,6 +48,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Mancala | Local Duel | Classic Kalah rules — sow, capture, extra turns; 2-player or easy bot |
 | Checkers | Local Duel | Mandatory-jump checkers with kings vs the bot |
 | Ludo | Local Duel | Full classic board — vs bot, 2-player, or 4-player pass-and-play |
+| Pong Duel | Local Duel | Paddle battle with spin — vs bot or 2 players on one screen |
 | Bubble Wrap | Relax Toys | Pop every bubble. No score, no timer, pure calm |
 
 ## App features

@@ -88,6 +88,8 @@ fun GameSetupScreen(
     var crossDifficulty by remember { mutableStateOf(CrossMathDifficulty.Normal) }
     var connectDifficulty by remember { mutableStateOf(NumberConnectDifficulty.Normal) }
     var ludoMode by remember { mutableStateOf(LudoMode.VsBot) }
+    var slidingSize by remember { mutableStateOf(SlidingSize.Classic) }
+    var pongMode by remember { mutableStateOf(PongMode.VsBot) }
 
     val choice = GameSetupChoice(
         tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode,
@@ -96,7 +98,7 @@ fun GameSetupScreen(
         waterDifficulty, nutsDifficulty, fillDifficulty, blocksDifficulty,
         escapePack, paintSize, flappyDifficulty, sandBrush, blockFillMode,
         mergeChainMode, crossDifficulty, connectDifficulty,
-        ClassicMode.Classic, ludoMode
+        ClassicMode.Classic, ludoMode, slidingSize, pongMode
     )
     val pages = instructionPages(game, choice)
 
@@ -261,6 +263,17 @@ fun GameSetupScreen(
                                 LudoMode.entries.map { it.label },
                                 ludoMode.ordinal
                             ) { ludoMode = LudoMode.entries[it] }
+                            GameId.SlidingPuzzle -> DifficultyRow(
+                                SlidingSize.entries.map { it.label },
+                                slidingSize.ordinal
+                            ) { slidingSize = SlidingSize.entries[it] }
+                            GameId.Pong -> DifficultyRow(
+                                PongMode.entries.map { it.label },
+                                pongMode.ordinal
+                            ) { pongMode = PongMode.entries[it] }
+                            GameId.WordRescue, GameId.WordGuess, GameId.PenaltyKicks,
+                            GameId.FidgetSpinner, GameId.ChalkDoodle ->
+                                DifficultyRow(ClassicMode.entries.map { it.label }, 0) {}
                         }
                     }
                 }
@@ -342,6 +355,13 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.Dominoes -> Text("🁫", style = MaterialTheme.typography.headlineMedium, color = Color.White)
             GameId.Checkers -> Text("⛀⛂", style = MaterialTheme.typography.titleLarge, color = Color.White)
             GameId.Ludo -> Text("🎲", style = MaterialTheme.typography.headlineMedium)
+            GameId.WordRescue -> Text("🎈", style = MaterialTheme.typography.headlineMedium)
+            GameId.WordGuess -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("W"); IconTile("?") }
+            GameId.SlidingPuzzle -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("15"); IconTile("↔") }
+            GameId.Pong -> Text("🏓", style = MaterialTheme.typography.headlineMedium)
+            GameId.PenaltyKicks -> Text("⚽", style = MaterialTheme.typography.headlineMedium)
+            GameId.FidgetSpinner -> Text("🌀", style = MaterialTheme.typography.headlineMedium)
+            GameId.ChalkDoodle -> Text("🖍", style = MaterialTheme.typography.headlineMedium)
         }
     }
 }
@@ -432,6 +452,17 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
             "Games won: ${scores.checkersWins}" else "No wins yet."
         GameId.Ludo -> if (scores.ludoWins > 0)
             "Races won: ${scores.ludoWins}" else "No races won yet."
+        GameId.WordRescue -> if (scores.wordRescueWins > 0)
+            "Words rescued: ${scores.wordRescueWins}" else "No rescues yet."
+        GameId.WordGuess -> if (scores.wordGuessWins > 0)
+            "Words cracked: ${scores.wordGuessWins}" else "No words cracked yet."
+        GameId.SlidingPuzzle -> if (scores.slidingBestMoves > 0)
+            "Best: ${ScoreLogic.movesLabel(scores.slidingBestMoves)}" else "No saved score yet."
+        GameId.Pong -> if (scores.pongWins > 0)
+            "Matches won: ${scores.pongWins}" else "No matches won yet."
+        GameId.PenaltyKicks -> if (scores.penaltyBestGoals > 0)
+            "Best round: ${scores.penaltyBestGoals}/5 goals" else "No rounds shot yet."
+        GameId.FidgetSpinner, GameId.ChalkDoodle -> "Pure relaxation — nothing tracked."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -657,5 +688,38 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Race the loop" to "Tokens run the track clockwise, then climb their colored home column. An exact roll lands them home.",
         "Capture & safety" to "Land on a rival to send them back to their yard — unless they're on a grey star or a start square.",
         "First home wins" to "Get all four tokens home before anyone else. ${choice.ludo.label} mode."
+    )
+    GameId.WordRescue -> listOf(
+        "Guess letters" to "Tap letters to reveal them in the hidden word. Green keys were in the word.",
+        "Mind the balloons" to "Every wrong letter pops one of six balloons. Lose them all and the word escapes.",
+        "Build a streak" to "Each rescued word extends your streak — one miss too many resets it."
+    )
+    GameId.WordGuess -> listOf(
+        "Six tries" to "Type a 5-letter word and hit GO. You get six attempts.",
+        "Read the colors" to "Green: right letter, right spot. Yellow: in the word, wrong spot. Grey: not in the word.",
+        "Narrow it down" to "The keyboard remembers what you've learned. Use it to zero in."
+    )
+    GameId.SlidingPuzzle -> listOf(
+        "Slide the tiles" to "Tap any tile next to the gap to slide it in.",
+        "Restore the order" to "Arrange the numbers 1, 2, 3… with the gap in the last corner.",
+        "Plan ahead" to "Every shuffle is solvable. Fewer moves = better score."
+    )
+    GameId.Pong -> listOf(
+        "Drag to defend" to "Drag anywhere to move your paddle. In 2-player mode, each side drags their own half.",
+        "Add spin" to "Hitting with the edge of your paddle angles the ball — and it speeds up with every hit.",
+        "First to 5" to "Miss and your opponent scores. First to ${PONG_WIN_SCORE} takes the match."
+    )
+    GameId.PenaltyKicks -> listOf(
+        "Watch the sweep" to "The aim marker sweeps across the goal — left, center, right.",
+        "Shoot!" to "Tap Shoot to lock your corner. The keeper picks a zone at the same moment.",
+        "Beat the keeper" to "Score when the keeper guesses wrong. Five shots — how many can you sink?"
+    )
+    GameId.FidgetSpinner -> listOf(
+        "Flick it" to "Swipe across the spinner to give it a spin. Faster flicks, faster spins.",
+        "That's it" to "Friction does the rest. Watch the spin counter climb."
+    )
+    GameId.ChalkDoodle -> listOf(
+        "Draw" to "Pick a chalk color and doodle on the board with your finger.",
+        "Wipe" to "One tap wipes the board clean. No saving, no judging — just scribbles."
     )
 }

@@ -13,8 +13,15 @@ import net.sclan.minigames.ui.BubbleWrapScreen
 import net.sclan.minigames.ui.CodeBreakerScreen
 import net.sclan.minigames.ui.BlackjackScreen
 import net.sclan.minigames.ui.BlockFillScreen
+import net.sclan.minigames.ui.ChalkDoodleScreen
 import net.sclan.minigames.ui.CheckersScreen
 import net.sclan.minigames.ui.ColorBlocksScreen
+import net.sclan.minigames.ui.FidgetSpinnerScreen
+import net.sclan.minigames.ui.HangmanScreen
+import net.sclan.minigames.ui.PenaltyKicksScreen
+import net.sclan.minigames.ui.PongScreen
+import net.sclan.minigames.ui.SlidingPuzzleScreen
+import net.sclan.minigames.ui.WordGuessScreen
 import net.sclan.minigames.ui.DominoesScreen
 import net.sclan.minigames.ui.LudoScreen
 import net.sclan.minigames.ui.SolitaireScreen
@@ -134,6 +141,13 @@ class MainActivity : ComponentActivity() {
                                 GameId.Dominoes -> Screen.Dominoes
                                 GameId.Checkers -> Screen.Checkers
                                 GameId.Ludo -> Screen.Ludo(choice.ludo)
+                                GameId.WordRescue -> Screen.WordRescue
+                                GameId.WordGuess -> Screen.WordGuess
+                                GameId.SlidingPuzzle -> Screen.SlidingPuzzle(choice.slidingPuzzle)
+                                GameId.Pong -> Screen.Pong(choice.pong)
+                                GameId.PenaltyKicks -> Screen.PenaltyKicks
+                                GameId.FidgetSpinner -> Screen.FidgetSpinner
+                                GameId.ChalkDoodle -> Screen.ChalkDoodle
                             }
                         }
                     )
@@ -406,6 +420,49 @@ class MainActivity : ComponentActivity() {
                             if (playerWon) scoreRepo.recordLudoWin()
                             completeIfDaily(GameId.Ludo)
                         }
+                    )
+                    Screen.WordRescue -> HangmanScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.WordRescue) },
+                        onRoundEnd = { won ->
+                            if (won) scoreRepo.recordWordRescueWin()
+                            completeIfDaily(GameId.WordRescue)
+                        }
+                    )
+                    Screen.WordGuess -> WordGuessScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.WordGuess) },
+                        onRoundEnd = { won, _ ->
+                            if (won) scoreRepo.recordWordGuessWin()
+                            completeIfDaily(GameId.WordGuess)
+                        }
+                    )
+                    is Screen.SlidingPuzzle -> SlidingPuzzleScreen(
+                        difficulty = current.size,
+                        onBack = { screen = Screen.GameSetup(GameId.SlidingPuzzle) },
+                        onWin = { moves ->
+                            scoreRepo.recordSlidingWin(moves)
+                            completeIfDaily(GameId.SlidingPuzzle)
+                        }
+                    )
+                    is Screen.Pong -> PongScreen(
+                        mode = current.mode,
+                        onBack = { screen = Screen.GameSetup(GameId.Pong) },
+                        onFinished = { playerWon ->
+                            if (playerWon) scoreRepo.recordPongWin()
+                            completeIfDaily(GameId.Pong)
+                        }
+                    )
+                    Screen.PenaltyKicks -> PenaltyKicksScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.PenaltyKicks) },
+                        onFinished = { goals ->
+                            scoreRepo.recordPenaltyRound(goals)
+                            if (goals > 0) completeIfDaily(GameId.PenaltyKicks)
+                        }
+                    )
+                    Screen.FidgetSpinner -> FidgetSpinnerScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.FidgetSpinner) }
+                    )
+                    Screen.ChalkDoodle -> ChalkDoodleScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.ChalkDoodle) }
                     )
                     Screen.Settings -> SettingsScreen(
                         onBack = { screen = Screen.Home },

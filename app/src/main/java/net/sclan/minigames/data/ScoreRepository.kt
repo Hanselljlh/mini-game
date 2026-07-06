@@ -37,6 +37,11 @@ data class HighScores(
     val dominoWins: Int = 0,
     val checkersWins: Int = 0,
     val ludoWins: Int = 0,
+    val wordRescueWins: Int = 0,
+    val wordGuessWins: Int = 0,
+    val slidingBestMoves: Int = 0,
+    val pongWins: Int = 0,
+    val penaltyBestGoals: Int = 0,
     val totalXp: Int = 0,
     val gamesPlayed: Int = 0
 )
@@ -137,6 +142,11 @@ class ScoreRepository(context: Context) {
         dominoWins = prefs.getInt("domino_wins", 0),
         checkersWins = prefs.getInt("checkers_wins", 0),
         ludoWins = prefs.getInt("ludo_wins", 0),
+        wordRescueWins = prefs.getInt("rescue_wins", 0),
+        wordGuessWins = prefs.getInt("wordguess_wins", 0),
+        slidingBestMoves = prefs.getInt("sliding_best", 0),
+        pongWins = prefs.getInt("pong_wins", 0),
+        penaltyBestGoals = prefs.getInt("penalty_best", 0),
         totalXp = prefs.getInt("total_xp", 0),
         gamesPlayed = prefs.getInt("games_played", 0)
     )
@@ -315,6 +325,25 @@ class ScoreRepository(context: Context) {
     fun recordDominoWin() = bumpWinCounter("domino_wins", scores.dominoWins, 20) { s, n -> s.copy(dominoWins = n) }
     fun recordCheckersWin() = bumpWinCounter("checkers_wins", scores.checkersWins, 30) { s, n -> s.copy(checkersWins = n) }
     fun recordLudoWin() = bumpWinCounter("ludo_wins", scores.ludoWins, 35) { s, n -> s.copy(ludoWins = n) }
+    fun recordWordRescueWin() = bumpWinCounter("rescue_wins", scores.wordRescueWins, 15) { s, n -> s.copy(wordRescueWins = n) }
+    fun recordWordGuessWin() = bumpWinCounter("wordguess_wins", scores.wordGuessWins, 20) { s, n -> s.copy(wordGuessWins = n) }
+    fun recordPongWin() = bumpWinCounter("pong_wins", scores.pongWins, 15) { s, n -> s.copy(pongWins = n) }
+
+    fun recordSlidingWin(moves: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterMoves(moves, cur.slidingBestMoves)) moves else cur.slidingBestMoves
+        val newXp = cur.totalXp + 20
+        prefs.edit().putInt("sliding_best", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(slidingBestMoves = newBest, totalXp = newXp)
+    }
+
+    fun recordPenaltyRound(goals: Int) {
+        val cur = scores
+        val newBest = if (ScoreLogic.isBetterScore(goals, cur.penaltyBestGoals)) goals else cur.penaltyBestGoals
+        val newXp = cur.totalXp + if (goals > 0) 10 else 0
+        prefs.edit().putInt("penalty_best", newBest).putInt("total_xp", newXp).apply()
+        scores = cur.copy(penaltyBestGoals = newBest, totalXp = newXp)
+    }
 
     fun recordEscapeLevel() {
         val cur = scores

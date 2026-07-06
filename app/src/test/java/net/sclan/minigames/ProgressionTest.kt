@@ -30,9 +30,10 @@ class ProgressionTest {
         assertEquals(playable.toSet(), picked)
     }
 
-    @Test fun dailyPickNeverSelectsSandFall() {
+    @Test fun dailyPickNeverSelectsScorelessToys() {
+        val excluded = setOf(GameId.SandFall, GameId.FidgetSpinner, GameId.ChalkDoodle)
         (0L..500L).forEach { day ->
-            assertTrue(DailyChallenge.gameForDay(day) != GameId.SandFall)
+            assertTrue(DailyChallenge.gameForDay(day) !in excluded)
         }
     }
 

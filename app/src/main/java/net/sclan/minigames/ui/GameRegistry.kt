@@ -55,7 +55,14 @@ object GameRegistry {
         GameMeta(GameId.Blackjack, GameCategory.Cards, "Solo", "3 min", "Hit or stand — closest to 21 wins"),
         GameMeta(GameId.Dominoes, GameCategory.Cards, "Solo", "5 min", "Match tiles to the chain, empty your hand"),
         GameMeta(GameId.Checkers, GameCategory.Duel, "Solo", "10 min", "Jump, capture, and crown kings vs the bot"),
-        GameMeta(GameId.Ludo, GameCategory.Duel, "1–4 players", "15 min", "Race four tokens home — captures, stars, and sixes")
+        GameMeta(GameId.Ludo, GameCategory.Duel, "1–4 players", "15 min", "Race four tokens home — captures, stars, and sixes"),
+        GameMeta(GameId.WordRescue, GameCategory.Words, "Solo", "3 min", "Guess letters before the balloons pop"),
+        GameMeta(GameId.WordGuess, GameCategory.Words, "Solo", "5 min", "Six color-coded tries to find the word"),
+        GameMeta(GameId.SlidingPuzzle, GameCategory.Puzzle, "Solo", "5 min", "Slide the numbered tiles back into order"),
+        GameMeta(GameId.Pong, GameCategory.Duel, "1–2 players", "3 min", "Paddle battle vs bot or a friend"),
+        GameMeta(GameId.PenaltyKicks, GameCategory.Arcade, "Solo", "2 min", "Time your shot past the diving keeper"),
+        GameMeta(GameId.FidgetSpinner, GameCategory.Relax, "Solo", "∞", "Flick it and watch it spin"),
+        GameMeta(GameId.ChalkDoodle, GameCategory.Relax, "Solo", "∞", "A pocket chalkboard for scribbles")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

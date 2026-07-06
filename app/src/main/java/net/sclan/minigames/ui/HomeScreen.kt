@@ -289,7 +289,13 @@ private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
     GameId.Dominoes -> if (scores.dominoWins > 0) "Wins: ${scores.dominoWins}" else null
     GameId.Checkers -> if (scores.checkersWins > 0) "Wins: ${scores.checkersWins}" else null
     GameId.Ludo -> if (scores.ludoWins > 0) "Races won: ${scores.ludoWins}" else null
-    GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala, GameId.SandFall -> null
+    GameId.WordRescue -> if (scores.wordRescueWins > 0) "Rescued: ${scores.wordRescueWins}" else null
+    GameId.WordGuess -> if (scores.wordGuessWins > 0) "Cracked: ${scores.wordGuessWins}" else null
+    GameId.SlidingPuzzle -> if (scores.slidingBestMoves > 0) "Best: ${ScoreLogic.movesLabel(scores.slidingBestMoves)}" else null
+    GameId.Pong -> if (scores.pongWins > 0) "Wins: ${scores.pongWins}" else null
+    GameId.PenaltyKicks -> if (scores.penaltyBestGoals > 0) "Best: ${scores.penaltyBestGoals}/5" else null
+    GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala,
+    GameId.SandFall, GameId.FidgetSpinner, GameId.ChalkDoodle -> null
 }
 
 @Composable

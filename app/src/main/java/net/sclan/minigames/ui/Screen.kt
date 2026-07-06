@@ -38,5 +38,12 @@ sealed class Screen {
     object Dominoes : Screen()
     object Checkers : Screen()
     data class Ludo(val mode: LudoMode) : Screen()
+    object WordRescue : Screen()
+    object WordGuess : Screen()
+    data class SlidingPuzzle(val size: SlidingSize) : Screen()
+    data class Pong(val mode: PongMode) : Screen()
+    object PenaltyKicks : Screen()
+    object FidgetSpinner : Screen()
+    object ChalkDoodle : Screen()
     object Settings : Screen()
 }
