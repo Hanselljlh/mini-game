@@ -42,7 +42,9 @@ enum class GameId(val title: String, val shortDescription: String) {
     Pong("Pong Duel", "Classic paddle battle — vs bot or two players on one screen."),
     PenaltyKicks("Penalty Kicks", "Time your shot past the diving keeper — five shots per round."),
     FidgetSpinner("Fidget Spinner", "Flick it. Watch it spin. Feel better."),
-    ChalkDoodle("Chalk Doodle", "A pocket chalkboard for scribbling whatever you like.")
+    ChalkDoodle("Chalk Doodle", "A pocket chalkboard for scribbling whatever you like."),
+    WordLadder("Word Ladder", "Change one letter at a time to climb from one word to another."),
+    AirHockey("Air Hockey", "Slam the puck into your rival's goal — vs bot or two players.")
 }
 
 enum class TileMergeDifficulty(val label: String, val targetTile: Int, val startTiles: Int) {
@@ -262,7 +264,8 @@ data class GameSetupChoice(
     val classic: ClassicMode = ClassicMode.Classic,
     val ludo: LudoMode = LudoMode.VsBot,
     val slidingPuzzle: SlidingSize = SlidingSize.Classic,
-    val pong: PongMode = PongMode.VsBot
+    val pong: PongMode = PongMode.VsBot,
+    val airHockey: PongMode = PongMode.VsBot
 )
 
 fun defaultSetupChoice(game: GameId): GameSetupChoice = GameSetupChoice()

@@ -13,6 +13,7 @@ import net.sclan.minigames.ui.BubbleWrapScreen
 import net.sclan.minigames.ui.CodeBreakerScreen
 import net.sclan.minigames.ui.BlackjackScreen
 import net.sclan.minigames.ui.BlockFillScreen
+import net.sclan.minigames.ui.AirHockeyScreen
 import net.sclan.minigames.ui.ChalkDoodleScreen
 import net.sclan.minigames.ui.CheckersScreen
 import net.sclan.minigames.ui.ColorBlocksScreen
@@ -26,6 +27,7 @@ import net.sclan.minigames.ui.DominoesScreen
 import net.sclan.minigames.ui.LudoScreen
 import net.sclan.minigames.ui.SolitaireScreen
 import net.sclan.minigames.ui.WarScreen
+import net.sclan.minigames.ui.WordLadderScreen
 import net.sclan.minigames.ui.ColorFillScreen
 import net.sclan.minigames.ui.CrossMathScreen
 import net.sclan.minigames.ui.EscapeScreen
@@ -148,6 +150,8 @@ class MainActivity : ComponentActivity() {
                                 GameId.PenaltyKicks -> Screen.PenaltyKicks
                                 GameId.FidgetSpinner -> Screen.FidgetSpinner
                                 GameId.ChalkDoodle -> Screen.ChalkDoodle
+                                GameId.WordLadder -> Screen.WordLadder
+                                GameId.AirHockey -> Screen.AirHockey(choice.airHockey)
                             }
                         }
                     )
@@ -463,6 +467,21 @@ class MainActivity : ComponentActivity() {
                     )
                     Screen.ChalkDoodle -> ChalkDoodleScreen(
                         onBack = { screen = Screen.GameSetup(GameId.ChalkDoodle) }
+                    )
+                    Screen.WordLadder -> WordLadderScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.WordLadder) },
+                        onWin = {
+                            scoreRepo.recordWordLadderWin()
+                            completeIfDaily(GameId.WordLadder)
+                        }
+                    )
+                    is Screen.AirHockey -> AirHockeyScreen(
+                        mode = current.mode,
+                        onBack = { screen = Screen.GameSetup(GameId.AirHockey) },
+                        onFinished = { playerWon ->
+                            if (playerWon) scoreRepo.recordAirHockeyWin()
+                            completeIfDaily(GameId.AirHockey)
+                        }
                     )
                     Screen.Settings -> SettingsScreen(
                         onBack = { screen = Screen.Home },

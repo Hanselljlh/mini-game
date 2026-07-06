@@ -90,6 +90,7 @@ fun GameSetupScreen(
     var ludoMode by remember { mutableStateOf(LudoMode.VsBot) }
     var slidingSize by remember { mutableStateOf(SlidingSize.Classic) }
     var pongMode by remember { mutableStateOf(PongMode.VsBot) }
+    var airHockeyMode by remember { mutableStateOf(PongMode.VsBot) }
 
     val choice = GameSetupChoice(
         tileDifficulty, mineDifficulty, ticDifficulty, memoryDifficulty, reactionMode,
@@ -98,7 +99,7 @@ fun GameSetupScreen(
         waterDifficulty, nutsDifficulty, fillDifficulty, blocksDifficulty,
         escapePack, paintSize, flappyDifficulty, sandBrush, blockFillMode,
         mergeChainMode, crossDifficulty, connectDifficulty,
-        ClassicMode.Classic, ludoMode, slidingSize, pongMode
+        ClassicMode.Classic, ludoMode, slidingSize, pongMode, airHockeyMode
     )
     val pages = instructionPages(game, choice)
 
@@ -271,8 +272,12 @@ fun GameSetupScreen(
                                 PongMode.entries.map { it.label },
                                 pongMode.ordinal
                             ) { pongMode = PongMode.entries[it] }
+                            GameId.AirHockey -> DifficultyRow(
+                                PongMode.entries.map { it.label },
+                                airHockeyMode.ordinal
+                            ) { airHockeyMode = PongMode.entries[it] }
                             GameId.WordRescue, GameId.WordGuess, GameId.PenaltyKicks,
-                            GameId.FidgetSpinner, GameId.ChalkDoodle ->
+                            GameId.FidgetSpinner, GameId.ChalkDoodle, GameId.WordLadder ->
                                 DifficultyRow(ClassicMode.entries.map { it.label }, 0) {}
                         }
                     }
@@ -362,6 +367,8 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.PenaltyKicks -> Text("⚽", style = MaterialTheme.typography.headlineMedium)
             GameId.FidgetSpinner -> Text("🌀", style = MaterialTheme.typography.headlineMedium)
             GameId.ChalkDoodle -> Text("🖍", style = MaterialTheme.typography.headlineMedium)
+            GameId.WordLadder -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("A"); IconTile("B") }
+            GameId.AirHockey -> Text("🏒", style = MaterialTheme.typography.headlineMedium)
         }
     }
 }
@@ -463,6 +470,10 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
         GameId.PenaltyKicks -> if (scores.penaltyBestGoals > 0)
             "Best round: ${scores.penaltyBestGoals}/5 goals" else "No rounds shot yet."
         GameId.FidgetSpinner, GameId.ChalkDoodle -> "Pure relaxation — nothing tracked."
+        GameId.WordLadder -> if (scores.wordLadderWins > 0)
+            "Ladders climbed: ${scores.wordLadderWins}" else "No ladders climbed yet."
+        GameId.AirHockey -> if (scores.airHockeyWins > 0)
+            "Matches won: ${scores.airHockeyWins}" else "No matches won yet."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -721,5 +732,15 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
     GameId.ChalkDoodle -> listOf(
         "Draw" to "Pick a chalk color and doodle on the board with your finger.",
         "Wipe" to "One tap wipes the board clean. No saving, no judging — just scribbles."
+    )
+    GameId.WordLadder -> listOf(
+        "One letter at a time" to "Turn the first word into the second by changing a single letter each step.",
+        "Real words only" to "Every rung has to be a valid word from the game's list.",
+        "Beat par" to "There's a shortest ladder shown as your target. Match it — or find your own route."
+    )
+    GameId.AirHockey -> listOf(
+        "Drag your mallet" to "Slide your mallet around your half of the table to strike the puck.",
+        "Aim for the goal" to "Knock the puck into your opponent's goal at the far end.",
+        "First to seven" to "Defend your own goal while you attack. ${choice.airHockey.label} sets the pace."
     )
 }

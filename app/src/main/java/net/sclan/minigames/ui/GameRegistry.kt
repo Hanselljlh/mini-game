@@ -62,7 +62,9 @@ object GameRegistry {
         GameMeta(GameId.Pong, GameCategory.Duel, "1–2 players", "3 min", "Paddle battle vs bot or a friend"),
         GameMeta(GameId.PenaltyKicks, GameCategory.Arcade, "Solo", "2 min", "Time your shot past the diving keeper"),
         GameMeta(GameId.FidgetSpinner, GameCategory.Relax, "Solo", "∞", "Flick it and watch it spin"),
-        GameMeta(GameId.ChalkDoodle, GameCategory.Relax, "Solo", "∞", "A pocket chalkboard for scribbles")
+        GameMeta(GameId.ChalkDoodle, GameCategory.Relax, "Solo", "∞", "A pocket chalkboard for scribbles"),
+        GameMeta(GameId.WordLadder, GameCategory.Words, "Solo", "5 min", "Climb from one word to another, one letter at a time"),
+        GameMeta(GameId.AirHockey, GameCategory.Duel, "1–2 players", "3 min", "Slam the puck into the goal vs bot or a friend")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

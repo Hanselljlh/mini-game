@@ -4,20 +4,41 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Top-left tile -->
+
+    <!-- Handheld console body (cream) with a soft drop shadow -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M27,22 L43,22 Q48,22 48,27 L48,43 Q48,48 43,48 L27,48 Q22,48 22,43 L22,27 Q22,22 27,22 Z" />
-    <!-- Top-right tile -->
+        android:fillColor="#33000000"
+        android:pathData="M36,33 h36 a12,12 0 0 1 12,12 v28 a12,12 0 0 1 -12,12 h-36 a12,12 0 0 1 -12,-12 v-28 a12,12 0 0 1 12,-12 z" />
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M65,22 L81,22 Q86,22 86,27 L86,43 Q86,48 81,48 L65,48 Q60,48 60,43 L60,27 Q60,22 65,22 Z" />
-    <!-- Bottom-left tile -->
+        android:fillColor="#FFF6E9"
+        android:pathData="M36,30 h36 a12,12 0 0 1 12,12 v28 a12,12 0 0 1 -12,12 h-36 a12,12 0 0 1 -12,-12 v-28 a12,12 0 0 1 12,-12 z" />
+
+    <!-- Screen -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M27,60 L43,60 Q48,60 48,65 L48,81 Q48,86 43,86 L27,86 Q22,86 22,81 L22,65 Q22,60 27,60 Z" />
-    <!-- Bottom-right tile -->
+        android:fillColor="#14323B"
+        android:pathData="M37,36 h34 a5,5 0 0 1 5,5 v12 a5,5 0 0 1 -5,5 h-34 a5,5 0 0 1 -5,-5 v-12 a5,5 0 0 1 5,-5 z" />
+
+    <!-- Two game tiles on the screen -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M65,60 L81,60 Q86,60 86,65 L86,81 Q86,86 81,86 L65,86 Q60,86 60,81 L60,65 Q60,60 65,60 Z" />
+        android:fillColor="#FF8A65"
+        android:pathData="M39,41 h5 a2,2 0 0 1 2,2 v5 a2,2 0 0 1 -2,2 h-5 a2,2 0 0 1 -2,-2 v-5 a2,2 0 0 1 2,-2 z" />
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M51,41 h5 a2,2 0 0 1 2,2 v5 a2,2 0 0 1 -2,2 h-5 a2,2 0 0 1 -2,-2 v-5 a2,2 0 0 1 2,-2 z" />
+    <path
+        android:fillColor="#4FC3F7"
+        android:pathData="M63,41 h5 a2,2 0 0 1 2,2 v5 a2,2 0 0 1 -2,2 h-5 a2,2 0 0 1 -2,-2 v-5 a2,2 0 0 1 2,-2 z" />
+
+    <!-- D-pad -->
+    <path
+        android:fillColor="#455A64"
+        android:pathData="M37.5,64 h5 v3.5 h3.5 v5 h-3.5 v3.5 h-5 v-3.5 h-3.5 v-5 h3.5 z" />
+
+    <!-- Action buttons -->
+    <path
+        android:fillColor="#E53935"
+        android:pathData="M64,67 a4,4 0 1 0 8,0 a4,4 0 1 0 -8,0 z" />
+    <path
+        android:fillColor="#FFCA28"
+        android:pathData="M70,73 a4,4 0 1 0 8,0 a4,4 0 1 0 -8,0 z" />
 </vector>

@@ -294,6 +294,8 @@ private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
     GameId.SlidingPuzzle -> if (scores.slidingBestMoves > 0) "Best: ${ScoreLogic.movesLabel(scores.slidingBestMoves)}" else null
     GameId.Pong -> if (scores.pongWins > 0) "Wins: ${scores.pongWins}" else null
     GameId.PenaltyKicks -> if (scores.penaltyBestGoals > 0) "Best: ${scores.penaltyBestGoals}/5" else null
+    GameId.WordLadder -> if (scores.wordLadderWins > 0) "Climbed: ${scores.wordLadderWins}" else null
+    GameId.AirHockey -> if (scores.airHockeyWins > 0) "Wins: ${scores.airHockeyWins}" else null
     GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala,
     GameId.SandFall, GameId.FidgetSpinner, GameId.ChalkDoodle -> null
 }

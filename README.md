@@ -4,7 +4,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 
 **No account. No location. Built for offline play.** Every game works in airplane mode; scores, favorites, and XP live only on the device.
 
-## Games (42)
+## Games (44)
 
 | Game | Category | Description |
 |------|----------|-------------|
@@ -34,6 +34,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Anagram Tiles | Words | Unscramble letter tiles to rebuild hidden words over 5–7 rounds |
 | Word Rescue | Words | Letter-guessing with a balloon-pop twist (6 misses allowed) |
 | Word Guess | Words | 5-letter deduction with green/yellow/grey feedback over 6 tries |
+| Word Ladder | Words | Transform one word into another one letter at a time (BFS-generated puzzles) |
 | Memory Match | Cards & Classics | Flip cards and find every matching pair in as few moves as you can |
 | Solitaire | Cards & Classics | Klondike draw-1 with tap-to-auto-move |
 | War | Cards & Classics | Head-to-head card battles, aces high |
@@ -49,6 +50,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Checkers | Local Duel | Mandatory-jump checkers with kings vs the bot |
 | Ludo | Local Duel | Full classic board — vs bot, 2-player, or 4-player pass-and-play |
 | Pong Duel | Local Duel | Paddle battle with spin — vs bot or 2 players on one screen |
+| Air Hockey | Local Duel | Free-moving mallets, puck physics, goals — vs bot or 2 players |
 | Bubble Wrap | Relax Toys | Pop every bubble. No score, no timer, pure calm |
 
 ## App features

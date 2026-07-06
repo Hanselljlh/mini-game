@@ -45,5 +45,7 @@ sealed class Screen {
     object PenaltyKicks : Screen()
     object FidgetSpinner : Screen()
     object ChalkDoodle : Screen()
+    object WordLadder : Screen()
+    data class AirHockey(val mode: PongMode) : Screen()
     object Settings : Screen()
 }
