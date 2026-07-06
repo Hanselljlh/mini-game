@@ -15,9 +15,31 @@ android {
         versionName = "1.9"
     }
 
+    // Stable signing key committed to the repo so every build (debug and
+    // release) shares one signature — app updates then install cleanly over
+    // each other. NOTE: fine for test distribution; a real Play Store upload
+    // key should be private, not committed.
+    signingConfigs {
+        create("app") {
+            storeFile = file("keystore/pocketarcade.keystore")
+            storePassword = "pocketarcade"
+            keyAlias = "pocketarcade"
+            keyPassword = "pocketarcade"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("app")
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("app")
         }
     }
 
