@@ -4,6 +4,99 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.SharedPreferencesMigration
+import androidx.datastore.preferences.core.MutablePreferences
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.util.concurrent.ConcurrentHashMap
+
+// DataStore-backed replacement for the old SharedPreferences. Existing users'
+// scores are carried over automatically via SharedPreferencesMigration.
+private val Context.scoreDataStore: DataStore<Preferences> by preferencesDataStore(
+    name = "pmg_scores_ds",
+    produceMigrations = { ctx -> listOf(SharedPreferencesMigration(ctx, "pmg_scores")) }
+)
+
+/**
+ * Thin write-through cache exposing the small slice of the SharedPreferences
+ * API this repository uses, backed by Preferences DataStore. Reads come from an
+ * in-memory snapshot (hydrated once at construction, including any migrated
+ * legacy data); writes update the snapshot synchronously and persist to
+ * DataStore off the main thread.
+ */
+internal class DataStorePrefs(context: Context) {
+    private val dataStore = context.applicationContext.scoreDataStore
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val cache = ConcurrentHashMap<String, Any>()
+
+    init {
+        // One-time synchronous hydrate; also triggers the legacy migration.
+        runBlocking { dataStore.data.first() }.asMap().forEach { (k, v) -> cache[k.name] = v }
+        // Stamp the schema version so future migrations have a version to branch on.
+        if (getInt(SCHEMA_KEY, 0) < SCHEMA_VERSION) edit().putInt(SCHEMA_KEY, SCHEMA_VERSION).apply()
+    }
+
+    companion object {
+        const val SCHEMA_KEY = "schema_version"
+        const val SCHEMA_VERSION = 2
+    }
+
+    fun getInt(key: String, def: Int): Int = (cache[key] as? Int) ?: def
+    fun getLong(key: String, def: Long): Long = (cache[key] as? Long) ?: def
+    fun getString(key: String, def: String?): String? = (cache[key] as? String) ?: def
+
+    @Suppress("UNCHECKED_CAST")
+    fun getStringSet(key: String, def: Set<String>?): Set<String>? =
+        (cache[key] as? Set<String>) ?: def
+
+    fun edit(): Editor = Editor()
+
+    inner class Editor {
+        private val puts = LinkedHashMap<String, Any?>()
+        private var doClear = false
+
+        fun putInt(key: String, value: Int): Editor = apply { puts[key] = value }
+        fun putLong(key: String, value: Long): Editor = apply { puts[key] = value }
+        fun putString(key: String, value: String): Editor = apply { puts[key] = value }
+        fun putStringSet(key: String, value: Set<String>): Editor = apply { puts[key] = value }
+        fun clear(): Editor = apply { doClear = true }
+
+        fun apply() {
+            if (doClear) cache.clear()
+            puts.forEach { (k, v) -> if (v == null) cache.remove(k) else cache[k] = v }
+            scope.launch {
+                dataStore.edit { p ->
+                    if (doClear) p.clear()
+                    puts.forEach { (k, v) -> writePref(p, k, v) }
+                }
+            }
+        }
+    }
+
+    private fun writePref(p: MutablePreferences, key: String, value: Any?) {
+        when (value) {
+            is Int -> p[intPreferencesKey(key)] = value
+            is Long -> p[longPreferencesKey(key)] = value
+            is String -> p[stringPreferencesKey(key)] = value
+            is Set<*> -> {
+                @Suppress("UNCHECKED_CAST")
+                p[stringSetPreferencesKey(key)] = value as Set<String>
+            }
+        }
+    }
+}
 
 data class HighScores(
     val best2048Tile: Int = 0,
@@ -97,7 +190,7 @@ object ScoreLogic {
 }
 
 class ScoreRepository(context: Context) {
-    private val prefs = context.getSharedPreferences("pmg_scores", Context.MODE_PRIVATE)
+    private val prefs = DataStorePrefs(context)
 
     var scores: HighScores by mutableStateOf(loadScores())
         private set

@@ -11,8 +11,8 @@ android {
         applicationId = "net.sclan.minigames"
         minSdk = 24
         targetSdk = 34
-        versionCode = 12
-        versionName = "1.11"
+        versionCode = 13
+        versionName = "1.12"
     }
 
     // Stable signing key committed to the repo so every build (debug and
@@ -80,4 +80,5 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 
     implementation("com.android.billingclient:billing-ktx:6.2.1")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }

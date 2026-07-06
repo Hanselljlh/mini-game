@@ -154,8 +154,9 @@ class ChessTest {
     }
 
     @Test fun promotionCreatesQueen() {
+        // Black king kept clear of a8 so the pawn can push straight in to promote.
         val s = ChessState(
-            boardOf(wk(7, 4), bk(0, 0), Triple(1, 0, Piece(PieceType.Pawn, PieceColor.White))),
+            boardOf(wk(7, 4), bk(0, 7), Triple(1, 0, Piece(PieceType.Pawn, PieceColor.White))),
             toMove = PieceColor.White
         )
         // Push the pawn straight to the last rank — it should auto-promote.
