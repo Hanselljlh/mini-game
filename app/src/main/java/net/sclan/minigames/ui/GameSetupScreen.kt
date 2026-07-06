@@ -277,7 +277,7 @@ fun GameSetupScreen(
                                 airHockeyMode.ordinal
                             ) { airHockeyMode = PongMode.entries[it] }
                             GameId.WordRescue, GameId.WordGuess, GameId.PenaltyKicks,
-                            GameId.FidgetSpinner, GameId.ChalkDoodle, GameId.WordLadder ->
+                            GameId.FidgetSpinner, GameId.ChalkDoodle, GameId.WordLadder, GameId.Pool ->
                                 DifficultyRow(ClassicMode.entries.map { it.label }, 0) {}
                         }
                     }
@@ -369,6 +369,7 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.ChalkDoodle -> Text("🖍", style = MaterialTheme.typography.headlineMedium)
             GameId.WordLadder -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("A"); IconTile("B") }
             GameId.AirHockey -> Text("🏒", style = MaterialTheme.typography.headlineMedium)
+            GameId.Pool -> Text("🎱", style = MaterialTheme.typography.headlineMedium)
         }
     }
 }
@@ -474,6 +475,8 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
             "Ladders climbed: ${scores.wordLadderWins}" else "No ladders climbed yet."
         GameId.AirHockey -> if (scores.airHockeyWins > 0)
             "Matches won: ${scores.airHockeyWins}" else "No matches won yet."
+        GameId.Pool -> if (scores.poolBestShots > 0)
+            "Best clear: ${scores.poolBestShots} shots" else "No tables cleared yet."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -742,5 +745,10 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Drag your mallet" to "Slide your mallet around your half of the table to strike the puck.",
         "Aim for the goal" to "Knock the puck into your opponent's goal at the far end.",
         "First to seven" to "Defend your own goal while you attack. ${choice.airHockey.label} sets the pace."
+    )
+    GameId.Pool -> listOf(
+        "Aim the cue" to "Drag back from the table and release like a slingshot — the white line shows your aim.",
+        "Mind the power" to "A longer drag hits harder. Use angles off the cushions to reach tricky balls.",
+        "Clear the table" to "Sink every colored ball to win. Potting the cue ball is a scratch — it just respots."
     )
 }

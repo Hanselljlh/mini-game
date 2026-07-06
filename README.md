@@ -4,7 +4,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 
 **No account. No location. Built for offline play.** Every game works in airplane mode; scores, favorites, and XP live only on the device.
 
-## Games (44)
+## Games (45)
 
 | Game | Category | Description |
 |------|----------|-------------|
@@ -27,6 +27,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Maze Paint | Arcade | Slide-and-paint every square of a generated maze |
 | Flappy Jump | Arcade | Tap-to-flap through scrolling pipe gaps |
 | Penalty Kicks | Arcade | Timing-based shootout vs a diving keeper, 5 shots a round |
+| Pool | Arcade | Top-down pool with elastic-collision physics and slingshot aiming |
 | Sand Fall | Relax Toys | Falling-sand physics toy with shifting rainbow colors |
 | Fidget Spinner | Relax Toys | Flick-to-spin with momentum and a spin counter |
 | Chalk Doodle | Relax Toys | Free drawing on a pocket chalkboard |

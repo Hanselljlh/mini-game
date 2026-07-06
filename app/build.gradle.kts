@@ -11,8 +11,8 @@ android {
         applicationId = "net.sclan.minigames"
         minSdk = 24
         targetSdk = 34
-        versionCode = 10
-        versionName = "1.9"
+        versionCode = 11
+        versionName = "1.10"
     }
 
     // Stable signing key committed to the repo so every build (debug and
