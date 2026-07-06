@@ -45,36 +45,34 @@ import kotlin.random.Random
 // Checkpoints are revealed; the player retraces the path from 1.
 // ---------------------------------------------------------------------------
 
-/** Generates a Hamiltonian path over an n×n grid using Warnsdorff + backtracking. */
+/**
+ * Generates a random Hamiltonian path over an n×n grid. Starts from a
+ * serpentine (boustrophedon) path — which always exists — then shuffles it
+ * with "backbite" moves. Guaranteed to terminate in O(n⁴) time, unlike
+ * backtracking searches which can hang on unlucky seeds.
+ */
 internal fun generateNumberPath(n: Int, random: Random = Random.Default): List<Pair<Int, Int>> {
-    val total = n * n
-    val dirs = listOf(0 to 1, 0 to -1, 1 to 0, -1 to 0)
-
-    fun neighbors(cell: Pair<Int, Int>, visited: Set<Pair<Int, Int>>): List<Pair<Int, Int>> =
-        dirs.map { (dr, dc) -> (cell.first + dr) to (cell.second + dc) }
-            .filter { (r, c) -> r in 0 until n && c in 0 until n && (r to c) !in visited }
-
-    val start = random.nextInt(n) to random.nextInt(n)
-    val path = mutableListOf(start)
-    val visited = mutableSetOf(start)
-
-    fun extend(): Boolean {
-        if (path.size == total) return true
-        val current = path.last()
-        // Warnsdorff: prefer neighbors with fewest onward moves; shuffle equal ranks
-        val options = neighbors(current, visited)
-            .sortedBy { nb -> neighbors(nb, visited + nb).size * 10 + random.nextInt(10) }
-        for (next in options) {
-            path.add(next)
-            visited.add(next)
-            if (extend()) return true
-            path.removeAt(path.size - 1)
-            visited.remove(next)
+    var path = buildList {
+        for (r in 0 until n) {
+            val cols: Iterable<Int> = if (r % 2 == 0) 0 until n else (n - 1) downTo 0
+            for (c in cols) add(r to c)
         }
-        return false
     }
 
-    return if (extend()) path.toList() else generateNumberPath(n, random)
+    repeat(n * n * 30) {
+        if (random.nextBoolean()) path = path.reversed()
+        val head = path[0]
+        // Backbite: pick a path cell adjacent to the head (beyond its current
+        // successor) and reverse the prefix, giving a new valid path.
+        val candidates = path.withIndex().filter { (i, cell) ->
+            i >= 2 && kotlin.math.abs(cell.first - head.first) + kotlin.math.abs(cell.second - head.second) == 1
+        }
+        if (candidates.isNotEmpty()) {
+            val j = candidates[random.nextInt(candidates.size)].index
+            path = path.subList(0, j).reversed() + path.subList(j, path.size)
+        }
+    }
+    return path
 }
 
 /** Which step numbers (1-based) are revealed: 1, N, and every [every]-th. */
