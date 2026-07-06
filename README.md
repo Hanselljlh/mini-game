@@ -4,7 +4,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 
 **No account. No location. Built for offline play.** Every game works in airplane mode; scores, favorites, and XP live only on the device.
 
-## Games (45)
+## Games (46)
 
 | Game | Category | Description |
 |------|----------|-------------|
@@ -52,6 +52,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Ludo | Local Duel | Full classic board — vs bot, 2-player, or 4-player pass-and-play |
 | Pong Duel | Local Duel | Paddle battle with spin — vs bot or 2 players on one screen |
 | Air Hockey | Local Duel | Free-moving mallets, puck physics, goals — vs bot or 2 players |
+| Chess | Local Duel | Full legal chess (castling, en passant, promotion) vs an alpha-beta bot |
 | Bubble Wrap | Relax Toys | Pop every bubble. No score, no timer, pure calm |
 
 ## App features

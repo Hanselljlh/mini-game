@@ -45,6 +45,7 @@ data class HighScores(
     val wordLadderWins: Int = 0,
     val airHockeyWins: Int = 0,
     val poolBestShots: Int = 0,
+    val chessWins: Int = 0,
     val totalXp: Int = 0,
     val gamesPlayed: Int = 0
 )
@@ -153,6 +154,7 @@ class ScoreRepository(context: Context) {
         wordLadderWins = prefs.getInt("ladder_wins", 0),
         airHockeyWins = prefs.getInt("airhockey_wins", 0),
         poolBestShots = prefs.getInt("pool_best_shots", 0),
+        chessWins = prefs.getInt("chess_wins", 0),
         totalXp = prefs.getInt("total_xp", 0),
         gamesPlayed = prefs.getInt("games_played", 0)
     )
@@ -336,6 +338,8 @@ class ScoreRepository(context: Context) {
     fun recordPongWin() = bumpWinCounter("pong_wins", scores.pongWins, 15) { s, n -> s.copy(pongWins = n) }
     fun recordWordLadderWin() = bumpWinCounter("ladder_wins", scores.wordLadderWins, 20) { s, n -> s.copy(wordLadderWins = n) }
     fun recordAirHockeyWin() = bumpWinCounter("airhockey_wins", scores.airHockeyWins, 15) { s, n -> s.copy(airHockeyWins = n) }
+
+    fun recordChessWin() = bumpWinCounter("chess_wins", scores.chessWins, 60) { s, n -> s.copy(chessWins = n) }
 
     fun recordPoolWin(shots: Int) {
         val cur = scores

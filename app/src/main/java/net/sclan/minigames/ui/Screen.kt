@@ -48,5 +48,6 @@ sealed class Screen {
     object WordLadder : Screen()
     data class AirHockey(val mode: PongMode) : Screen()
     object Pool : Screen()
+    object Chess : Screen()
     object Settings : Screen()
 }

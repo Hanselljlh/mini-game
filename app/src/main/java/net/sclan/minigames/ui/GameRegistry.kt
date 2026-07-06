@@ -65,7 +65,8 @@ object GameRegistry {
         GameMeta(GameId.ChalkDoodle, GameCategory.Relax, "Solo", "∞", "A pocket chalkboard for scribbles"),
         GameMeta(GameId.WordLadder, GameCategory.Words, "Solo", "5 min", "Climb from one word to another, one letter at a time"),
         GameMeta(GameId.AirHockey, GameCategory.Duel, "1–2 players", "3 min", "Slam the puck into the goal vs bot or a friend"),
-        GameMeta(GameId.Pool, GameCategory.Arcade, "Solo", "5 min", "Aim, shoot, and sink every ball")
+        GameMeta(GameId.Pool, GameCategory.Arcade, "Solo", "5 min", "Aim, shoot, and sink every ball"),
+        GameMeta(GameId.Chess, GameCategory.Duel, "Solo", "15 min", "Full chess with check, mate, and a bot")
     )
 
     fun meta(id: GameId): GameMeta = games.first { it.id == id }

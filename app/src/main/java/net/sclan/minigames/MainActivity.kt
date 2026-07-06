@@ -16,6 +16,7 @@ import net.sclan.minigames.ui.BlockFillScreen
 import net.sclan.minigames.ui.AirHockeyScreen
 import net.sclan.minigames.ui.ChalkDoodleScreen
 import net.sclan.minigames.ui.CheckersScreen
+import net.sclan.minigames.ui.ChessScreen
 import net.sclan.minigames.ui.ColorBlocksScreen
 import net.sclan.minigames.ui.FidgetSpinnerScreen
 import net.sclan.minigames.ui.HangmanScreen
@@ -154,6 +155,7 @@ class MainActivity : ComponentActivity() {
                                 GameId.WordLadder -> Screen.WordLadder
                                 GameId.AirHockey -> Screen.AirHockey(choice.airHockey)
                                 GameId.Pool -> Screen.Pool
+                                GameId.Chess -> Screen.Chess
                             }
                         }
                     )
@@ -490,6 +492,13 @@ class MainActivity : ComponentActivity() {
                         onWin = { shots ->
                             scoreRepo.recordPoolWin(shots)
                             completeIfDaily(GameId.Pool)
+                        }
+                    )
+                    Screen.Chess -> ChessScreen(
+                        onBack = { screen = Screen.GameSetup(GameId.Chess) },
+                        onFinished = { playerWon ->
+                            if (playerWon) scoreRepo.recordChessWin()
+                            completeIfDaily(GameId.Chess)
                         }
                     )
                     Screen.Settings -> SettingsScreen(

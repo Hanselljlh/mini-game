@@ -45,7 +45,8 @@ enum class GameId(val title: String, val shortDescription: String) {
     ChalkDoodle("Chalk Doodle", "A pocket chalkboard for scribbling whatever you like."),
     WordLadder("Word Ladder", "Change one letter at a time to climb from one word to another."),
     AirHockey("Air Hockey", "Slam the puck into your rival's goal — vs bot or two players."),
-    Pool("Pool", "Line up your cue and sink every ball on the table.")
+    Pool("Pool", "Line up your cue and sink every ball on the table."),
+    Chess("Chess", "Full chess with check, mate, castling, and a thinking bot.")
 }
 
 enum class TileMergeDifficulty(val label: String, val targetTile: Int, val startTiles: Int) {

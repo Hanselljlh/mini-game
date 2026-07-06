@@ -297,6 +297,7 @@ private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
     GameId.WordLadder -> if (scores.wordLadderWins > 0) "Climbed: ${scores.wordLadderWins}" else null
     GameId.AirHockey -> if (scores.airHockeyWins > 0) "Wins: ${scores.airHockeyWins}" else null
     GameId.Pool -> if (scores.poolBestShots > 0) "Best: ${scores.poolBestShots} shots" else null
+    GameId.Chess -> if (scores.chessWins > 0) "Wins: ${scores.chessWins}" else null
     GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala,
     GameId.SandFall, GameId.FidgetSpinner, GameId.ChalkDoodle -> null
 }

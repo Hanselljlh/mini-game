@@ -277,7 +277,8 @@ fun GameSetupScreen(
                                 airHockeyMode.ordinal
                             ) { airHockeyMode = PongMode.entries[it] }
                             GameId.WordRescue, GameId.WordGuess, GameId.PenaltyKicks,
-                            GameId.FidgetSpinner, GameId.ChalkDoodle, GameId.WordLadder, GameId.Pool ->
+                            GameId.FidgetSpinner, GameId.ChalkDoodle, GameId.WordLadder,
+                            GameId.Pool, GameId.Chess ->
                                 DifficultyRow(ClassicMode.entries.map { it.label }, 0) {}
                         }
                     }
@@ -370,6 +371,7 @@ fun MiniGameIcon(game: GameId, modifier: Modifier = Modifier.size(56.dp)) {
             GameId.WordLadder -> Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { IconTile("A"); IconTile("B") }
             GameId.AirHockey -> Text("🏒", style = MaterialTheme.typography.headlineMedium)
             GameId.Pool -> Text("🎱", style = MaterialTheme.typography.headlineMedium)
+            GameId.Chess -> Text("♛", style = MaterialTheme.typography.headlineMedium, color = Color.White)
         }
     }
 }
@@ -477,6 +479,8 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
             "Matches won: ${scores.airHockeyWins}" else "No matches won yet."
         GameId.Pool -> if (scores.poolBestShots > 0)
             "Best clear: ${scores.poolBestShots} shots" else "No tables cleared yet."
+        GameId.Chess -> if (scores.chessWins > 0)
+            "Games won: ${scores.chessWins}" else "No wins yet."
     }
     Text(text, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 }
@@ -750,5 +754,10 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
         "Aim the cue" to "Drag back from the table and release like a slingshot — the white line shows your aim.",
         "Mind the power" to "A longer drag hits harder. Use angles off the cushions to reach tricky balls.",
         "Clear the table" to "Sink every colored ball to win. Potting the cue ball is a scratch — it just respots."
+    )
+    GameId.Chess -> listOf(
+        "You're White" to "You play the white pieces at the bottom and move first. Tap a piece to see its legal moves.",
+        "Real rules" to "Full legal moves including castling, en passant, and check. Pawns auto-promote to a queen.",
+        "Beat the bot" to "The bot searches a few moves ahead. Deliver checkmate — or hold a draw by stalemate."
     )
 }
