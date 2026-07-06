@@ -211,7 +211,7 @@ class ScoreRepository(context: Context) {
     var colorBlind: Boolean by mutableStateOf(prefs.getInt("colorblind", 0) == 1)
         private set
 
-    fun setColorBlind(on: Boolean) {
+    fun updateColorBlind(on: Boolean) {
         prefs.edit().putInt("colorblind", if (on) 1 else 0).apply()
         colorBlind = on
     }

@@ -509,7 +509,7 @@ class MainActivity : ComponentActivity() {
                         scores = scores,
                         colorBlind = scoreRepo.colorBlind,
                         onColorBlind = {
-                            scoreRepo.setColorBlind(it)
+                            scoreRepo.updateColorBlind(it)
                             AppSettings.colorBlind = it
                         },
                         onRemoveAds = { billingRepo.launchPurchaseFlow(this@MainActivity) },
