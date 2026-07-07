@@ -60,7 +60,7 @@ data class MinesweeperConfig(val rows: Int, val cols: Int, val mines: Int)
 enum class MinesweeperDifficulty(val label: String, val config: MinesweeperConfig) {
     Easy("Easy", MinesweeperConfig(12, 12, 22)),
     Normal("Normal", MinesweeperConfig(16, 16, 40)),
-    Hard("Hard", MinesweeperConfig(16, 30, 99))
+    Hard("Hard", MinesweeperConfig(30, 16, 99))
 }
 
 enum class TicTacToeDifficulty(val label: String) {

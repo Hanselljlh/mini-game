@@ -3,7 +3,7 @@ package net.sclan.minigames.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -201,16 +201,19 @@ fun MinesweeperScreen(
 
             Spacer(Modifier.height(12.dp))
             val displayBoard = board ?: List(config.rows) { List(config.cols) { MsCell() } }
-            val cellSize = 36.dp
-            // Boards are big now (up to 30×16) — pan in both directions.
-            Box(
+            // Columns always fit the screen width — tall boards scroll straight
+            // down, never sideways. Long boards are oriented portrait (30×16).
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .horizontalScroll(rememberScrollState())
-                    .verticalScroll(rememberScrollState())
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                val cellSize = ((maxWidth - 2.dp * (config.cols - 1)) / config.cols).coerceIn(18.dp, 40.dp)
+                val glyphSize = (cellSize.value * 0.5f).sp
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    modifier = Modifier.verticalScroll(rememberScrollState())
+                ) {
                     for (r in 0 until config.rows) {
                         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                             for (c in 0 until config.cols) {
@@ -228,12 +231,12 @@ fun MinesweeperScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     when {
-                                        !cell.isRevealed && cell.isFlagged -> Text("⚑", fontSize = 15.sp, color = Color.White)
-                                        cell.isRevealed && cell.isMine -> Text("✹", fontSize = 15.sp, color = Color.White)
+                                        !cell.isRevealed && cell.isFlagged -> Text("⚑", fontSize = glyphSize, color = Color.White)
+                                        cell.isRevealed && cell.isMine -> Text("✹", fontSize = glyphSize, color = Color.White)
                                         cell.isRevealed && cell.neighborMines > 0 -> Text(
                                             text = cell.neighborMines.toString(),
                                             color = numberColors[cell.neighborMines] ?: Color.Black,
-                                            fontSize = 15.sp,
+                                            fontSize = glyphSize,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
@@ -245,7 +248,7 @@ fun MinesweeperScreen(
             }
             Spacer(Modifier.height(6.dp))
             Text(
-                "Drag to pan the board. Tap to reveal • long-press to flag.",
+                "Tap to reveal • long-press to flag. Tall boards scroll down.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
