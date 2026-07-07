@@ -9,7 +9,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Game | Category | Description |
 |------|----------|-------------|
 | Tile Merge | Brain & Logic | Slide matching number tiles together until you reach the target tile (1024/2048/4096) |
-| Minesweeper | Brain & Logic | Easy, Normal, and Hard boards — tap to reveal, long-press to flag |
+| Minesweeper | Brain & Logic | 12×12 to full 30×16 Expert boards with pannable grid — tap to reveal, long-press to flag |
 | Code Breaker | Brain & Logic | Mastermind-style deduction — crack the 4-color code with feedback pegs |
 | Mini Sudoku | Brain & Logic | Generated 4×4, 6×6, and 9×9 puzzles with conflict highlighting |
 | Maze Runner | Brain & Logic | Freshly generated mazes — slide until you hit a wall, race to the exit |

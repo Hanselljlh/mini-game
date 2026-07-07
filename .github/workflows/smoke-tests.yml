@@ -4,7 +4,7 @@ name: Smoke Tests (Emulator)
 # on an Android emulator. Triggered manually, or automatically when this
 # workflow file itself changes (workflow_dispatch only works from the default
 # branch, so the paths trigger is how we run it from the feature branch).
-# To re-run from the feature branch: edit this comment's run counter. Run: 3
+# To re-run from the feature branch: edit this comment's run counter. Run: 4
 on:
   workflow_dispatch:
   push:

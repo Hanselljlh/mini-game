@@ -17,7 +17,13 @@ class DifficultyConfigTest {
     @Test fun minesweeperDifficultiesIncreaseBoardAndMines() {
         assertTrue(MinesweeperDifficulty.Easy.config.mines < MinesweeperDifficulty.Normal.config.mines)
         assertTrue(MinesweeperDifficulty.Normal.config.mines < MinesweeperDifficulty.Hard.config.mines)
-        assertTrue(MinesweeperDifficulty.Hard.config.rows > MinesweeperDifficulty.Normal.config.rows)
+        val cells = { d: MinesweeperDifficulty -> d.config.rows * d.config.cols }
+        assertTrue(cells(MinesweeperDifficulty.Easy) < cells(MinesweeperDifficulty.Normal))
+        assertTrue(cells(MinesweeperDifficulty.Normal) < cells(MinesweeperDifficulty.Hard))
+        // Mines always fit with room to spare for the first-tap guarantee
+        MinesweeperDifficulty.entries.forEach { d ->
+            assertTrue(d.config.mines < cells(d) - 1)
+        }
     }
 
     @Test fun customMinesweeperBoardUsesSelectedDifficulty() {

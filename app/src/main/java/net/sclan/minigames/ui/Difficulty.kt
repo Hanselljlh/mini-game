@@ -58,9 +58,9 @@ enum class TileMergeDifficulty(val label: String, val targetTile: Int, val start
 data class MinesweeperConfig(val rows: Int, val cols: Int, val mines: Int)
 
 enum class MinesweeperDifficulty(val label: String, val config: MinesweeperConfig) {
-    Easy("Easy", MinesweeperConfig(8, 8, 8)),
-    Normal("Normal", MinesweeperConfig(9, 9, 10)),
-    Hard("Hard", MinesweeperConfig(12, 12, 30))
+    Easy("Easy", MinesweeperConfig(12, 12, 22)),
+    Normal("Normal", MinesweeperConfig(16, 16, 40)),
+    Hard("Hard", MinesweeperConfig(16, 30, 99))
 }
 
 enum class TicTacToeDifficulty(val label: String) {
