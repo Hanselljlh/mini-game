@@ -29,6 +29,9 @@ jobs:
       - name: Build debug APK
         run: ./gradlew assembleDebug
 
+      - name: Compile instrumented smoke tests
+        run: ./gradlew assembleDebugAndroidTest
+
       - name: Build release APK (minified, signed)
         run: ./gradlew assembleRelease
 

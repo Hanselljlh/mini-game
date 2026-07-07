@@ -13,6 +13,7 @@ android {
         targetSdk = 34
         versionCode = 14
         versionName = "1.13"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     // Stable signing key committed to the repo so every build (debug and
@@ -76,8 +77,14 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     testImplementation("junit:junit:4.13.2")
+
+    androidTestImplementation(composeBom)
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:runner:1.5.2")
 
     implementation("com.android.billingclient:billing-ktx:6.2.1")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
