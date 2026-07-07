@@ -11,13 +11,36 @@ android {
         applicationId = "net.sclan.minigames"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 16
+        versionName = "1.15"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // Stable signing key committed to the repo so every build (debug and
+    // release) shares one signature — app updates then install cleanly over
+    // each other. NOTE: fine for test distribution; a real Play Store upload
+    // key should be private, not committed.
+    signingConfigs {
+        create("app") {
+            storeFile = file("keystore/pocketarcade.keystore")
+            storePassword = "pocketarcade"
+            keyAlias = "pocketarcade"
+            keyPassword = "pocketarcade"
+        }
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("app")
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("app")
         }
     }
 
@@ -54,8 +77,15 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     testImplementation("junit:junit:4.13.2")
 
+    androidTestImplementation(composeBom)
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+
     implementation("com.android.billingclient:billing-ktx:6.2.1")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }

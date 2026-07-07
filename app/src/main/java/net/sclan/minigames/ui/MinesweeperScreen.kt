@@ -3,6 +3,9 @@ package net.sclan.minigames.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -198,43 +201,57 @@ fun MinesweeperScreen(
 
             Spacer(Modifier.height(12.dp))
             val displayBoard = board ?: List(config.rows) { List(config.cols) { MsCell() } }
-            val cellSize = when (difficulty) {
-                MinesweeperDifficulty.Easy -> 36.dp
-                MinesweeperDifficulty.Normal -> 34.dp
-                MinesweeperDifficulty.Hard -> 26.dp
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                for (r in 0 until config.rows) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                        for (c in 0 until config.cols) {
-                            val cell = displayBoard[r][c]
-                            val bg = when {
-                                cell.isRevealed && cell.isMine -> Color(0xFFB71C1C)
-                                cell.isRevealed -> Color(0xFFE0E0E0)
-                                else -> Color(0xFF78909C)
-                            }
-                            Box(
-                                modifier = Modifier.size(cellSize).background(bg, RoundedCornerShape(4.dp)).combinedClickable(
-                                    onClick = { onTap(r, c) },
-                                    onLongClick = { onLongPress(r, c) }
-                                ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                when {
-                                    !cell.isRevealed && cell.isFlagged -> Text("⚑", fontSize = 14.sp, color = Color.White)
-                                    cell.isRevealed && cell.isMine -> Text("✹", fontSize = 14.sp, color = Color.White)
-                                    cell.isRevealed && cell.neighborMines > 0 -> Text(
-                                        text = cell.neighborMines.toString(),
-                                        color = numberColors[cell.neighborMines] ?: Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
+            // Columns always fit the screen width — tall boards scroll straight
+            // down, never sideways. Long boards are oriented portrait (30×16).
+            BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                val cellSize = ((maxWidth - 2.dp * (config.cols - 1)) / config.cols).coerceIn(18.dp, 40.dp)
+                val glyphSize = (cellSize.value * 0.5f).sp
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    modifier = Modifier.verticalScroll(rememberScrollState())
+                ) {
+                    for (r in 0 until config.rows) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                            for (c in 0 until config.cols) {
+                                val cell = displayBoard[r][c]
+                                val bg = when {
+                                    cell.isRevealed && cell.isMine -> Color(0xFFB71C1C)
+                                    cell.isRevealed -> Color(0xFFE0E0E0)
+                                    else -> Color(0xFF78909C)
+                                }
+                                Box(
+                                    modifier = Modifier.size(cellSize).background(bg, RoundedCornerShape(4.dp)).combinedClickable(
+                                        onClick = { onTap(r, c) },
+                                        onLongClick = { onLongPress(r, c) }
+                                    ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    when {
+                                        !cell.isRevealed && cell.isFlagged -> Text("⚑", fontSize = glyphSize, color = Color.White)
+                                        cell.isRevealed && cell.isMine -> Text("✹", fontSize = glyphSize, color = Color.White)
+                                        cell.isRevealed && cell.neighborMines > 0 -> Text(
+                                            text = cell.neighborMines.toString(),
+                                            color = numberColors[cell.neighborMines] ?: Color.Black,
+                                            fontSize = glyphSize,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "Tap to reveal • long-press to flag. Tall boards scroll down.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

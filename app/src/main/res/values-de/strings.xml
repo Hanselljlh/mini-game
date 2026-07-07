@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_title">Pocket Arcade Offline</string>
+    <string name="home_tagline">Puzzles, Karten, Arcade und Duelle — ohne WLAN, ohne Konto.</string>
+    <string name="search_hint">Spiele suchen</string>
+    <string name="section_todays_pick">HEUTIGE OFFLINE-AUSWAHL</string>
+    <string name="section_continue">WEITERSPIELEN</string>
+    <string name="section_favorites">FAVORITEN</string>
+    <string name="section_settings_privacy">EINSTELLUNGEN UND DATENSCHUTZ</string>
+</resources>

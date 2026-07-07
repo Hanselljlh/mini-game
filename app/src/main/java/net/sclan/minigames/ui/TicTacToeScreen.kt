@@ -62,7 +62,8 @@ internal fun chooseSmartBotMove(board: List<String>, bot: String = "O", human: S
 @Composable
 fun TicTacToeScreen(
     difficulty: TicTacToeDifficulty = TicTacToeDifficulty.TwoPlayer,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onFinished: () -> Unit = {}
 ) {
     var board by remember { mutableStateOf(List(9) { "" }) }
     var current by remember { mutableStateOf("X") }
@@ -79,9 +80,14 @@ fun TicTacToeScreen(
     fun finishTurn(next: List<String>): Boolean {
         return when (val w = winner(next)) {
             null -> if (next.all { it.isNotEmpty() }) {
-                status = "Draw!"; gameOver = true; true
+                status = "Draw!"; gameOver = true; onFinished(); true
             } else false
-            else -> { status = if (w == "X" && difficulty != TicTacToeDifficulty.TwoPlayer) "You win!" else "$w wins!"; gameOver = true; true }
+            else -> {
+                status = if (w == "X" && difficulty != TicTacToeDifficulty.TwoPlayer) "You win!" else "$w wins!"
+                gameOver = true
+                onFinished()
+                true
+            }
         }
     }
 

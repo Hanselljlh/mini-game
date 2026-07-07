@@ -1,5 +1,7 @@
 package net.sclan.minigames.ui
 
+import net.sclan.minigames.R
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,28 +15,52 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import net.sclan.minigames.data.HighScores
 import net.sclan.minigames.data.ScoreLogic
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onGameSelect: (GameId) -> Unit,
     scores: HighScores = HighScores(),
+    favorites: Set<String> = emptySet(),
+    recents: List<String> = emptyList(),
     adsEnabled: Boolean = true,
+    dailyGame: GameId? = null,
+    dailyDone: Boolean = false,
+    onToggleFavorite: (GameId) -> Unit = {},
     onSettings: () -> Unit = {}
 ) {
+    var query by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf<GameCategory?>(null) }
+
+    val filtered = GameRegistry.search(query)
+        .filter { selectedCategory == null || it.category == selectedCategory }
+    val browsing = query.isNotBlank() || selectedCategory != null
+
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -43,51 +69,140 @@ fun HomeScreen(
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(24.dp))
             Text(
-                "Pocket Mini Games",
+                stringResource(R.string.home_title),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                "Choose a game, read the rules, set difficulty, then play offline.",
+                stringResource(R.string.home_tagline),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(Modifier.height(28.dp))
-
-            SectionLabel("GAMES")
-            Spacer(Modifier.height(8.dp))
-
-            GameCard(
-                game = GameId.TileMerge,
-                subtitle = "Slide and merge matching number tiles",
-                badge = if (scores.best2048Tile > 0)
-                    "Best tile: ${ScoreLogic.tileLabel(scores.best2048Tile)}  •  Score: ${scores.best2048Score}"
-                else "Setup • instructions • difficulty",
-                onClick = { onGameSelect(GameId.TileMerge) }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "Level ${ScoreLogic.levelForXp(scores.totalXp)} • ${scores.totalXp} XP • ${scores.gamesPlayed} games played",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
             )
+            Spacer(Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text(stringResource(R.string.search_hint)) },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                singleLine = true
+            )
+
             Spacer(Modifier.height(10.dp))
-            GameCard(
-                game = GameId.Minesweeper,
-                subtitle = "Reveal safe squares and flag hidden mines",
-                badge = if (scores.minesweeperWins > 0)
-                    "Wins: ${scores.minesweeperWins}  •  Best: ${ScoreLogic.timeLabel(scores.minesweeperBestTimeSecs)}"
-                else "Easy / Normal / Hard boards",
-                onClick = { onGameSelect(GameId.Minesweeper) }
-            )
-            Spacer(Modifier.height(10.dp))
-            GameCard(
-                game = GameId.TicTacToe,
-                subtitle = "2-player, easy bot, or smart bot",
-                badge = "Choose opponent before playing",
-                onClick = { onGameSelect(GameId.TicTacToe) }
-            )
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = selectedCategory == null,
+                    onClick = { selectedCategory = null },
+                    label = { Text("All") }
+                )
+                GameCategory.entries.forEach { category ->
+                    FilterChip(
+                        selected = selectedCategory == category,
+                        onClick = {
+                            selectedCategory = if (selectedCategory == category) null else category
+                        },
+                        label = { Text(category.label) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(16.dp))
 
-            Spacer(Modifier.height(28.dp))
-            SectionLabel("SETTINGS")
+            if (!browsing && dailyGame != null) {
+                val dailyMeta = GameRegistry.meta(dailyGame)
+                SectionLabel(stringResource(R.string.section_todays_pick))
+                Spacer(Modifier.height(8.dp))
+                Card(
+                    onClick = { onGameSelect(dailyGame) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        MiniGameIcon(dailyGame, modifier = Modifier.width(56.dp).height(56.dp))
+                        Spacer(Modifier.width(14.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                dailyGame.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                dailyMeta.subtitle,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                if (dailyDone) "Completed today ✓ (+${DailyChallenge.BONUS_XP} XP earned)"
+                                else "Complete it today for +${DailyChallenge.BONUS_XP} XP",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+                Spacer(Modifier.height(20.dp))
+            }
+
+            if (browsing) {
+                if (filtered.isEmpty()) {
+                    Text(
+                        "No games match. Try another search.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    GameCardList(filtered, scores, favorites, onGameSelect, onToggleFavorite)
+                }
+            } else {
+                val recentMetas = recents
+                    .mapNotNull { name -> GameRegistry.games.firstOrNull { it.id.name == name } }
+                    .take(3)
+                if (recentMetas.isNotEmpty()) {
+                    SectionLabel(stringResource(R.string.section_continue))
+                    Spacer(Modifier.height(8.dp))
+                    GameCardList(recentMetas, scores, favorites, onGameSelect, onToggleFavorite)
+                    Spacer(Modifier.height(20.dp))
+                }
+
+                val favoriteMetas = GameRegistry.games.filter { it.id.name in favorites && it.id.name !in recents.take(3) }
+                if (favoriteMetas.isNotEmpty()) {
+                    SectionLabel(stringResource(R.string.section_favorites))
+                    Spacer(Modifier.height(8.dp))
+                    GameCardList(favoriteMetas, scores, favorites, onGameSelect, onToggleFavorite)
+                    Spacer(Modifier.height(20.dp))
+                }
+
+                GameCategory.entries.forEach { category ->
+                    val inCategory = GameRegistry.games.filter { it.category == category }
+                    if (inCategory.isNotEmpty()) {
+                        SectionLabel(category.label.uppercase())
+                        Spacer(Modifier.height(8.dp))
+                        GameCardList(inCategory, scores, favorites, onGameSelect, onToggleFavorite)
+                        Spacer(Modifier.height(20.dp))
+                    }
+                }
+            }
+
+            SectionLabel(stringResource(R.string.section_settings_privacy))
             Spacer(Modifier.height(8.dp))
-
             Card(
                 onClick = onSettings,
                 modifier = Modifier.fillMaxWidth(),
@@ -98,18 +213,21 @@ fun HomeScreen(
                     Spacer(Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            if (adsEnabled) "Remove Ads" else "Ads Removed ✓",
+                            if (adsEnabled) "Remove Ads • Privacy • Data" else "Ads Removed ✓ • Privacy • Data",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            if (adsEnabled) "Support the app and hide placeholder ads"
-                            else "Thank you for your support!",
+                            "One-time purchase, restore, and delete-local-data controls",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
                 }
             }
 
@@ -119,30 +237,111 @@ fun HomeScreen(
 }
 
 @Composable
-private fun SectionLabel(text: String) {
-    Text(text, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+private fun GameCardList(
+    metas: List<GameMeta>,
+    scores: HighScores,
+    favorites: Set<String>,
+    onGameSelect: (GameId) -> Unit,
+    onToggleFavorite: (GameId) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        metas.forEach { meta ->
+            GameCard(
+                meta = meta,
+                badge = scoreBadge(meta.id, scores),
+                isFavorite = meta.id.name in favorites,
+                onClick = { onGameSelect(meta.id) },
+                onToggleFavorite = { onToggleFavorite(meta.id) }
+            )
+        }
+    }
+}
+
+private fun scoreBadge(id: GameId, scores: HighScores): String? = when (id) {
+    GameId.TileMerge -> if (scores.best2048Tile > 0)
+        "Best tile: ${ScoreLogic.tileLabel(scores.best2048Tile)}  •  Score: ${scores.best2048Score}" else null
+    GameId.Minesweeper -> if (scores.minesweeperWins > 0)
+        "Wins: ${scores.minesweeperWins}  •  Best: ${ScoreLogic.timeLabel(scores.minesweeperBestTimeSecs)}" else null
+    GameId.MemoryMatch -> if (scores.memoryBestMoves > 0)
+        "Best: ${ScoreLogic.movesLabel(scores.memoryBestMoves)}" else null
+    GameId.ReactionTap -> if (scores.reactionBestMs > 0)
+        "Best avg: ${ScoreLogic.reactionLabel(scores.reactionBestMs)}" else null
+    GameId.Snake -> if (scores.snakeBestScore > 0) "Best: ${scores.snakeBestScore} food" else null
+    GameId.WordSearch -> if (scores.wordSearchBestSecs > 0) "Best: ${ScoreLogic.timeLabel(scores.wordSearchBestSecs)}" else null
+    GameId.CodeBreaker -> if (scores.codeBestGuesses > 0) "Best: ${scores.codeBestGuesses} guesses" else null
+    GameId.Sudoku -> if (scores.sudokuWins > 0) "Solved: ${scores.sudokuWins}" else null
+    GameId.TimingStack -> if (scores.stackBestLayers > 0) "Best: ${scores.stackBestLayers} layers" else null
+    GameId.MazeRunner -> if (scores.mazeBestSecs > 0) "Best: ${ScoreLogic.timeLabel(scores.mazeBestSecs)}" else null
+    GameId.AnagramTiles -> if (scores.anagramBestSolved > 0) "Best: ${scores.anagramBestSolved} solved" else null
+    GameId.SimonSays -> if (scores.simonBestRound > 0) "Best: ${scores.simonBestRound} rounds" else null
+    GameId.WaterSort -> if (scores.waterSortBestMoves > 0) "Best: ${ScoreLogic.movesLabel(scores.waterSortBestMoves)}" else null
+    GameId.NutsAndBolts -> if (scores.nutsBestMoves > 0) "Best: ${ScoreLogic.movesLabel(scores.nutsBestMoves)}" else null
+    GameId.ColorFill -> if (scores.colorFillWins > 0) "Filled: ${scores.colorFillWins}" else null
+    GameId.ColorBlocks -> if (scores.blocksBestScore > 0) "Best: ${scores.blocksBestScore}" else null
+    GameId.Escape -> if (scores.escapeLevelsBeaten > 0) "Levels: ${scores.escapeLevelsBeaten}" else null
+    GameId.MazePaint -> if (scores.paintBestSwipes > 0) "Best: ${scores.paintBestSwipes} swipes" else null
+    GameId.FlappyJump -> if (scores.flappyBestScore > 0) "Best: ${scores.flappyBestScore} pipes" else null
+    GameId.BlockFill -> if (scores.blockFillBestScore > 0) "Best: ${scores.blockFillBestScore}" else null
+    GameId.MergeChain -> if (scores.mergeChainBest > 0) "Best: ${scores.mergeChainBest}" else null
+    GameId.CrossMath -> if (scores.crossMathSolved > 0) "Solved: ${scores.crossMathSolved}" else null
+    GameId.NumberConnect -> if (scores.numberConnectWins > 0) "Paths: ${scores.numberConnectWins}" else null
+    GameId.Solitaire -> if (scores.solitaireWins > 0) "Wins: ${scores.solitaireWins}" else null
+    GameId.War -> if (scores.warWins > 0) "Wins: ${scores.warWins}" else null
+    GameId.Blackjack -> if (scores.blackjackWins > 0) "Hands won: ${scores.blackjackWins}" else null
+    GameId.Dominoes -> if (scores.dominoWins > 0) "Wins: ${scores.dominoWins}" else null
+    GameId.Checkers -> if (scores.checkersWins > 0) "Wins: ${scores.checkersWins}" else null
+    GameId.Ludo -> if (scores.ludoWins > 0) "Races won: ${scores.ludoWins}" else null
+    GameId.WordRescue -> if (scores.wordRescueWins > 0) "Rescued: ${scores.wordRescueWins}" else null
+    GameId.WordGuess -> if (scores.wordGuessWins > 0) "Cracked: ${scores.wordGuessWins}" else null
+    GameId.SlidingPuzzle -> if (scores.slidingBestMoves > 0) "Best: ${ScoreLogic.movesLabel(scores.slidingBestMoves)}" else null
+    GameId.Pong -> if (scores.pongWins > 0) "Wins: ${scores.pongWins}" else null
+    GameId.PenaltyKicks -> if (scores.penaltyBestGoals > 0) "Best: ${scores.penaltyBestGoals}/5" else null
+    GameId.WordLadder -> if (scores.wordLadderWins > 0) "Climbed: ${scores.wordLadderWins}" else null
+    GameId.AirHockey -> if (scores.airHockeyWins > 0) "Wins: ${scores.airHockeyWins}" else null
+    GameId.Pool -> if (scores.poolBestShots > 0) "Best: ${scores.poolBestShots} shots" else null
+    GameId.Chess -> if (scores.chessWins > 0) "Wins: ${scores.chessWins}" else null
+    GameId.TicTacToe, GameId.FourInARow, GameId.DotsAndBoxes, GameId.BubbleWrap, GameId.Mancala,
+    GameId.SandFall, GameId.FidgetSpinner, GameId.ChalkDoodle -> null
 }
 
 @Composable
-private fun GameCard(game: GameId, subtitle: String, badge: String? = null, onClick: () -> Unit) {
+private fun SectionLabel(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+private fun GameCard(
+    meta: GameMeta,
+    badge: String?,
+    isFavorite: Boolean,
+    onClick: () -> Unit,
+    onToggleFavorite: () -> Unit
+) {
     Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            MiniGameIcon(game, modifier = Modifier.width(56.dp).height(56.dp))
+        Row(modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            MiniGameIcon(meta.id, modifier = Modifier.width(56.dp).height(56.dp))
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(game.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (badge != null) {
-                    Spacer(Modifier.height(4.dp))
-                    Text(badge, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-                }
+                Text(meta.id.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text(meta.subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    badge ?: "${meta.players}  •  ~${meta.estTime}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            IconButton(onClick = onToggleFavorite) {
+                Icon(
+                    if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                    tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
