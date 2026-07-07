@@ -79,7 +79,7 @@ fun GameSetupScreen(
     var nutsDifficulty by remember { mutableStateOf(WaterSortDifficulty.Normal) }
     var fillDifficulty by remember { mutableStateOf(ColorFillDifficulty.Normal) }
     var blocksDifficulty by remember { mutableStateOf(ColorBlocksDifficulty.Normal) }
-    var escapePack by remember { mutableStateOf(EscapePack.Rookie) }
+    var escapePack by remember { mutableStateOf(EscapeDifficulty.Casual) }
     var paintSize by remember { mutableStateOf(MazeSize.Medium) }
     var flappyDifficulty by remember { mutableStateOf(FlappyDifficulty.Normal) }
     var sandBrush by remember { mutableStateOf(SandBrush.Normal) }
@@ -227,9 +227,9 @@ fun GameSetupScreen(
                                 blocksDifficulty.ordinal
                             ) { blocksDifficulty = ColorBlocksDifficulty.entries[it] }
                             GameId.Escape -> DifficultyRow(
-                                EscapePack.entries.map { it.label },
+                                EscapeDifficulty.entries.map { it.label },
                                 escapePack.ordinal
-                            ) { escapePack = EscapePack.entries[it] }
+                            ) { escapePack = EscapeDifficulty.entries[it] }
                             GameId.MazePaint -> DifficultyRow(
                                 MazeSize.entries.map { it.label },
                                 paintSize.ordinal
@@ -436,7 +436,7 @@ private fun BestScoreLine(game: GameId, scores: HighScores) {
         GameId.ColorBlocks -> if (scores.blocksBestScore > 0)
             "Best score: ${scores.blocksBestScore}" else "No saved score yet."
         GameId.Escape -> if (scores.escapeLevelsBeaten > 0)
-            "Levels beaten: ${scores.escapeLevelsBeaten}" else "No escapes yet."
+            "Puzzles escaped: ${scores.escapeLevelsBeaten}" else "No escapes yet."
         GameId.MazePaint -> if (scores.paintBestSwipes > 0)
             "Best: ${scores.paintBestSwipes} swipes" else "No saved score yet."
         GameId.FlappyJump -> if (scores.flappyBestScore > 0)
@@ -640,7 +640,7 @@ private fun instructionPages(game: GameId, choice: GameSetupChoice): List<Pair<S
     GameId.Escape -> listOf(
         "Free the red block" to "The red block wants out through the right edge. Everything else is in the way.",
         "Slide the blockers" to "Tap a block to select it, then swipe to slide it along its track — horizontal blocks slide sideways, vertical ones up and down.",
-        "Fewer moves, more glory" to "Each pack has ${choice.escape.count} hand-crafted levels. Solve them in as few moves as you can."
+        "Fewer moves, more glory" to "Puzzles are freshly generated every time — endless and never repeating. Beat the Par shown for ${choice.escape.label} bragging rights."
     )
     GameId.MazePaint -> listOf(
         "Slide and paint" to "Swipe to glide until you hit a wall. Every square you pass gets painted.",

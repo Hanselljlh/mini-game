@@ -2,10 +2,13 @@ package net.sclan.minigames
 
 import net.sclan.minigames.ui.BF_SHAPES
 import net.sclan.minigames.ui.BF_SIZE
-import net.sclan.minigames.ui.ESCAPE_LEVELS
 import net.sclan.minigames.ui.ESC_EXIT_ROW
+import net.sclan.minigames.ui.ESC_FALLBACK
 import net.sclan.minigames.ui.ESC_SIZE
 import net.sclan.minigames.ui.EscBlock
+import net.sclan.minigames.ui.EscapeDifficulty
+import net.sclan.minigames.ui.escMinMoves
+import net.sclan.minigames.ui.generateEscapePuzzle
 import net.sclan.minigames.ui.FLAPPY_BIRD_R
 import net.sclan.minigames.ui.FlappyState
 import net.sclan.minigames.ui.MazeDir
@@ -34,43 +37,57 @@ import kotlin.random.Random
 
 class ArcadePackTest {
 
-    // --- Escape ---
+    // --- Escape (procedural) ---
 
-    @Test fun escapeLevelsAreWellFormed() {
-        ESCAPE_LEVELS.forEachIndexed { i, blocks ->
-            val red = blocks.first()
-            assertEquals("level $i red id", 0, red.id)
-            assertTrue("level $i red horizontal", red.horizontal)
-            assertEquals("level $i red on exit row", ESC_EXIT_ROW, red.row)
-            // No overlaps, all in bounds
-            val cells = blocks.flatMap { it.cells() }
-            assertEquals("level $i overlap", cells.size, cells.toSet().size)
-            cells.forEach { (r, c) ->
-                assertTrue("level $i bounds", r in 0 until ESC_SIZE && c in 0 until ESC_SIZE)
+    @Test fun generatedPuzzlesAreWellFormedAndSolvable() {
+        EscapeDifficulty.entries.forEach { d ->
+            repeat(4) { seed ->
+                val (blocks, par) = generateEscapePuzzle(d, Random(seed * 31 + d.ordinal), attempts = 120)
+                val red = blocks.first()
+                assertEquals("red id", 0, red.id)
+                assertTrue("red horizontal", red.horizontal)
+                assertEquals("red on exit row", ESC_EXIT_ROW, red.row)
+                val cells = blocks.flatMap { it.cells() }
+                assertEquals("no overlaps", cells.size, cells.toSet().size)
+                cells.forEach { (r, c) ->
+                    assertTrue("in bounds", r in 0 until ESC_SIZE && c in 0 until ESC_SIZE)
+                }
+                // Par is the proven BFS solution length — puzzle must be solvable
+                assertEquals("par matches solver", escMinMoves(blocks), par)
+                assertTrue("not pre-solved", par >= 1)
             }
         }
     }
 
-    @Test fun escapeLevelsAreSolvable() {
-        // BFS over states proves every shipped level can be solved.
-        ESCAPE_LEVELS.forEachIndexed { i, start ->
-            val seen = mutableSetOf(start.map { it.row to it.col })
-            val queue = ArrayDeque(listOf(start))
-            var solved = false
-            while (queue.isNotEmpty() && !solved) {
-                val state = queue.removeFirst()
-                if (escSolved(state)) { solved = true; break }
-                state.forEach { block ->
-                    listOf(-1, 1).forEach { delta ->
-                        escMove(state, block.id, delta)?.let { next ->
-                            val key = next.map { it.row to it.col }
-                            if (seen.add(key)) queue.add(next)
-                        }
-                    }
-                }
-            }
-            assertTrue("level $i must be solvable", solved)
+    @Test fun casualPuzzlesLandInBand() {
+        // The easy band is dense in random space — generation should hit it.
+        repeat(5) { seed ->
+            val (_, par) = generateEscapePuzzle(EscapeDifficulty.Casual, Random(seed), attempts = 150)
+            assertTrue("casual par $par", par in 1..9) // band 3..7 plus small fallback slack
         }
+    }
+
+    @Test fun puzzlesVaryAcrossCalls() {
+        val layouts = (0 until 6).map { seed ->
+            generateEscapePuzzle(EscapeDifficulty.Casual, Random(seed), attempts = 60).first
+        }
+        assertTrue("distinct layouts", layouts.toSet().size >= 4)
+    }
+
+    @Test fun fallbackPuzzleIsSolvable() {
+        val par = escMinMoves(ESC_FALLBACK)
+        assertTrue(par != null && par in 1..10)
+    }
+
+    @Test fun minMovesDetectsUnsolvable() {
+        // Red walled in by a full-height column it can never pass: verticals of
+        // length 3 stacked at col 5 can only slide within the column — unsolvable.
+        val blocked = listOf(
+            EscBlock(0, ESC_EXIT_ROW, 0, 2, true),
+            EscBlock(1, 0, 5, 3, false),
+            EscBlock(2, 3, 5, 3, false)
+        )
+        assertNull(escMinMoves(blocked))
     }
 
     @Test fun escMoveRejectsCollisionsAndBounds() {

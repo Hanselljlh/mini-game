@@ -14,7 +14,7 @@ An offline-first casual mini-game hub for Android, built with Kotlin and Jetpack
 | Mini Sudoku | Brain & Logic | Generated 4×4, 6×6, and 9×9 puzzles with conflict highlighting |
 | Maze Runner | Brain & Logic | Freshly generated mazes — slide until you hit a wall, race to the exit |
 | Simon Says | Brain & Logic | Repeat the flashing pad sequence as it grows, three speeds |
-| Escape | Brain & Logic | Slide blockers along their tracks and free the red block — 6 handcrafted levels |
+| Escape | Brain & Logic | Slide blockers to free the red block — endless BFS-verified generated puzzles with par |
 | Merge Chain | Brain & Logic | 2248-style chain merging with gravity refill |
 | Cross Math | Brain & Logic | Interlocking equation puzzles with digit tiles |
 | Number Connect | Brain & Logic | Retrace a hidden Hamiltonian path from 1 to N |

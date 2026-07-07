@@ -42,10 +42,14 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
+import kotlin.random.Random
 
 // ---------------------------------------------------------------------------
 // Pure game logic (Rush-Hour-style block escape on a 6×6 grid)
 // The red block (id 0) is horizontal on row 2 and must reach the right edge.
+// Puzzles are generated procedurally and never repeat: random layouts are
+// proven solvable by BFS, and the BFS solution length ("par") is used to
+// band them into difficulties.
 // ---------------------------------------------------------------------------
 
 internal const val ESC_SIZE = 6
@@ -74,50 +78,95 @@ internal fun escSolved(blocks: List<EscBlock>): Boolean {
     return red.col + red.len >= ESC_SIZE
 }
 
-/** Handcrafted original levels: red block first (row 2, horizontal). */
-internal val ESCAPE_LEVELS: List<List<EscBlock>> = listOf(
-    // 1 — one mover
-    listOf(
-        EscBlock(0, 2, 0, 2, true),
-        EscBlock(1, 0, 2, 3, false)
-    ),
-    // 2 — two movers
-    listOf(
-        EscBlock(0, 2, 1, 2, true),
-        EscBlock(1, 1, 3, 2, false),
-        EscBlock(2, 0, 4, 3, false)
-    ),
-    // 3 — slide up out of the lane
-    listOf(
-        EscBlock(0, 2, 0, 2, true),
-        EscBlock(1, 2, 2, 2, false),
-        EscBlock(2, 0, 3, 2, false),
-        EscBlock(3, 4, 3, 2, true)
-    ),
-    // 4 — quick unhook near the exit
-    listOf(
-        EscBlock(0, 2, 3, 2, true),
-        EscBlock(1, 1, 5, 2, false),
-        EscBlock(2, 4, 0, 3, true),
-        EscBlock(3, 0, 0, 2, false)
-    ),
-    // 5 — two blockers, both must clear
-    listOf(
-        EscBlock(0, 2, 0, 2, true),
-        EscBlock(1, 2, 2, 2, false),
-        EscBlock(2, 2, 4, 3, false),
-        EscBlock(3, 0, 4, 2, true),
-        EscBlock(4, 0, 2, 2, false)
-    ),
-    // 6 — long pole and a tail
-    listOf(
-        EscBlock(0, 2, 1, 2, true),
-        EscBlock(1, 1, 3, 3, false),
-        EscBlock(2, 2, 4, 2, false),
-        EscBlock(3, 0, 0, 2, false),
-        EscBlock(4, 4, 0, 3, true)
-    )
+/**
+ * Minimum number of single-cell slides to solve, or null if unsolvable.
+ * Breadth-first over block positions; [maxStates] bounds the search so it can
+ * never run away (a lesson learned the hard way with Number Connect).
+ */
+internal fun escMinMoves(start: List<EscBlock>, maxStates: Int = 120_000): Int? {
+    fun key(b: List<EscBlock>) = b.joinToString("|") { "${it.row},${it.col}" }
+    val seen = hashSetOf(key(start))
+    var frontier = listOf(start)
+    var depth = 0
+    while (frontier.isNotEmpty() && seen.size < maxStates) {
+        if (frontier.any { escSolved(it) }) return depth
+        val next = mutableListOf<List<EscBlock>>()
+        for (state in frontier) {
+            for (block in state) {
+                for (delta in intArrayOf(-1, 1)) {
+                    escMove(state, block.id, delta)?.let { n ->
+                        if (seen.add(key(n))) next.add(n)
+                    }
+                }
+            }
+        }
+        frontier = next
+        depth++
+    }
+    return null
+}
+
+/** Always-solvable emergency layout (par ≈ 5) if generation somehow strikes out. */
+internal val ESC_FALLBACK: List<EscBlock> = listOf(
+    EscBlock(0, 2, 0, 2, true),
+    EscBlock(1, 2, 3, 2, false),
+    EscBlock(2, 4, 0, 3, true)
 )
+
+private fun distToBand(par: Int, d: EscapeDifficulty): Int = when {
+    par < d.minMoves -> d.minMoves - par
+    par > d.maxMoves -> par - d.maxMoves
+    else -> 0
+}
+
+/**
+ * Generates a fresh random puzzle whose BFS par falls inside the difficulty
+ * band (or the closest solvable layout found if the band can't be hit within
+ * [attempts]). Returns the puzzle and its par. Every call is a new puzzle —
+ * there is no fixed level list to exhaust.
+ */
+internal fun generateEscapePuzzle(
+    difficulty: EscapeDifficulty,
+    random: Random = Random.Default,
+    attempts: Int = 250
+): Pair<List<EscBlock>, Int> {
+    var best: Pair<List<EscBlock>, Int>? = null
+    repeat(attempts) {
+        val blocks = mutableListOf(EscBlock(0, ESC_EXIT_ROW, random.nextInt(2), 2, true))
+        val target = difficulty.blockers.random(random)
+        var id = 1
+        var placeTries = 0
+        while (id <= target && placeTries < 90) {
+            placeTries++
+            val horizontal = random.nextFloat() < 0.4f
+            val len = if (random.nextFloat() < 0.3f) 3 else 2
+            val row: Int
+            val col: Int
+            if (horizontal) {
+                // Horizontal blockers stay off the exit row — only vertical
+                // blocks may cross the red block's lane.
+                var r = random.nextInt(ESC_SIZE)
+                if (r == ESC_EXIT_ROW) r = if (random.nextBoolean()) ESC_EXIT_ROW - 1 else ESC_EXIT_ROW + 1
+                row = r
+                col = random.nextInt(ESC_SIZE - len + 1)
+            } else {
+                row = random.nextInt(ESC_SIZE - len + 1)
+                col = random.nextInt(ESC_SIZE)
+            }
+            val candidate = EscBlock(id, row, col, len, horizontal)
+            if (candidate.cells().none { it in escOccupied(blocks) }) {
+                blocks.add(candidate)
+                id++
+            }
+        }
+        val par = escMinMoves(blocks) ?: return@repeat
+        if (par < 1) return@repeat // red lane already clear — boring
+        val puzzle = blocks.toList() to par
+        if (par in difficulty.minMoves..difficulty.maxMoves) return puzzle
+        if (best == null || distToBand(par, difficulty) < distToBand(best!!.second, difficulty)) best = puzzle
+    }
+    return best ?: (ESC_FALLBACK to (escMinMoves(ESC_FALLBACK) ?: 5))
+}
 
 // ---------------------------------------------------------------------------
 // UI
@@ -126,29 +175,34 @@ internal val ESCAPE_LEVELS: List<List<EscBlock>> = listOf(
 private val escBlockColors = listOf(
     Color(0xFFE53935), // red hero
     Color(0xFF8D6E63), Color(0xFF5C6BC0), Color(0xFF26A69A),
-    Color(0xFFFFB300), Color(0xFF7E57C2), Color(0xFF66BB6A)
+    Color(0xFFFFB300), Color(0xFF7E57C2), Color(0xFF66BB6A), Color(0xFFEC407A)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EscapeScreen(
-    pack: EscapePack = EscapePack.Rookie,
+    difficulty: EscapeDifficulty = EscapeDifficulty.Casual,
     onBack: () -> Unit,
-    onLevelDone: (levelIndex: Int, moves: Int) -> Unit = { _, _ -> }
+    onPuzzleSolved: (moves: Int) -> Unit = {}
 ) {
-    var levelInPack by remember(pack) { mutableIntStateOf(0) }
-    val levelIndex = pack.firstLevel + levelInPack
-    var blocks by remember(pack, levelInPack) { mutableStateOf(ESCAPE_LEVELS[levelIndex]) }
-    var selected by remember(pack, levelInPack) { mutableIntStateOf(0) }
-    var moves by remember(pack, levelInPack) { mutableIntStateOf(0) }
-    var won by remember(pack, levelInPack) { mutableStateOf(false) }
+    var puzzleNumber by remember(difficulty) { mutableIntStateOf(1) }
+    var puzzle by remember(difficulty) { mutableStateOf(generateEscapePuzzle(difficulty)) }
+    var blocks by remember(difficulty, puzzleNumber) { mutableStateOf(puzzle.first) }
+    var selected by remember(difficulty, puzzleNumber) { mutableIntStateOf(0) }
+    var moves by remember(difficulty, puzzleNumber) { mutableIntStateOf(0) }
+    var won by remember(difficulty, puzzleNumber) { mutableStateOf(false) }
     var boardSize by remember { mutableStateOf(IntSize.Zero) }
 
-    fun reset() {
-        blocks = ESCAPE_LEVELS[levelIndex]
+    fun resetSame() {
+        blocks = puzzle.first
         selected = 0
         moves = 0
         won = false
+    }
+
+    fun nextPuzzle() {
+        puzzle = generateEscapePuzzle(difficulty)
+        puzzleNumber++
     }
 
     fun trySlide(dx: Int, dy: Int) {
@@ -161,14 +215,14 @@ fun EscapeScreen(
         moves++
         if (escSolved(next)) {
             won = true
-            onLevelDone(levelIndex, moves)
+            onPuzzleSolved(moves)
         }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Escape • ${pack.label} ${levelInPack + 1}/${pack.count}") },
+                title = { Text("Escape • ${difficulty.label} #$puzzleNumber") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -186,9 +240,9 @@ fun EscapeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Moves: $moves", style = MaterialTheme.typography.titleMedium)
+                Text("Moves: $moves • Par: ${puzzle.second}", style = MaterialTheme.typography.titleMedium)
                 if (won) Text("Escaped! 🚗", color = Color(0xFF2E7D32), fontWeight = FontWeight.Bold)
-                Button(onClick = ::reset) { Text("Reset") }
+                Button(onClick = ::resetSame) { Text("Reset") }
             }
 
             Spacer(Modifier.height(12.dp))
@@ -200,7 +254,7 @@ fun EscapeScreen(
                     .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(10.dp))
                     .border(2.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp))
                     .onSizeChanged { boardSize = it }
-                    .pointerInput(pack, levelInPack, selected, won) {
+                    .pointerInput(difficulty, puzzleNumber, selected, won) {
                         var dx = 0f
                         var dy = 0f
                         detectDragGestures(
@@ -251,20 +305,16 @@ fun EscapeScreen(
             Spacer(Modifier.height(12.dp))
 
             if (won) {
-                if (levelInPack + 1 < pack.count) {
-                    Button(onClick = { levelInPack++ }) { Text("Next Level") }
-                } else {
-                    Text("Pack complete! 🏁", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                }
+                Button(onClick = ::nextPuzzle) { Text("Next Puzzle") }
                 Spacer(Modifier.height(8.dp))
             }
 
             Text(
-                "Tap a block to select it, then swipe to slide it along its track. Get the red block to the right edge.",
+                "Tap a block to select it, then swipe to slide it along its track. Get the red block to the right edge. " +
+                    "Every puzzle is freshly generated — they never repeat.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
 }
-

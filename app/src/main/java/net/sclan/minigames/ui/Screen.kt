@@ -24,7 +24,7 @@ sealed class Screen {
     data class NutsAndBolts(val difficulty: WaterSortDifficulty) : Screen()
     data class ColorFill(val difficulty: ColorFillDifficulty) : Screen()
     data class ColorBlocks(val difficulty: ColorBlocksDifficulty) : Screen()
-    data class Escape(val pack: EscapePack) : Screen()
+    data class Escape(val difficulty: EscapeDifficulty) : Screen()
     data class MazePaint(val size: MazeSize) : Screen()
     data class FlappyJump(val difficulty: FlappyDifficulty) : Screen()
     data class SandFall(val brush: SandBrush) : Screen()

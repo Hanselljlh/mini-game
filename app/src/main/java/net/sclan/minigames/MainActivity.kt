@@ -331,9 +331,9 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                     is Screen.Escape -> EscapeScreen(
-                        pack = current.pack,
+                        difficulty = current.difficulty,
                         onBack = { screen = Screen.GameSetup(GameId.Escape) },
-                        onLevelDone = { _, _ ->
+                        onPuzzleSolved = { _ ->
                             scoreRepo.recordEscapeLevel()
                             completeIfDaily(GameId.Escape)
                         }

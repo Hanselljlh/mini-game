@@ -172,10 +172,10 @@ enum class ColorBlocksDifficulty(val label: String, val rows: Int, val cols: Int
     Hard("Hard • 6 colors", 12, 10, 6)
 }
 
-enum class EscapePack(val label: String, val firstLevel: Int, val count: Int) {
-    Rookie("Rookie • levels 1–2", 0, 2),
-    Driver("Driver • levels 3–4", 2, 2),
-    Expert("Expert • levels 5–6", 4, 2)
+enum class EscapeDifficulty(val label: String, val blockers: IntRange, val minMoves: Int, val maxMoves: Int) {
+    Casual("Casual", 3..4, 3, 7),
+    Tricky("Tricky", 4..6, 8, 12),
+    Expert("Expert", 5..7, 13, 60)
 }
 
 enum class FlappyDifficulty(val label: String, val speed: Float, val gap: Float) {
@@ -255,7 +255,7 @@ data class GameSetupChoice(
     val nutsAndBolts: WaterSortDifficulty = WaterSortDifficulty.Normal,
     val colorFill: ColorFillDifficulty = ColorFillDifficulty.Normal,
     val colorBlocks: ColorBlocksDifficulty = ColorBlocksDifficulty.Normal,
-    val escape: EscapePack = EscapePack.Rookie,
+    val escape: EscapeDifficulty = EscapeDifficulty.Casual,
     val mazePaint: MazeSize = MazeSize.Medium,
     val flappyJump: FlappyDifficulty = FlappyDifficulty.Normal,
     val sandFall: SandBrush = SandBrush.Normal,
