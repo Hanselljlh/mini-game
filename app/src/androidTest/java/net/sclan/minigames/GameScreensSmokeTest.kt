@@ -3,7 +3,6 @@ package net.sclan.minigames
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.assertExists
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import net.sclan.minigames.ui.AirHockeyScreen
 import net.sclan.minigames.ui.AnagramTilesScreen
